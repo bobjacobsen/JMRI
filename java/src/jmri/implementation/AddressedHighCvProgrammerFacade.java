@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Programmer facade, at this point just an example.
+ * Programmer facade for decoders that have an alternate high-CV access method for command
+ * stations that can't address all 1024 NMRA addresses. 
  * <p>
- * This is for decoders that have an alternate high-CV access method for command
- * stations that can't address all 1024. It falls back to that mode if the CS
+ * This falls back to that mode if the CS
  * can't directly address an requested CV address. In the fall back, CVs from 0
  * to "top" are addressed directly. (Top being a supplied parameter) Above the
  * top CV, the upper part of the CV address written to a specific CV, followed
