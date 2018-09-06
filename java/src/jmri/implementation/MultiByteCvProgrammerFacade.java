@@ -16,9 +16,14 @@ import org.slf4j.LoggerFactory;
  * There can be two through eight addresses (zero or one would be pointless; nine or more don't fit).
  * The left-most address holds the most significant byte and is done first; the right-most 
  * address is the least significant address and is done last.  
+ * <p>
+ * For example, a write of 1026 to CV (4).(13.14) will write the value 4 (the upper byte)
+ * to CV4, then write the value 2 (the lower byte) to indexed CV 13.14 via whatever
+ * downstream facades and programmers handle those CVs.
  * 
  * <p>Cautions and limitations:
  * <ul>
+ * <li>Programming mode is just passed through; this is intended to work with any mode.
  * <li>This assumes each value is an 8-bit byte; it may not work right with downstream types that
  *      assume something else.  (That T2CV.11.12 example may not be a good one). This
  *      could be extended in the figure with e.g. (T2CV.11.12:16) to indicate width.
@@ -28,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see jmri.implementation.ProgrammerFacadeSelector
  *
- * @author Bob Jacobsen Copyright (C) 2013
+ * @author Bob Jacobsen Copyright (C) 2018
  */
 public class MultiByteCvProgrammerFacade extends AbstractProgrammerFacade implements ProgListener {
 
