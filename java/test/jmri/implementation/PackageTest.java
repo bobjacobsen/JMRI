@@ -24,6 +24,7 @@ import org.junit.runners.Suite;
         MultiIndexProgrammerFacadeTest.class,
         VerifyWriteProgrammerFacadeTest.class,
         OffsetHighCvProgrammerFacadeTest.class,
+        MultiByteCvProgrammerFacadeTest.class,
         ResettingOffsetHighCvProgrammerFacadeTest.class,
         RouteTest.class,
         SE8cSignalHeadTest.class,
