@@ -7,7 +7,7 @@ import jmri.configurexml.AbstractXmlAdapter;
 import jmri.util.FileUtil;
 import org.jdom2.Element;
 import org.slf4j.Logger;
-import orgslf4j.LoggerFactory;
+import org.slf4j.LoggerFactory;
 
 public class PerformCTCModelXml extends AbstractXmlAdapter {
     private final static Logger log = LoggerFactory.getLogger(PerformCTCModelXml.class);
