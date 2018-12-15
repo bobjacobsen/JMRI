@@ -1,0 +1,43 @@
+<store>
+    <item>
+        <key>Key1</key>
+        <value>Val1</value>
+    </item>
+    <item>
+        <key>Key2</key>
+        <value>Val2</value>
+    </item>
+    <item>
+        <key>Key3</key>
+        <value>Val3</value>
+    </item>
+    <store>
+        <key>Store 1</key>
+        <value>
+            <item><key>KeyA</key><value>Val1</value></item>
+            <item><key>KeyB</key><value>Val2</value></item>
+            <item><key>KeyC</key><value>Val3</value></item>
+        </value>
+    </store>
+    <store>
+        <key>Store 2</key>
+        <value>
+            <item><key>Key1</key><value>Val21</value></item>
+            <item><key>Key2</key><value>Val22</value></item>
+            <item><key>Key3</key><value>Val23</value></item>
+        </value>
+    </store>
+    <store>
+        <key>Store 3</key>
+        <value>
+            <store>
+                <key>Substore 3 - 1</key>
+                <value>
+                    <item><key>Key1</key><value>Val21</value></item>
+                    <item><key>Key2</key><value>Val22</value></item>
+                    <item><key>Key3</key><value>Val23</value></item>
+                </value>
+            </store>
+        </value>
+    </store>
+</store>
