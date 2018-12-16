@@ -69,7 +69,7 @@ public class MetaDataStore {
         }
         for (Element c: root.getChildren("store")) {
             String key = c.getChild("key").getText();
-            MetaDataStore value = loadContent(c);
+            MetaDataStore value = loadContent(c.getChild("value"));
             retval.nestedContent.put(key,value);
         }
 

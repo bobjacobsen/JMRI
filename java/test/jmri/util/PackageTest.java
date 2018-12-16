@@ -58,6 +58,7 @@ import org.junit.runners.Suite;
         JmriLocalEntityResolverTest.class,
         JmriNullEntityResolverTest.class,
         LocoAddressComparatorTest.class,
+        MetaDataStore.class,
         MouseInputAdapterInstallerTest.class,
         NamedBeanComparatorTest.class,
         NonNullArrayListTest.class,
