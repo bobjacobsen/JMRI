@@ -10,10 +10,12 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.ComboBoxModel;
+import javax.swing.ComboBoxEditor;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -100,8 +102,16 @@ public class EnumVariableValue extends VariableValue implements ActionListener {
         treeNodes.removeLast();
     }
 
+    @SuppressWarnings("unchecked") // type capture requires this?
     public void lastItem() {
         _value = new JComboBox<>(java.util.Arrays.copyOf(_itemArray, _nstored));
+        
+        if (_valueEditor == null)  _valueEditor = _value.getEditor();
+        else _value.setEditor(_valueEditor);
+        
+        if (_valueRenderer == null) _valueRenderer = (ListCellRenderer<String>) _value.getRenderer(); // type capture warnings here
+        else _value.setRenderer(_valueRenderer);
+        
         // finish initialization
         _value.setActionCommand("");
         _defaultColor = _value.getBackground();
@@ -122,7 +132,9 @@ public class EnumVariableValue extends VariableValue implements ActionListener {
 
     // stored value
     JComboBox<String> _value = null;
-
+    static ComboBoxEditor _valueEditor;
+    static ListCellRenderer<String> _valueRenderer;
+    
     // place to keep the items & associated numbers
     private String[] _itemArray = null;
     private TreePath[] _pathArray = null;
@@ -395,6 +407,12 @@ public class EnumVariableValue extends VariableValue implements ActionListener {
             default: {
                 // return a new JComboBox representing the same model
                 VarComboBox b = new VarComboBox(_value.getModel(), this);
+                if (_valueEditor == null)  _valueEditor = b.getEditor();
+                else b.setEditor(_valueEditor);
+        
+                if (_valueRenderer == null) _valueRenderer = (ListCellRenderer<String>) b.getRenderer(); // type capture warnings here
+                else b.setRenderer(_valueRenderer);
+
                 comboVars.add(b);
                 if (getReadOnly() || getInfoOnly()) {
                     b.setEnabled(false);
