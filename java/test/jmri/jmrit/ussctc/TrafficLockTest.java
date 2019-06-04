@@ -8,7 +8,7 @@ import org.junit.*;
  * Tests for TrafficLock class in the jmri.jmrit.ussctc package
  *
  * @author	Bob Jacobsen Copyright 2007
-  */
+ */
 public class TrafficLockTest {
 
     @Test
@@ -40,6 +40,7 @@ public class TrafficLockTest {
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        jmri.util.JUnitUtil.resetProfileManager();
         JUnitUtil.initConfigureManager();
         JUnitUtil.initMemoryManager();
     }

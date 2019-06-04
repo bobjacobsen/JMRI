@@ -22,13 +22,12 @@ import jmri.jmrit.operations.trains.JsonManifest;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
 import jmri.server.json.JSON;
-import jmri.server.json.JsonException;
 import jmri.server.json.operations.JsonOperations;
 import jmri.server.json.operations.JsonUtil;
 import jmri.util.FileUtil;
 import jmri.web.server.WebServer;
 import jmri.web.servlet.ServletUtil;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.openide.util.lookup.ServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,7 @@ public class OperationsServlet extends HttpServlet {
         if (this.getServletContext().getContextPath().equals("/operations")) { // NOI18N
             this.mapper = new ObjectMapper();
             // ensure all operations managers are functional before handling first request
-            OperationsManager.getInstance();
+            InstanceManager.getDefault(OperationsManager.class);
         }
     }
 
@@ -89,18 +88,23 @@ public class OperationsServlet extends HttpServlet {
                     report = pathInfo[2];
                 }
                 log.debug("Handling {} with id {}", report, id);
-                if (report.equals("manifest")) {
-                    this.processManifest(id, request, response);
-                } else if (report.equals("conductor")) {
-                    this.processConductor(id, request, response);
-                } else if (report.equals("trains")) {
-                    // TODO: allow for editing/building/reseting train
-                    log.warn("Unhandled request for \"trains\"");
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-                } else {
-                    // Don't know what to do
-                    log.warn("Unparsed request for \"{}\"", report);
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                switch (report) {
+                    case "manifest":
+                        this.processManifest(id, request, response);
+                        break;
+                    case "conductor":
+                        this.processConductor(id, request, response);
+                        break;
+                    case "trains":
+                        // TODO: allow for editing/building/reseting train
+                        log.warn("Unhandled request for \"trains\"");
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                        break;
+                    default:
+                        // Don't know what to do
+                        log.warn("Unparsed request for \"{}\"", report);
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                        break;
                 }
             }
         }
@@ -110,21 +114,16 @@ public class OperationsServlet extends HttpServlet {
         if (JSON.JSON.equals(request.getParameter("format"))) {
             response.setContentType(UTF8_APPLICATION_JSON);
             InstanceManager.getDefault(ServletUtil.class).setNonCachingHeaders(response);
-            try {
-                JsonUtil utilities = new JsonUtil(this.mapper);
-                response.getWriter().print(utilities.getTrains(request.getLocale()));
-            } catch (JsonException ex) {
-                int code = ex.getJsonMessage().path(JSON.DATA).path(JsonException.CODE).asInt(200);
-                response.sendError(code, (new ObjectMapper()).writeValueAsString(ex.getJsonMessage()));
-            }
+            JsonUtil utilities = new JsonUtil(this.mapper);
+            response.getWriter().print(utilities.getTrains(request.getLocale()));
         } else if ("html".equals(request.getParameter("format"))) {
             response.setContentType(UTF8_TEXT_HTML);
             InstanceManager.getDefault(ServletUtil.class).setNonCachingHeaders(response);
             boolean showAll = ("all".equals(request.getParameter("show")));
             StringBuilder html = new StringBuilder();
             String format = FileUtil.readURL(FileUtil.findURL(Bundle.getMessage(request.getLocale(), "TrainsSnippet.html")));
-            for (Train train : TrainManager.instance().getTrainsByNameList()) {
-                if (showAll || !CarManager.instance().getByTrainDestinationList(train).isEmpty()) {
+            for (Train train : InstanceManager.getDefault(TrainManager.class).getTrainsByNameList()) {
+                if (showAll || !InstanceManager.getDefault(CarManager.class).getByTrainDestinationList(train).isEmpty()) {
                     html.append(String.format(request.getLocale(), format,
                             train.getIconName(),
                             StringEscapeUtils.escapeHtml4(train.getDescription()),
@@ -158,7 +157,7 @@ public class OperationsServlet extends HttpServlet {
     }
 
     private void processManifest(String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Train train = TrainManager.instance().getTrainById(id);
+        Train train = InstanceManager.getDefault(TrainManager.class).getTrainById(id);
         if ("html".equals(request.getParameter("format"))) {
             log.debug("Getting manifest HTML code for train {}", id);
             HtmlManifest manifest = new HtmlManifest(request.getLocale(), train);
@@ -205,7 +204,7 @@ public class OperationsServlet extends HttpServlet {
     }
 
     private void processConductor(String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Train train = TrainManager.instance().getTrainById(id);
+        Train train = InstanceManager.getDefault(TrainManager.class).getTrainById(id);
         JsonNode data;
         if (request.getContentType() != null && request.getContentType().contains(APPLICATION_JSON)) {
             data = this.mapper.readTree(request.getReader());
@@ -217,11 +216,11 @@ public class OperationsServlet extends HttpServlet {
             ((ObjectNode) data).put("format", request.getParameter("format"));
         }
         if (data.path("format").asText().equals("html")) {
-            if (!data.path(JsonOperations.LOCATION).isMissingNode()) {
-                String location = data.path(JsonOperations.LOCATION).asText();
-                if (location.equals(JSON.NULL) || train.getNextLocationName().equals(location)) {
+            JsonNode location = data.path(JsonOperations.LOCATION);
+            if (!location.isMissingNode()) {
+                if (location.isNull() || train.getNextLocationName().equals(location.asText())) {
                     train.move();
-                    return; // done property change will cause update to client
+                    return; // done; property change will cause update to client
                 }
             }
             log.debug("Getting conductor HTML code for train {}", id);

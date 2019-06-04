@@ -2,11 +2,16 @@ package jmri.jmrit.operations.locations;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jmri.InstanceManager;
 import jmri.jmrit.operations.locations.schedules.Schedule;
 import jmri.jmrit.operations.locations.schedules.ScheduleEditFrame;
@@ -17,8 +22,6 @@ import jmri.jmrit.operations.locations.tools.IgnoreUsedTrackAction;
 import jmri.jmrit.operations.locations.tools.ShowCarsByLocationAction;
 import jmri.jmrit.operations.locations.tools.ShowTrainsServingLocationAction;
 import jmri.jmrit.operations.setup.Control;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Frame for user edit of a spur.
@@ -58,7 +61,7 @@ public class SpurEditFrame extends TrackEditFrame implements java.beans.Property
         _toolMenu.add(new IgnoreUsedTrackAction(this));
         _toolMenu.add(new ChangeTrackTypeAction(this));
         _toolMenu.add(new ShowTrainsServingLocationAction(Bundle.getMessage("MenuItemShowTrainsTrack"), _location, _track));
-        _toolMenu.add(new ShowCarsByLocationAction(false, location.getName(), _trackName));
+        _toolMenu.add(new ShowCarsByLocationAction(false, _location, _track));
         addHelpMenu("package.jmri.jmrit.operations.Operations_Sidings", true); // NOI18N
 
         // override text strings for tracks
@@ -128,14 +131,8 @@ public class SpurEditFrame extends TrackEditFrame implements java.beans.Property
     @Override
     protected void saveTrack(Track track) {
         // save the schedule
-        Object selected = comboBoxSchedules.getSelectedItem();
-        if (selected == null) {
-            track.setScheduleId(Track.NONE);
-        } else {
-            Schedule sch = (Schedule) selected;
-            // update only if the schedule has changed
-            track.setScheduleId(sch.getId());
-        }
+        Schedule schedule = (Schedule) comboBoxSchedules.getSelectedItem();
+        track.setSchedule(schedule);
         textSchError.setText(track.checkScheduleValid());
         super.saveTrack(track);
     }
@@ -180,7 +177,7 @@ public class SpurEditFrame extends TrackEditFrame implements java.beans.Property
                 || e.getPropertyName().equals(Track.SCHEDULE_ID_CHANGED_PROPERTY)) {
             updateScheduleComboBox();
         }
-        if (e.getPropertyName().equals(Schedule.LISTCHANGE_CHANGED_PROPERTY)) {
+        if (e.getSource().getClass().equals(Schedule.class)) {
             textSchError.setText(_track.checkScheduleValid());
         }
         super.propertyChange(e);

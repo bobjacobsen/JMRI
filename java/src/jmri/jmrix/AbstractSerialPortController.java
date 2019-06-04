@@ -13,10 +13,10 @@ import purejavacomm.SerialPortEventListener;
 
 /**
  * Provide an abstract base for *PortController classes.
- * <P>
+ * <p>
  * This is complicated by the lack of multiple inheritance. SerialPortAdapter is
  * an Interface, and its implementing classes also inherit from various
- * PortController types. But we want some common behaviours for those, so we put
+ * PortController types. But we want some common behaviors for those, so we put
  * them here.
  *
  * @see jmri.jmrix.SerialPortAdapter
@@ -72,7 +72,7 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
      */
     @Override
     public void setPort(String port) {
-        log.debug("Setting port to " + port);
+        log.debug("Setting port to {}", port);
         mPort = port;
     }
     protected String mPort = null;
@@ -207,7 +207,6 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
         return -1;
     }
 
-
     /**
      * Set event logging
      */
@@ -287,16 +286,13 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
         port.notifyOnCarrierDetect(true);
         port.notifyOnCTS(true);
         port.notifyOnDSR(true);
-
     }
 
-    
     Vector<String> portNameVector = null;
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Vector<String> getPortNames() {
         //reloadDriver(); // Refresh the list of communication ports
@@ -365,12 +361,12 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
         try {
             thread.join();
         } catch (InterruptedException e) {
-            log.error("Unable to join to the reconnection thread " + e.getMessage());
+            log.error("Unable to join to the reconnection thread ", e.getMessage());
         }
         if (!opened) {
             log.error("Failed to re-establish connectivity");
         } else {
-            log.info("Reconnected to " + getCurrentPortName());
+            log.info("Reconnected to {}", getCurrentPortName());
             resetupConnection();
         }
     }
@@ -389,7 +385,6 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
             _status = THREADFAIL;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void run() {
             boolean reply = true;
@@ -399,7 +394,7 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
                 safeSleep(reconnectinterval, "Waiting");
                 count++;
                 try {
-                    log.error("Retrying Connection attempt " + secondCount + "-" + count);
+                    log.error("Retrying Connection attempt {}-{}", secondCount, count);
                     Enumeration<CommPortIdentifier> portIDs = CommPortIdentifier.getPortIdentifiers();
                     while (portIDs.hasMoreElements()) {
                         CommPortIdentifier id = portIDs.nextElement();
@@ -407,7 +402,7 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
                         if (id.getPortType() != CommPortIdentifier.PORT_PARALLEL) // accumulate the names in a vector
                         {
                             if (id.getName().equals(mPort)) {
-                                log.info(mPort + " port has reappeared as being valid, trying to reconnect");
+                                log.info("{} port has reappeared as being valid, trying to reconnect", mPort);
                                 openPort(mPort, "jmri");
                             }
                         }
@@ -416,8 +411,8 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
                 }
                 reply = !opened;
                 if (count >= retryAttempts) {
-                    log.error("Unable to reconnect after " + count + " Attempts, increasing duration of retries");
-                    //retrying but with twice the retry interval.
+                    log.error("Unable to reconnect after {} attempts, increasing duration of retries", count);
+                    // retrying but with twice the retry interval.
                     reconnectinterval = reconnectinterval * 2;
                     count = 0;
                     secondCount++;
@@ -430,11 +425,12 @@ abstract public class AbstractSerialPortController extends AbstractPortControlle
             if (!opened) {
                 log.error("Failed to re-establish connectivity");
             } else {
-                log.error("Reconnected to " + getCurrentPortName());
+                log.error("Reconnected to {}", getCurrentPortName());
                 resetupConnection();
             }
         }
     }
 
     private final static Logger log = LoggerFactory.getLogger(AbstractSerialPortController.class);
+
 }

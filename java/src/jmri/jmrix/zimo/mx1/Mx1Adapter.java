@@ -118,20 +118,21 @@ public class Mx1Adapter extends Mx1PortController implements jmri.jmrix.SerialPo
      */
     @Override
     public void configure() {
-        Mx1CommandStation cs = new Mx1CommandStation();
-        this.getSystemConnectionMemo().setCommandStation(cs);
+        Mx1CommandStation cs = new Mx1CommandStation(getSystemConnectionMemo().getSystemPrefix(), getSystemConnectionMemo().getUserName());
+        getSystemConnectionMemo().setCommandStation(cs);
         // connect to a packetizing traffic controller
         Mx1Packetizer packets = new Mx1Packetizer(cs, Mx1Packetizer.ASCII);
         packets.connectPort(this);
 
-        this.getSystemConnectionMemo().setMx1TrafficController(packets);
-        this.getSystemConnectionMemo().configureManagers();
+        getSystemConnectionMemo().setMx1TrafficController(packets);
+        getSystemConnectionMemo().configureManagers();
 
         // start operation
         packets.startThreads();
     }
 
-// base class methods for the ZimoPortController interface
+    // base class methods for the ZimoPortController interface
+    
     @Override
     public DataInputStream getInputStream() {
         if (!opened) {
@@ -189,8 +190,10 @@ public class Mx1Adapter extends Mx1PortController implements jmri.jmrix.SerialPo
         return Arrays.copyOf(validSpeeds, validSpeeds.length);
     }
 
-    protected String[] validSpeeds = new String[]{"1,200 baud", "2,400 baud", "4,800 baud",
-        "9,600 baud", "19,200 baud", "38,400 baud"};
+    protected String[] validSpeeds = new String[]{Bundle.getMessage("Baud1200"),
+            Bundle.getMessage("Baud2400"), Bundle.getMessage("Baud4800"),
+            Bundle.getMessage("Baud9600"), Bundle.getMessage("Baud19200"),
+            Bundle.getMessage("Baud38400")};
     protected int[] validSpeedValues = new int[]{1200, 2400, 4800, 9600, 19200, 38400};
 
     // meanings are assigned to these above, so make sure the order is consistent

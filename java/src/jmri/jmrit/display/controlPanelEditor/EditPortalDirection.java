@@ -22,14 +22,14 @@ import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.Portal;
 
 /**
- * <P>
+ *
  * @author Pete Cressman Copyright: Copyright (c) 2013
  *
  */
 public class EditPortalDirection extends jmri.util.JmriJFrame implements ActionListener, ListSelectionListener {
 
-    private OBlock _homeBlock;
-    private CircuitBuilder _parent;
+    private final OBlock _homeBlock;
+    private final CircuitBuilder _parent;
     private PortalIcon _icon;
     private JRadioButton _toButton;
     private JRadioButton _fromButton;
@@ -38,8 +38,7 @@ public class EditPortalDirection extends jmri.util.JmriJFrame implements ActionL
     private PortalList _portalList;
 
     static int STRUT_SIZE = 10;
-    static boolean _firstInstance = true;
-    static Point _loc = null;
+    static Point _loc = new Point(-1, -1);
     static Dimension _dim = null;
 
     public EditPortalDirection(String title, CircuitBuilder parent, OBlock block) {
@@ -57,24 +56,19 @@ public class EditPortalDirection extends jmri.util.JmriJFrame implements ActionL
 
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        javax.swing.border.Border padding = BorderFactory.createEmptyBorder(10, 5, 4, 5);
+        contentPane.setBorder(padding);
 
-        contentPane.add(Box.createVerticalStrut(STRUT_SIZE));
-        contentPane.add(makePortalPanel());
-        contentPane.add(Box.createVerticalStrut(STRUT_SIZE));
+        contentPane.add(new JScrollPane(makePortalPanel()));
+        setContentPane(contentPane);
 
-        JPanel border = new JPanel();
-        border.setLayout(new java.awt.BorderLayout(10, 10));
-        border.add(contentPane);
-        setContentPane(border);
-        if (_firstInstance) {
-            setLocationRelativeTo(_parent._editor);
-//            setSize(500,500);
-            _firstInstance = false;
+        pack();
+        if (_loc.x < 0) {
+            setLocation(jmri.util.PlaceWindow. nextTo(_parent._editor, null, this));
         } else {
             setLocation(_loc);
             setSize(_dim);
         }
-        pack();
         setVisible(true);
     }
 
@@ -135,14 +129,20 @@ public class EditPortalDirection extends jmri.util.JmriJFrame implements ActionL
     private JPanel makePortalPanel() {
         JPanel portalPanel = new JPanel();
         portalPanel.setLayout(new BoxLayout(portalPanel, BoxLayout.Y_AXIS));
+
+        JPanel panel = new JPanel();
+        panel.add(new JLabel(Bundle.getMessage("PortalTitle", _homeBlock.getDisplayName())));
+        portalPanel.add(panel);
+
         _portalList = new PortalList(_homeBlock);
         _portalList.addListSelectionListener(this);
         portalPanel.add(new JScrollPane(_portalList));
 
         portalPanel.add(Box.createVerticalStrut(STRUT_SIZE));
 
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
         JLabel l = new JLabel(Bundle.getMessage("PortalDirection1", _homeBlock.getDisplayName()));
         l.setAlignmentX(JComponent.LEFT_ALIGNMENT);
         panel.add(l);
@@ -164,7 +164,6 @@ public class EditPortalDirection extends jmri.util.JmriJFrame implements ActionL
 
         portalPanel.add(Box.createVerticalStrut(STRUT_SIZE));
         panel = new JPanel();
-//        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.add(makeArrowPanel());
         portalPanel.add(panel);
 
@@ -172,6 +171,11 @@ public class EditPortalDirection extends jmri.util.JmriJFrame implements ActionL
 
         portalPanel.add(makeDoneButtonPanel());
         return portalPanel;
+    }
+
+    protected void clearListSelection() {
+        _portalList.clearSelection();
+        _parent._editor.highlight(null);
     }
 
     /**

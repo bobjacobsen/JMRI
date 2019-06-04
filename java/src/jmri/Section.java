@@ -1,5 +1,6 @@
 package jmri;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
@@ -26,21 +27,21 @@ import org.slf4j.LoggerFactory;
 /**
  * Sections represent a group of one or more connected Blocks that may be
  * allocated to a train travelling in a given direction.
- * <P>
+ * <p>
  * A Block may be in multiple Sections. All Blocks contained in a given section
  * must be unique. Blocks are kept in order--the first block is connected to the
  * second, the second is connected to the third, etc.
- * <P>
+ * <p>
  * A Block in a Section must be connected to the Block before it (if there is
  * one) and to the Block after it (if there is one), but may not be connected to
  * any other Block in the Section. This restriction is enforced when a Section
  * is created, and checked when a Section is loaded from disk.
- * <P>
+ * <p>
  * A Section has a "direction" defined by the sequence in which Blocks are added
  * to the Section. A train may run through a Section in either the forward
  * direction (from first block to last block) or reverse direction (from last
  * block to first block).
- * <P>
+ * <p>
  * A Section has one or more EntryPoints. Each EntryPoint is a Path of one of
  * the Blocks in the Section that defines a connection to a Block outside of the
  * Section. EntryPoints are grouped into two lists: "forwardEntryPoints" - entry
@@ -48,30 +49,30 @@ import org.slf4j.LoggerFactory;
  * "reverseEntryPoints" - entry through which will result in a train travelling
  * in the "reverse" direction Note that "forwardEntryPoints" are also reverse
  * exit points, and vice versa.
- * <P>
+ * <p>
  * A Section has one of the following states" FREE - available for allocation by
  * a dispatcher FORWARD - allocated for travel in the forward direction REVERSE
  * - allocated for travel in the reverse direction
- * <P>
+ * <p>
  * A Section has an occupancy. A Section is OCCUPIED if any of its Blocks is
  * OCCUPIED. A Section is UNOCCUPIED if all of its Blocks are UNOCCUPIED
- * <P>
+ * <p>
  * A Section of may be allocated to only one train at a time, even if the trains
  * are travelling in the same direction. If a Section has sufficient space for
  * multiple trains travelling in the same direction it should be broken up into
  * multiple Sections so the trains can follow each other through the original
  * Section.
- * <P>
+ * <p>
  * A Section may not contain any reverse loops. The track that is reversed in a
  * reverse loop must be in a separate Section.
- * <P>
+ * <p>
  * Each Section optionally carries two direction sensors, one for the forward
  * direction and one for the reverse direction. These sensors force signals for
  * travel in their respective directions to "RED" when they are active. When the
  * Section is free, both the sensors are Active. These internal sensors follow
  * the state of the Section, permitting signals to function normally in the
  * direction of allocation.
- * <P>
+ * <p>
  * Each Section optionally carries two stopping sensors, one for the forward
  * direction and one for the reverse direction. These sensors change to active
  * when a train traversing the Section triggers its sensing device. Stopping
@@ -82,20 +83,19 @@ import org.slf4j.LoggerFactory;
  * to enter a passing siding and clear the track behind it. When not running
  * automatically, these sensors may be used to light panel lights to notify the
  * dispatcher that the train has reached the end of the Section.
- * <P>
+ * <p>
  * This Section implementation provides for delayed initialization of blocks and
  * direction sensors to be independent of order of items in panel files.
- * <P>
+ * <p>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is open source software; you can redistribute it and/or modify it under
  * the terms of version 2 of the GNU General Public License as published by the
  * Free Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author Dave Duchamp Copyright (C) 2008,2010
  */
@@ -495,7 +495,7 @@ public class Section extends AbstractNamedBean {
             for (Block block : mBlockEntries) if (block == b) return false; // already present
             // Note: connectivity to current block is assumed to have been checked
         }
-        
+
         // a lot of this code searches for blocks by their user name.
         // warn if there isn't one.
         if (b.getUserName()== null) log.warn("Block {} does not have a user name, may not work correctly in Section {}", b.getSystemName(), getSystemName());
@@ -597,7 +597,7 @@ public class Section extends AbstractNamedBean {
      * @param scale  the scale; one of {@link jmri.Scale}
      * @return the scale length
      */
-    public float getLengthF(boolean meters, int scale) {
+    public float getLengthF(boolean meters, Scale scale) {
         if (initializationNeeded) {
             initializeBlocks();
         }
@@ -605,14 +605,14 @@ public class Section extends AbstractNamedBean {
         for (Block block : mBlockEntries) {
             length = length + block.getLengthMm();
         }
-        length = length / (float) (Scale.getScaleFactor(scale));
+        length = length / (float) (scale.getScaleFactor());
         if (meters) {
             return (length * 0.001f);
         }
         return (length * 0.00328084f);
     }
 
-    public int getLengthI(boolean meters, int scale) {
+    public int getLengthI(boolean meters, Scale scale) {
         return ((int) ((getLengthF(meters, scale) + 0.5f)));
     }
 
@@ -1268,7 +1268,7 @@ public class Section extends AbstractNamedBean {
      * should only happen if blocks are not set up correctly--if all connections
      * go to the same Block, or not all Blocks set. An error message is logged
      * if EntryPoint.UNKNOWN is returned.
-     * 
+     *
      * @param t Actually of type LayoutSlip, this is the track segment to check.
      */
     private int getDirectionSlip(LayoutTurnout t, ConnectivityUtil cUtil) {
@@ -2358,6 +2358,8 @@ public class Section extends AbstractNamedBean {
         return true;
     }
 
+    @SuppressWarnings("unused") // not used now, preserved for later use
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification="was previously marked with @SuppressWarnings, reason unknown")
     private List<EntryPoint> getListOfForwardBlockEntryPoints(Block b) {
         if (initializationNeeded) {
             initializeBlocks();
@@ -2609,7 +2611,7 @@ public class Section extends AbstractNamedBean {
     public void clearNameInUnoccupiedBlocks() {
         for (Block b : mBlockEntries) {
             if (b.getState() == Block.UNOCCUPIED) {
-                b.setValue("  ");
+                b.setValue(null);
             }
         }
     }
@@ -2676,7 +2678,7 @@ public class Section extends AbstractNamedBean {
                     throw new PropertyVetoException(Bundle.getMessage("VetoBlockInSection", getDisplayName()), e);
                 }
             }
-        } 
+        }
         // "DoDelete" case, if needed, should be handled here.
     }
 

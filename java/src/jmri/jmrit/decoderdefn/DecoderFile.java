@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents and manipulates a decoder definition, both as a file and in
  * memory. The internal storage is a JDOM tree.
- * <P>
+ * <p>
  * This object is created by DecoderIndexFile to represent the decoder
  * identification info _before_ the actual decoder file is read.
  *
@@ -42,6 +42,8 @@ public class DecoderFile extends XmlFile {
         _numOuts = numOuts;
         _element = decoder;
 
+        log.trace("Create DecoderFile with Family \"{}\" Model \"{}\"", family, model);
+        
         // store the default range of version id's
         setVersionRange(lowVersionID, highVersionID);
     }
@@ -318,7 +320,7 @@ public class DecoderFile extends XmlFile {
         } else {
             exclude = extraExclude;
         }
-        // if there are any include clauses, then it cannot match
+        // if there are any exclude clauses, then it cannot match
         if (!exclude.equals("") && (isInList(productID, exclude) || isInList(modelID, exclude) || isInList(familyID, exclude))) {
             if (log.isTraceEnabled()) {
                 log.trace("exclude match: /" + exclude + "/ /" + productID + "/ /" + modelID + "/");
@@ -399,7 +401,7 @@ public class DecoderFile extends XmlFile {
                         + e.getAttribute("item") + " exception: " + ex);
             }
             // load each row
-            variableModel.setRow(nextCvStoreIndex++, e);
+            variableModel.setRow(nextCvStoreIndex++, e, _element == null ? null : this);
         }
 
         // load constants to table
@@ -449,7 +451,7 @@ public class DecoderFile extends XmlFile {
 
     /**
      * Convert to a canonical text form for ComboBoxes, etc.
-     * <P>
+     * <p>
      * Must be able to distinguish identical models in different families.
      *
      * @return the title string for the decoder

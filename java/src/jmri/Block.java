@@ -3,6 +3,7 @@ package jmri;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents a particular piece of track, more informally a "Block".
- * <P>
+ * <p>
  * A Block (at least in this implementation) corresponds exactly to the track
  * covered by at most one sensor. That could be generalized in the future.
  * <p>
@@ -47,19 +48,19 @@ import org.slf4j.LoggerFactory;
  * system names like "IB201".
  * <p>
  * Issues:
- * <UL>
- * <LI>The tracking doesn't handle a train pulling in behind another well:
- * <UL>
- * <LI>When the 2nd train arrives, the Sensor is already active, so the value is
+ * <ul>
+ * <li>The tracking doesn't handle a train pulling in behind another well:
+ * <ul>
+ * <li>When the 2nd train arrives, the Sensor is already active, so the value is
  * unchanged (but the value can only be a single object anyway)
- * <LI>When the 1st train leaves, the Sensor stays active, so the value remains
+ * <li>When the 1st train leaves, the Sensor stays active, so the value remains
  * that of the 1st train
- * </UL>
- * <LI> The assumption is that a train will only go through a set turnout. For
+ * </ul>
+ * <li> The assumption is that a train will only go through a set turnout. For
  * example, a train could come into the turnout block from the main even if the
  * turnout is set to the siding. (Ignoring those layouts where this would cause
  * a short; it doesn't do so on all layouts)
- * <LI> Does not handle closely-following trains where there is only one
+ * <li> Does not handle closely-following trains where there is only one
  * electrical block per signal. To do this, it probably needs some type of
  * "assume a train doesn't back up" logic. A better solution is to have multiple
  * sensors and Block objects between each signal head.
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * b2 to b1), the block that's re-entered will get an updated direction, but the
  * direction of this block (b2 in the example) is not updated. In other words,
  * we're not noticing that the train must have reversed to go back out.
- * </UL>
+ * </ul>
  * <p>
  * Do not assume that a Block object uniquely represents a piece of track. To
  * allow independent development, it must be possible for multiple Block objects
@@ -118,6 +119,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
 
     static final public int OCCUPIED = Sensor.ACTIVE;
     static final public int UNOCCUPIED = Sensor.INACTIVE;
+    // why isn't UNDETECTED == NamedBean.UNKNOWN?
     static final public int UNDETECTED = 0x100;  // bit coded, just in case; really should be enum
 
     // Curvature attributes
@@ -127,8 +129,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
     static final public int SEVERE = 0x04;
 
     // this should only be used for debugging...
-    @Override
-    public String toString() {
+    public String toDebugString() {
         String result = getFullyFormattedDisplayName() + " ";
         switch (getState()) {
             case UNDETECTED: {
@@ -155,7 +156,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
      * Set the sensor by name.
      *
      * @param pName the name of the Sensor to set
-     * @return true if a Sensor is set; false otherwise
+     * @return true if a Sensor is set and is not null; false otherwise
      */
     public boolean setSensor(String pName) {
         if (pName == null || pName.equals("")) {
@@ -317,7 +318,14 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         int old = _current;
         _current = v;
         // notify
-        firePropertyChange("state", old, _current);
+
+        // It is rather unpleasant that the following needs to be done in a try-catch, but exceptions have been observed
+        try {
+            firePropertyChange("state", old, _current);
+        } catch (Exception e) {
+            log.error(getDisplayName()+" got exception during fireProperTyChange("+old+","+_current+") in thread "+
+                    Thread.currentThread().getName()+" "+Thread.currentThread().getId()+": ", e);
+        }
     }
 
     /**
@@ -604,7 +612,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
 
     /**
      * Handle change in sensor state.
-     * <P>
+     * <p>
      * Defers real work to goingActive, goingInactive methods.
      *
      * @param e the event
@@ -651,6 +659,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         }
     }
 
+    private Instant _timeLastInactive;
     /**
      * Handles Block sensor going INACTIVE: this block is empty
      */
@@ -666,6 +675,7 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         setValue(null);
         setDirection(Path.NONE);
         setState(UNOCCUPIED);
+        _timeLastInactive = Instant.now();
     }
 
     private final int maxInfoMessages = 5;
@@ -712,10 +722,27 @@ public class Block extends AbstractNamedBean implements PhysicalLocationReporter
         switch (count) {
             case 0:
                 if (null != _previousValue) {
-                    setValue(_previousValue);
-                    if (infoMessageCount < maxInfoMessages) {
-                        log.debug("Sensor ACTIVE came out of nowhere, no neighbors active for block {}. Restoring previous value.", getDisplayName());
-                        infoMessageCount++;
+                    // restore the previous value under either of these circumstances:
+                    // 1. the block has been 'unoccupied' only very briefly
+                    // 2. power has just come back on
+                    Instant tn = Instant.now();
+                    BlockManager bm = jmri.InstanceManager.getDefault(jmri.BlockManager.class);
+                    if (bm.timeSinceLastLayoutPowerOn() < 5000 || (_timeLastInactive != null && tn.toEpochMilli() - _timeLastInactive.toEpochMilli() < 2000)) {
+                        setValue(_previousValue);
+                        if (infoMessageCount < maxInfoMessages) {
+                            log.debug("Sensor ACTIVE came out of nowhere, no neighbors active for block {}. Restoring previous value.", getDisplayName());
+                            infoMessageCount++;
+                        }
+                    } else if (log.isDebugEnabled()) {
+                        if (null != _timeLastInactive) {
+                            log.debug("not restoring previous value, block {} has been inactive for too long ("
+                                    + (tn.toEpochMilli() - _timeLastInactive.toEpochMilli()) + "ms) and layout power has not just been restored ("
+                                    + bm.timeSinceLastLayoutPowerOn() + "ms ago)", getDisplayName());
+                        } else {
+                            log.debug("not restoring previous value, block {} has been inactive since the start " +
+                                    "of this session and layout power has not just been restored ("
+                                    + bm.timeSinceLastLayoutPowerOn() + "ms ago)", getDisplayName());
+                        }
                     }
                 } else {
                     if (infoMessageCount < maxInfoMessages) {

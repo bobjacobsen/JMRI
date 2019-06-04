@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,15 +16,13 @@ import jmri.JmriException;
 import jmri.Turnout;
 import jmri.util.ColorUtil;
 import jmri.util.MathUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for all layout track objects (PositionablePoint,
  * TrackSegment, LayoutTurnout, LayoutSlip, LevelXing and LayoutTurntable)
  *
  * @author Dave Duchamp Copyright (C) 2009
- * @author George Warner Copyright (c) 2017
+ * @author George Warner Copyright (c) 2017-2018
  */
 public abstract class LayoutTrack {
 
@@ -56,6 +55,9 @@ public abstract class LayoutTrack {
     public static final int SLIP_RIGHT = 26;
     public static final int BEZIER_CONTROL_POINT_OFFSET_MIN = 30; // offset for TrackSegment Bezier control points (minimum)
     public static final int BEZIER_CONTROL_POINT_OFFSET_MAX = 38; // offset for TrackSegment Bezier control points (maximum)
+    public static final int SHAPE_CENTER = 39;
+    public static final int SHAPE_POINT_OFFSET_MIN = 40; // offset for Shape points (minimum)
+    public static final int SHAPE_POINT_OFFSET_MAX = 49; // offset for Shape points (maximum)
     public static final int TURNTABLE_RAY_OFFSET = 50; // offset for turntable connection points
 
     // operational instance variables (not saved between sessions)
@@ -68,9 +70,6 @@ public abstract class LayoutTrack {
     //protected static double maxDashLength = 10;
     protected boolean hidden = false;
 
-    // package-private
-    static Color defaultTrackColor = Color.black;
-
     /**
      * constructor method
      */
@@ -78,7 +77,6 @@ public abstract class LayoutTrack {
         this.ident = ident;
         this.center = c;
         this.layoutEditor = layoutEditor;
-        defaultTrackColor = ColorUtil.stringToColor(layoutEditor.getDefaultTrackColor());
     }
 
     /**
@@ -110,41 +108,106 @@ public abstract class LayoutTrack {
         center = p;
     }
 
-    public static void setDefaultTrackColor(@Nullable Color color) {
-        defaultTrackColor = color;
+    /**
+     * @return true if this track segment has decorations
+     */
+    public boolean hasDecorations() {
+        return false;
     }
 
-    protected Color setColorForTrackBlock(Graphics2D g2, @Nullable LayoutBlock lb, boolean forceBlockTrackColor) {
-        Color result = defaultTrackColor;
-        if (lb != null) {
+    /**
+     * get decorations
+     *
+     * @return the decorations
+     */
+    public Map<String, String> getDecorations() {
+        return decorations;
+    }
+
+    /**
+     * set decorations
+     *
+     * @param decorations to set
+     */
+    public void setDecorations(Map<String, String> decorations) {
+        this.decorations = decorations;
+    }
+    protected Map<String, String> decorations = null;
+
+    protected Color getColorForTrackBlock(
+            @Nullable LayoutBlock layoutBlock, boolean forceBlockTrackColor) {
+        Color result = ColorUtil.CLEAR;  // transparent
+        if (layoutBlock != null) {
             if (forceBlockTrackColor) {
-                result = lb.getBlockTrackColor();
+                result = layoutBlock.getBlockTrackColor();
             } else {
-                result = lb.getBlockColor();
+                result = layoutBlock.getBlockColor();
             }
         }
+        return result;
+    }
+
+    // optional parameter forceTrack = false
+    protected Color getColorForTrackBlock(@Nullable LayoutBlock lb) {
+        return getColorForTrackBlock(lb, false);
+    }
+
+    protected Color setColorForTrackBlock(Graphics2D g2,
+            @Nullable LayoutBlock layoutBlock, boolean forceBlockTrackColor) {
+        Color result = getColorForTrackBlock(layoutBlock, forceBlockTrackColor);
         g2.setColor(result);
         return result;
     }
 
-    // optional prameter forceTrack = false
+    // optional parameter forceTrack = false
     protected Color setColorForTrackBlock(Graphics2D g2, @Nullable LayoutBlock lb) {
         return setColorForTrackBlock(g2, lb, false);
     }
 
+    public abstract boolean isMainline();
+
     /**
-     * one draw routine to rule them all...
+     * draw one line (Ballast, ties, center or 3rd rail, block lines)
+     *
+     * @param g2      the graphics context
+     * @param isMain  true if drawing mainlines
+     * @param isBlock true if drawing block lines
+     */
+    protected abstract void draw1(Graphics2D g2, boolean isMain, boolean isBlock);
+
+    /**
+     * draw two lines (rails)
+     *
+     * @param g2               the graphics context
+     * @param isMain           true if drawing mainlines
+     * @param railDisplacement the offset from center to draw the lines
+     */
+    protected abstract void draw2(Graphics2D g2, boolean isMain, float railDisplacement);
+
+    /**
+     * draw hidden track
      *
      * @param g2 the graphics context
      */
-    protected abstract void draw(Graphics2D g2);
+    //protected abstract void drawHidden(Graphics2D g2);
+    //note: placeholder until I get this implemented in all sub-classes
+    //TODO: replace with abstract declaration (above)
+    protected void drawHidden(Graphics2D g2) {
+        //nothing to do here... move along...
+    }
 
     /**
      * highlight unconnected connections
      *
-     * @param g2 the graphics context
+     * @param g2           the graphics context
+     * @param specificType the specific connection to draw (or NONE for all)
      */
-    protected abstract void drawUnconnected(Graphics2D g2);
+    protected abstract void highlightUnconnected(Graphics2D g2, int specificType);
+
+    // optional parameter specificType = NONE
+    protected void highlightUnconnected(Graphics2D g2) {
+        highlightUnconnected(g2, NONE);
+    }
 
     /**
      * draw the edit controls
@@ -159,6 +222,18 @@ public abstract class LayoutTrack {
      * @param g2 the graphics context
      */
     protected abstract void drawTurnoutControls(Graphics2D g2);
+
+    /**
+     * draw track decorations
+     *
+     * @param g2 the graphics context
+     */
+    //protected abstract void drawDecorations(Graphics2D g2);
+    //note: placeholder until I get this implemented in all sub-classes
+    //TODO: replace with abstract declaration (above)
+    protected void drawDecorations(Graphics2D g2) {
+        //nothing to do here... move along...
+    }
 
     /**
      * Get the hidden state of the track element.
@@ -211,6 +286,33 @@ public abstract class LayoutTrack {
     }
 
     /**
+     * Check for active block boundaries.
+     * <p>
+     * If any connection point of a layout track object has attached objects, such as
+     * signal masts, signal heads or NX sensors, the layout track object cannot be deleted.
+     * @return true if the layout track object can be deleted.
+     */
+    public abstract boolean canRemove();
+
+    /**
+     * Display the attached items that prevent removing the layout track item.
+     * @param itemList A list of the attached heads, masts and/or sensors.
+     * @param typeKey The object type such as Turnout, Level Crossing, etc.
+     */
+    public void displayRemoveWarningDialog(List<String> itemList, String typeKey) {
+        itemList.sort(null);
+        StringBuilder msg = new StringBuilder(Bundle.getMessage("MakeLabel",  // NOI18N
+                Bundle.getMessage("DeleteTrackItem", Bundle.getMessage(typeKey))));  // NOI18N
+        for (String item : itemList) {
+            msg.append("\n    " + item);  // NOI18N
+        }
+        javax.swing.JOptionPane.showMessageDialog(layoutEditor,
+                msg.toString(),
+                Bundle.getMessage("WarningTitle"),  // NOI18N
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+    }
+
+    /**
      * Initialization method for LayoutTrack sub-classes. The following method
      * is called for each instance after the entire LayoutEditor is loaded to
      * set the specific objects for that instance
@@ -248,10 +350,10 @@ public abstract class LayoutTrack {
     /**
      * find the hit (location) type for a point
      *
-     * @param hitPoint           - the point
-     * @param useRectangles      - whether to use (larger) rectangles or
+     * @param hitPoint            the point
+     * @param useRectangles       whether to use (larger) rectangles or
      *                           (smaller) circles for hit testing
-     * @param requireUnconnected - whether to only return hit types for free
+     * @param requireUnconnected  whether to only return hit types for free
      *                           connections
      * @return the location type for the point (or NONE)
      * @since 7.4.3
@@ -307,7 +409,7 @@ public abstract class LayoutTrack {
                 result = false; // these are not
                 break;
         }
-        if ((hitType >= BEZIER_CONTROL_POINT_OFFSET_MIN) && (hitType <= BEZIER_CONTROL_POINT_OFFSET_MAX)) {
+        if (isBezierHitType(hitType)) {
             result = false; // these are not
         } else if (hitType >= TURNTABLE_RAY_OFFSET) {
             result = true;  // these are all connection types
@@ -317,7 +419,7 @@ public abstract class LayoutTrack {
 
     /**
      * @param hitType the hit point type
-     * @return true if this int is for a layout control
+     * @return true if this hit type is for a layout control
      */
     protected static boolean isControlHitType(int hitType) {
         boolean result = false; // assume failure (pessimist!)
@@ -354,13 +456,18 @@ public abstract class LayoutTrack {
                 result = false; // these are not
                 break;
         }
-        if ((hitType >= BEZIER_CONTROL_POINT_OFFSET_MIN) && (hitType <= BEZIER_CONTROL_POINT_OFFSET_MAX)) {
+        if (isBezierHitType(hitType)) {
             result = false; // these are not control types
         } else if (hitType >= TURNTABLE_RAY_OFFSET) {
             result = true;  // these are all control types
         }
         return result;
     }   // isControlHitType
+
+    protected static boolean isBezierHitType(int hitType) {
+        return (hitType >= BEZIER_CONTROL_POINT_OFFSET_MIN)
+                && (hitType <= BEZIER_CONTROL_POINT_OFFSET_MAX);
+    }
 
     /**
      * @param hitType the hit point type
@@ -401,7 +508,7 @@ public abstract class LayoutTrack {
                 result = false; // these are not
                 break;
         }
-        if ((hitType >= BEZIER_CONTROL_POINT_OFFSET_MIN) && (hitType <= BEZIER_CONTROL_POINT_OFFSET_MAX)) {
+        if (isBezierHitType(hitType)) {
             result = true; // these are all popup hit types
         } else if (hitType >= TURNTABLE_RAY_OFFSET) {
             result = true;  // these are all popup hit types
@@ -498,7 +605,7 @@ public abstract class LayoutTrack {
     /**
      * return true if this connection type is disconnected
      *
-     * @param connectionType - the connection type to test
+     * @param connectionType  the connection type to test
      * @return true if the connection for this connection type is free
      */
     public boolean isDisconnected(int connectionType) {
@@ -539,19 +646,17 @@ public abstract class LayoutTrack {
     /**
      * check this track and its neighbors for non-contiguous blocks
      * <p>
-     * For each (non-null) blocks of this track do:
-     * #1) If it's got an entry in the blockNamesToTrackNameSetMap then
-     * #2) If this track is not in one of the TrackNameSets for this block
-     * #3) add a new set (with this block/track) to
-     *     blockNamesToTrackNameSetMap and
-     * #4) check all the connections in this
-     *     block (by calling the 2nd method below)
+     * For each (non-null) blocks of this track do: #1) If it's got an entry in
+     * the blockNamesToTrackNameSetMap then #2) If this track is not in one of
+     * the TrackNameSets for this block #3) add a new set (with this
+     * block/track) to blockNamesToTrackNameSetMap and #4) check all the
+     * connections in this block (by calling the 2nd method below)
      * <p>
-     *     Basically, we're maintaining contiguous track sets for each block found
-     *     (in blockNamesToTrackNameSetMap)
+     * Basically, we're maintaining contiguous track sets for each block found
+     * (in blockNamesToTrackNameSetMap)
      *
-     * @param blockNamesToTrackNameSetMaps hashmap of key:block names to
-     *        lists of track name sets for those blocks
+     * @param blockNamesToTrackNameSetMaps hashmap of key:block names to lists
+     *                                     of track name sets for those blocks
      * <p>
      * note: used by LayoutEditorChecks.setupCheckNonContiguousBlocksMenu()
      */
@@ -561,7 +666,7 @@ public abstract class LayoutTrack {
     /**
      * recursive routine to check for all contiguous tracks in this blockName
      *
-     * @param blockName  the block that we're checking for
+     * @param blockName    the block that we're checking for
      * @param TrackNameSet the set of track names in this block
      */
     public abstract void collectContiguousTracksNamesInBlockNamed(
@@ -570,10 +675,12 @@ public abstract class LayoutTrack {
 
     /**
      * Assign all the layout blocks in this track
-     * @param layoutBlock to this layout block
-     * (used by the Tools menu's "Assign block to selection" item)
+     *
+     * @param layoutBlock to this layout block (used by the Tools menu's "Assign
+     *                    block to selection" item)
      */
     public abstract void setAllLayoutBlocks(LayoutBlock layoutBlock);
-    
-    // private final static Logger log = LoggerFactory.getLogger(LayoutTrack.class);
+
+    //private final static Logger log
+    // = LoggerFactory.getLogger(LayoutTrack.class);
 }

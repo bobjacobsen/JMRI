@@ -79,7 +79,7 @@
 		   <td>Limited to 8 Locomotives</td>
 			<td>Allows any address but
 		       00 to be used.</td>
-		<tr>
+		</tr>
 		</table>
 		
 		<p>
@@ -250,7 +250,10 @@
 	<img src="images/Preferences-ConsistManagerSelection-Annotated.png" alt="Annotated User Preferences window" />
 
         <p>
-        Once the preferences are loaded, the choices for the consist manager will be selectable in the "Consists" column (inside the box labeled 1 in the figure above).  Here we see two choices, one for a Loconet connection, labeled A and one for the Internal connection labeled B.  If you have more system connections available, other options may be available as well.
+        Once the preferences are loaded, the choices for the consist manager will be selectable in the "Consists" column
+		(inside the box labeled 1 in the figure above).  Here we see two choices, one for a LocoNet connection, labeled A
+		and one for the Internal connection labeled B.<br>
+		If you have more system connections available, other options may be available as well.
         </p>
 
         <p>
@@ -285,8 +288,10 @@
 		<li>in DecoderPro: in the Actions menu</li>
 		<li>in PanelPro: in the Tools menu</li>
 	</ul>
-	When you first open the Consist Tool, you will see a screen similar to the following:
+
+	<p>When you first open the Consist Tool, you will see a screen similar to the following:
 	</p>
+
 	<img src="images/ConsistTool.png" alt="Blank Consist Tool"
 		 height="251" width="725"/>
 	<p>
@@ -387,6 +392,7 @@
 	</p>
 	<img src="images/ConsistTool-SelectConsist.png" alt="Select a Consist"
 		 height="83" width="353"/>
+
 	<!--#include virtual="/Footer" -->
     </div><!-- closes #mainContent-->
   </div> <!-- closes #mBody-->

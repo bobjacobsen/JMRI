@@ -25,7 +25,7 @@ public class SprogCSThrottleManagerTest {
     // The minimal setup for log4J
     @Before
     public void setUp() {
-        apps.tests.Log4JFixture.setUp();
+        jmri.util.JUnitUtil.setUp();
         // prepare an interface
         jmri.util.JUnitUtil.resetInstanceManager();
 
@@ -40,6 +40,10 @@ public class SprogCSThrottleManagerTest {
     @After
     public void tearDown() {
         m.getSlotThread().interrupt();
+        stcs.dispose();
+        op = null;
+        stcs = null;
+        m = null;
         JUnitUtil.tearDown();
     }
 

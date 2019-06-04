@@ -7,15 +7,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implement turnout manager for serial systems
- * <P>
- * System names are "KTnnn", where nnn is the turnout number without padding.
+ * <p>
+ * System names are "KTnnn", where K is the user configurable system prefix,
+ * nnn is the turnout number without padding.
  *
  * @author Bob Jacobsen Copyright (C) 2003, 2008
-  */
+ */
 public class SerialTurnoutManager extends AbstractTurnoutManager {
 
     MapleSystemConnectionMemo _memo = null;
-    protected String prefix = "M";
+    protected String prefix = "K";
 
     public SerialTurnoutManager() {
 
@@ -102,9 +103,8 @@ public class SerialTurnoutManager extends AbstractTurnoutManager {
 
     /**
      * Public method to normalize a system name.
-     * <P>
-     * Returns a normalized system name if system name has a valid format, else
-     * returns "".
+     * @return a normalized system name if system name has a valid format, else
+     * return "".
      */
     @Override
     public String normalizeSystemName(String systemName) {
@@ -112,12 +112,11 @@ public class SerialTurnoutManager extends AbstractTurnoutManager {
     }
 
     /**
-     * Provide a manager-specific tooltip for the Add new item beantable pane.
+     * {@inheritDoc}
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddOutputEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddOutputEntryToolTip");
     }
 
     /**
@@ -144,7 +143,7 @@ public class SerialTurnoutManager extends AbstractTurnoutManager {
 //  * the user to specify the type of control to be used.  The routine should 
 //  * return 0 for 'steady state' control, or n for 'pulsed' control, where n
 //  * specifies the duration of the pulse (normally in seconds).  
-//  */
+// */
 //  public int askControlType(String systemName) {
 //  // ask if user wants 'steady state' output (stall motors, e.g., Tortoises) or 
 //  //   'pulsed' output (some turnout controllers).

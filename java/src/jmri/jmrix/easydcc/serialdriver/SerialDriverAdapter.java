@@ -99,17 +99,20 @@ public class SerialDriverAdapter extends EasyDccPortController implements jmri.j
      */
     @Override
     public void configure() {
-        // connect to the traffic controller
+        // connect to the traffic controller, which is provided via the memo
         log.debug("set tc for memo {}", getSystemConnectionMemo().getUserName());
-        EasyDccTrafficController control = new EasyDccTrafficController(getSystemConnectionMemo());
-        control.connectPort(this);
-        this.getSystemConnectionMemo().setEasyDccTrafficController(control);
+
+        getSystemConnectionMemo().getTrafficController().connectPort(this);
+
         // do the common manager config
-        this.getSystemConnectionMemo().configureManagers();
+        getSystemConnectionMemo().configureManagers();
     }
 
     // Base class methods for the EasyDccPortController interface
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataInputStream getInputStream() {
         if (!opened) {
@@ -119,6 +122,9 @@ public class SerialDriverAdapter extends EasyDccPortController implements jmri.j
         return new DataInputStream(serialStream);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataOutputStream getOutputStream() {
         if (!opened) {
@@ -132,6 +138,9 @@ public class SerialDriverAdapter extends EasyDccPortController implements jmri.j
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean status() {
         return opened;
@@ -148,13 +157,6 @@ public class SerialDriverAdapter extends EasyDccPortController implements jmri.j
     // private control members
     private boolean opened = false;
     InputStream serialStream = null;
-
-    /**
-     * @deprecated JMRI Since 4.9.5 instance() shouldn't be used, convert to JMRI multi-system support structure
-     */
-    static public SerialDriverAdapter instance() {
-        return null;
-    }
 
     private final static Logger log = LoggerFactory.getLogger(SerialDriverAdapter.class);
 

@@ -9,7 +9,7 @@ import org.junit.Test;
 
 
 /**
- * Tests for the {@link jmri.jmris.srcp.parser.SRCPTokenizer} class.
+ * Tests for the jmri.jmris.srcp.parser.SRCPTokenizer class.
  *
  * @author Paul Bender Copyright (C) 2012,2017
  */
@@ -250,29 +250,19 @@ public class SRCPTokenizerTest {
         Assert.assertTrue("Wrong token kind for REG", SRCPParserConstants.REG == t.kind);
     }
 
-    // This used to be an error.
-    // now should check to see that the token produced
-    // is the BADTOKEN token.
-    @Test
-    public void testTokenizeFailure() {
-        boolean errorThrown = false;
+    @Test(expected=TokenMgrError.class)
+    public void testTokenizeFailure() throws TokenMgrError {
         String cmd = "this should fail";
         SimpleCharStream cs = new SimpleCharStream(new StringReader(cmd));
         SRCPParserTokenManager stm = new SRCPParserTokenManager(cs);
-        Token t;
-        try {
-            t = stm.getNextToken();
-            Assert.assertTrue(t.kind == SRCPParserConstants.BADTOKEN);
-        } catch (TokenMgrError tme) {
-            errorThrown = true;
-        }
-        Assert.assertFalse(errorThrown);
+        stm.getNextToken();  // called to invoke TokenMgrError
     }
 
     // The minimal setup for log4J
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
     }
 
     @After

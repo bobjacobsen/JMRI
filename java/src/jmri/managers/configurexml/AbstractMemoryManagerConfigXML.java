@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides the abstract base and store functionality for configuring
  * MemoryManagers, working with AbstractMemoryManagers.
- * <P>
+ * <p>
  * Typically, a subclass will just implement the load(Element memories) class,
  * relying on implementation here to load the individual Memory objects. Note
  * that these are stored explicitly, so the resolution mechanism doesn't need to
@@ -39,8 +39,9 @@ public abstract class AbstractMemoryManagerConfigXML extends AbstractNamedBeanMa
         setStoreElementClass(memories);
         MemoryManager tm = (MemoryManager) o;
         if (tm != null) {
+            @SuppressWarnings("deprecation") // getSystemNameAddedOrderList() call needed until deprecated code removed
             java.util.Iterator<String> iter
-                    = tm.getSystemNameList().iterator();
+                    = tm.getSystemNameAddedOrderList().iterator();
 
             // don't return an element if there are not memories to include
             if (!iter.hasNext()) {
@@ -116,7 +117,6 @@ public abstract class AbstractMemoryManagerConfigXML extends AbstractNamedBeanMa
      *
      * @param memories Element containing the Memory elements to load.
      */
-    @SuppressWarnings("unchecked")
     public void loadMemories(Element memories) {
         List<Element> memoryList = memories.getChildren("memory");
         if (log.isDebugEnabled()) {

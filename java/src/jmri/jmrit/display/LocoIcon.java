@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An icon that displays the position of a loco on a panel.<P>
+ * An icon that displays the position of a loco on a panel.<p>
  * The icon can always be repositioned and its popup menu is always active.
  *
  * @author Bob Jacobsen Copyright (c) 2002
@@ -215,6 +215,10 @@ public class LocoIcon extends PositionableLabel {
         String[] colors = {WHITE, GREEN, GRAY, RED, BLUE, YELLOW};
         return colors;
     }
+    
+    public Color getLocoColor() {
+        return _locoColor;
+    }
 
     protected RosterEntry _entry = null;
 
@@ -289,18 +293,20 @@ public class LocoIcon extends PositionableLabel {
     public void init() {
         NamedIcon icon = (NamedIcon) getIcon();
         String name = icon.getURL();
-        if (name.endsWith("loco-white.gif")) {
-            _locoColor = Color.WHITE;
-        } else if (name.endsWith("loco-green.gif")) {
-            _locoColor = Color.GREEN;
-        } else if (name.endsWith("loco-gray.gif")) {
-            _locoColor = Color.GRAY;
-        } else if (name.endsWith("loco-red.gif")) {
-            _locoColor = Color.RED;
-        } else if (name.endsWith("loco-blue.gif")) {
-            _locoColor = COLOR_BLUE;
-        } else if (name.endsWith("loco-yellow.gif")) {
-            _locoColor = Color.YELLOW;
+        if (name != null) {
+            if (name.endsWith("loco-white.gif")) {
+                _locoColor = Color.WHITE;
+            } else if (name.endsWith("loco-green.gif")) {
+                _locoColor = Color.GREEN;
+            } else if (name.endsWith("loco-gray.gif")) {
+                _locoColor = Color.GRAY;
+            } else if (name.endsWith("loco-red.gif")) {
+                _locoColor = Color.RED;
+            } else if (name.endsWith("loco-blue.gif")) {
+                _locoColor = COLOR_BLUE;
+            } else if (name.endsWith("loco-yellow.gif")) {
+                _locoColor = Color.YELLOW;
+            }
         }
     }
 
@@ -310,9 +316,6 @@ public class LocoIcon extends PositionableLabel {
     @Override
     public void doMouseReleased(MouseEvent event) {
         List<Positionable> selections = _editor.getSelectedItems(event);
-        if (selections == null) {
-            return;
-        }
         for (int i = 0; i < selections.size(); i++) {
             if (selections.get(i) instanceof IndicatorTrack) {
                 IndicatorTrack t = (IndicatorTrack) selections.get(i);

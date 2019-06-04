@@ -9,7 +9,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -21,16 +20,15 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import jmri.util.MenuScroller;
+import jmri.util.swing.JmriColorChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
  * This class handles text attributes for Positionables. Font, size, style and
  * color. Margin size and color, Border size and color, Fixed sizes.
  * Justification.
- * </p>
- *
+ * <p>
  * moved from PositionableLabel
  *
  * @author Pete Cressman copyright (C) 2010
@@ -43,7 +41,8 @@ public class PositionablePopupUtil {
     protected PositionablePopupUtil _self;
     protected PositionablePropertiesUtil _propertiesUtil;
 
-    private Color defaultBorderColor;
+    private final Color defaultBorderColor;
+    private boolean _suppressRecentColor = false;
 
     protected final int LABEL = 1;
     protected final int TEXTFIELD = 2;
@@ -74,8 +73,9 @@ public class PositionablePopupUtil {
         util.setMargin(getMargin());
         util.setBorderSize(getBorderSize());
         util.setBorderColor(getBorderColor());
-        util.setFont(util.getFont().deriveFont(getFontStyle()));
+        util.setFont(getFont().deriveFont(getFontStyle()));
         util.setFontSize(getFontSize());
+        util.setFontStyle(getFontStyle());
         util.setOrientation(getOrientation());
         util.setBackgroundColor(getBackground());
         util.setForeground(getForeground());
@@ -152,14 +152,14 @@ public class PositionablePopupUtil {
     public void setBackgroundMenu(JPopupMenu popup) {
         JMenuItem edit = new JMenuItem(Bundle.getMessage("FontBackgroundColor"));
         edit.addActionListener((ActionEvent event) -> {
-            Color desiredColor = JColorChooser.showDialog(_textComponent,
+            Color desiredColor = JmriColorChooser.showDialog(_textComponent,
                                  Bundle.getMessage("FontBackgroundColor"),
                                  getBackground());
             if (desiredColor!=null ) {
                setBackgroundColor(desiredColor);
            }
         });
- 
+
         popup.add(edit);
 
     }
@@ -171,7 +171,7 @@ public class PositionablePopupUtil {
         edit.add(CoordinateEdit.getBorderEditAction(_parent));
         JMenuItem colorMenu = new JMenuItem(Bundle.getMessage("BorderColorMenu"));
         colorMenu.addActionListener((ActionEvent event) -> {
-            Color desiredColor = JColorChooser.showDialog(_textComponent,
+            Color desiredColor = JmriColorChooser.showDialog(_textComponent,
                                  Bundle.getMessage("BorderColorMenu"),
                                  defaultBorderColor);
             if (desiredColor!=null ) {
@@ -189,7 +189,7 @@ public class PositionablePopupUtil {
         edit.add(makeFontStyleMenu());
         JMenuItem colorMenu = new JMenuItem(Bundle.getMessage("FontColor"));
         colorMenu.addActionListener((ActionEvent event) -> {
-            Color desiredColor = JColorChooser.showDialog(_textComponent,
+            Color desiredColor = JmriColorChooser.showDialog(_textComponent,
                                  Bundle.getMessage("FontColor"),
                                  _textComponent.getForeground());
             if (desiredColor!=null ) {
@@ -285,6 +285,9 @@ public class PositionablePopupUtil {
             outlineBorder = new LineBorder(borderColor, borderSize);
             _parent.setBorder(new CompoundBorder(outlineBorder, borderMargin));
         }
+        if (!_suppressRecentColor) {
+            JmriColorChooser.addRecentColor(border);
+        }
     }
 
     public Color getBorderColor() {
@@ -297,6 +300,9 @@ public class PositionablePopupUtil {
     public void setForeground(Color c) {
         _textComponent.setForeground(c);
         _parent.updateSize();
+        if (!_suppressRecentColor) {
+            JmriColorChooser.addRecentColor(c);
+        }
     }
 
     public Color getForeground() {
@@ -312,11 +318,18 @@ public class PositionablePopupUtil {
             setHasBackground(true);
             _textComponent.setBackground(color);
             _parent.setBackground(color);
+            if (!_suppressRecentColor) {
+                JmriColorChooser.addRecentColor(color);
+            }
         }
         if (hasBackground()) {
             setMargin(margin);  //This rebuilds margin and sets it colour.
         }
         _parent.updateSize();
+    }
+    
+    public void setSuppressRecentColor(boolean b) {
+        _suppressRecentColor = b;
     }
 
     public void setHasBackground(boolean set) {
@@ -336,6 +349,9 @@ public class PositionablePopupUtil {
 
     public Color getBackground() {
         Color c = _textComponent.getBackground();
+        if (c==null) {
+            c = Color.WHITE;
+        }
         if (!_hasBackground) {
             // make sure the alpha value is set to 0
             c = jmri.util.ColorUtil.setAlpha(c,0);

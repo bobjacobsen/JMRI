@@ -7,7 +7,7 @@ import jmri.util.SystemType;
  * SerialDriverAdapter object.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2003
-  */
+ */
 public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig {
 
     /**
@@ -19,7 +19,8 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -29,16 +30,20 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
     public String name() {
         if (SystemType.isMacOSX()
                 || (SystemType.isWindows() && Double.valueOf(System.getProperty("os.version")) >= 6)) {
-            return "(Direct Drive (Serial) not available)";
+            return Bundle.getMessage("DirectSerialNameNot");
         }
 
-        return "Direct Drive (Serial)";
+        return Bundle.getMessage("DirectSerialName");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
-        if(adapter == null ){
-           adapter = SerialDriverAdapter.instance();
+        if (adapter == null) {
+            adapter = new SerialDriverAdapter();
         }
     }
+    
 }

@@ -16,11 +16,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Basic Implementation of a LogixManager.
- * <P>
+ * <p>
  * Note that Logix system names must begin with IX, and be followed by a string,
  * usually, but not always, a number. All alphabetic characters in a Logix
  * system name must be upper case. This is enforced when a Logix is created.
- * <P>
+ * <p>
  * The system names of Conditionals belonging to a Logix begin with the Logix's
  * system name, then there is a capital C and a number.
  *
@@ -141,23 +141,16 @@ public class DefaultLogixManager extends AbstractManager<Logix>
             x.setGuiNames();
         }
         // iterate thru all Logixs that exist
-        java.util.Iterator<String> iter
-                = getSystemNameList().iterator();
+        java.util.Iterator<Logix> iter
+                = getNamedBeanSet().iterator();
         while (iter.hasNext()) {
             // get the next Logix
-            String sysName = iter.next();
-            if (sysName == null) {
-                log.error("System name null when activating Logixs");
-                break;
-            }
-            if (sysName.equals(LRouteTableAction.LOGIX_INITIALIZER)) {
+            x = iter.next();
+
+            if (x.getSystemName().equals(LRouteTableAction.LOGIX_INITIALIZER)) {
                 continue;
             }
-            x = getBySystemName(sysName);
-            if (x == null) {
-                log.error("Error getting Logix *" + sysName + "* when activating Logixs");
-                break;
-            }
+
             if (loadDisabled) {
                 // user has requested that Logixs be loaded disabled
                 log.warn("load disabled set - will not activate logic for: " + x.getDisplayName());

@@ -12,7 +12,7 @@ import org.junit.Test;
  * the base for test classes, including providing some common tests.
  *
  * @author	Bob Jacobsen 2002, 2004, 2005, 2007, 2008
-  */
+ */
 public abstract class AbstractLightTestBase {
 
     // implementing classes must provide these abstract members:
@@ -92,6 +92,32 @@ public abstract class AbstractLightTestBase {
         Assert.assertEquals("state 1", jmri.Light.ON, t.getState());
         Assert.assertEquals("state 2", "On", t.describeState(t.getState()));
         checkOnMsgSent();
+    }
+
+    @Test
+    public void testGetBeanType(){
+         Assert.assertEquals("bean type",t.getBeanType(),Bundle.getMessage("BeanNameLight"));
+    }
+
+    // Test the Light interface
+    @Test
+    public void testLight() {
+        t.setState(Light.ON);
+        Assert.assertTrue("Light is ON", t.getState() == Light.ON);
+        t.setState(Light.OFF);
+        Assert.assertTrue("Light is ON", t.getState() == Light.OFF);
+        t.setCommandedState(Light.ON);
+        Assert.assertTrue("Light is ON", t.getState() == Light.ON);
+        t.setCommandedState(Light.OFF);
+        Assert.assertTrue("Light is ON", t.getState() == Light.OFF);
+        t.setState(Light.ON);
+        Assert.assertTrue("Light is ON", t.getCommandedState() == Light.ON);
+        t.setState(Light.OFF);
+        Assert.assertTrue("Light is ON", t.getCommandedState() == Light.OFF);
+        t.setState(Light.ON);
+        Assert.assertTrue("Light is ON", t.getKnownState() == Light.ON);
+        t.setState(Light.OFF);
+        Assert.assertTrue("Light is ON", t.getKnownState() == Light.OFF);
     }
 
 }

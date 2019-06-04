@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Table data model for display of Roster variable values.
- * <P>
+ * <p>
  * Any desired ordering, etc, is handled outside this class.
- * <P>
+ * <p>
  * The initial implementation doesn't automatically update when roster entries
  * change, doesn't allow updating of the entries, and only shows some of the
  * fields. But it's a start....
@@ -43,7 +43,7 @@ public class RosterTableModel extends DefaultTableModel implements PropertyChang
     static final int OWNERCOL = 8;
     static final int DATEUPDATECOL = 9;
     public static final int PROTOCOL = 10;
-    int NUMCOL = PROTOCOL + 1;
+    private int NUMCOL = PROTOCOL + 1;
     private String rosterGroup = null;
     boolean editable = false;
 

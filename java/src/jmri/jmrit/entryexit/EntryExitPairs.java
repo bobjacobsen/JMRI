@@ -5,13 +5,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
+import java.util.*;
 import java.util.Map.Entry;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -202,6 +200,7 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return sourcePoint.getRefLocation();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getXMLOrder() {
         return ENTRYEXIT;
@@ -217,11 +216,13 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DestinationPoints getBeanBySystemName(String systemName) {
         return getBySystemName(systemName);
     }
 
+    /** {@inheritDoc} */
     @Override
     public DestinationPoints getBeanByUserName(String userName) {
         for (Source e : nxpair.values()) {
@@ -233,6 +234,7 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public DestinationPoints getNamedBean(String name) {
         DestinationPoints b = getBeanByUserName(name);
@@ -242,16 +244,19 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return getBeanBySystemName(name);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getSystemPrefix() {
         throw new UnsupportedOperationException("Not supported yet.");  // NOI18N
     }
 
+    /** {@inheritDoc} */
     @Override
     public char typeLetter() {
         throw new UnsupportedOperationException("Not supported yet.");  // NOI18N
     }
 
+    /** {@inheritDoc} */
     @Override
     public String makeSystemName(String s) {
         throw new UnsupportedOperationException("Not supported yet.");  // NOI18N
@@ -281,12 +286,20 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return inputName;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    @CheckReturnValue
+    public int getObjectCount() { 
+        return getNamedBeanList().size(); // not efficient
+    }
+
     /**
      * Implemented to support the Conditional combo box name list
      * @since 4.9.3
      * @return a sorted array of NX names
      */
     @Override
+    @Deprecated  // will be removed when superclass method is removed due to @Override
     public String[] getSystemNameArray() {
         List<String> nxList = getEntryExitList();
         String[] arr = new String[nxList.size()];
@@ -299,17 +312,20 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return arr;
     }
 
+    /** {@inheritDoc} */
     @Override
+    @Deprecated  // will be removed when superclass method is removed due to @Override
     public List<String> getSystemNameList() {
         return getEntryExitList();
     }
 
-    @Override
     /**
      * Implemented to support the Conditional combo box name list
      * @since 4.9.3
      * @return a list of Destination Point beans
      */
+    @Override
+    @Deprecated  // will be removed when superclass method is removed due to @Override
     public List<DestinationPoints> getNamedBeanList() {
         List<DestinationPoints> beanList = new ArrayList<>();
         for (Source e : nxpair.values()) {
@@ -321,11 +337,30 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return beanList;
     }
 
+    /**
+     * Implemented to support the Conditional combo box name list
+     * @since 4.9.3
+     * @return a list of Destination Point beans
+     */
+    @Override
+    public SortedSet<DestinationPoints> getNamedBeanSet() {
+        TreeSet<DestinationPoints> beanList = new TreeSet<>(new jmri.util.NamedBeanComparator<>());
+        for (Source e : nxpair.values()) {
+            List<String> uidList = e.getDestinationUniqueId();
+            for (String uid : uidList) {
+                beanList.add(e.getByUniqueId(uid));
+            }
+        }
+        return beanList;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public void register(DestinationPoints n) {
         throw new UnsupportedOperationException("Not supported yet.");  // NOI18N
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deregister(DestinationPoints n) {
         throw new UnsupportedOperationException("Not supported yet.");  // NOI18N
@@ -339,6 +374,7 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return routeClearOption;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void dispose() {
     }
@@ -756,12 +792,14 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
             if (dPair.dp == null) {
                 continue;
             }
-            for (String lgxName : mgr.getSystemNameList()) {
-                jmri.Logix lgx = mgr.getLogix(lgxName);
+            for (jmri.Logix lgx : mgr.getNamedBeanSet()) {
                 for (int i = 0; i < lgx.getNumConditionals(); i++) {
                     String cdlName = lgx.getConditionalByNumberOrder(i);
                     jmri.implementation.DefaultConditional cdl = (jmri.implementation.DefaultConditional) lgx.getConditional(cdlName);
-                    String cdlUserName = (cdl.getUserName() == null) ? "" : cdl.getUserName();
+                    String cdlUserName = cdl.getUserName();
+                    if (cdlUserName == null) {
+                        cdlUserName = "";
+                    }
                     for (jmri.ConditionalVariable var : cdl.getStateVariableList()) {
                         if (var.getBean() == dPair.dp) {
                             String refName = (cdlUserName.equals("")) ? cdlName : cdlName + "  ( " + cdlUserName + " )";
@@ -924,7 +962,7 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
                     blockSensors.add(sBean.getDisplayName());
                 }
             }
-            LayoutEditor sPanel = pdSrc.getPanel();
+
             for (PointDetails pdDest : src.getDestinationPoints()) {
                 Sensor dBean = pdDest.getSensor();
                 for (LayoutBlock dProtect : pdDest.getProtecting()) {
@@ -1237,15 +1275,15 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         }
     }
 
-    java.beans.PropertyChangeSupport pcs = new java.beans.PropertyChangeSupport(this);
+    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     @Override
-    public synchronized void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
+    public synchronized void addPropertyChangeListener(PropertyChangeListener l) {
         pcs.addPropertyChangeListener(l);
     }
 
     @Override
-    public synchronized void removePropertyChangeListener(java.beans.PropertyChangeListener l) {
+    public synchronized void removePropertyChangeListener(PropertyChangeListener l) {
         pcs.removePropertyChangeListener(l);
     }
 
@@ -1320,24 +1358,65 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         }
     };
 
-    public void vetoableChange(java.beans.PropertyChangeEvent evt) throws java.beans.PropertyVetoException {
+    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
 
     }
 
-    java.beans.VetoableChangeSupport vcs = new java.beans.VetoableChangeSupport(this);
+    VetoableChangeSupport vcs = new VetoableChangeSupport(this);
 
     @Override
-    public synchronized void addVetoableChangeListener(java.beans.VetoableChangeListener l) {
+    public synchronized void addVetoableChangeListener(VetoableChangeListener l) {
         vcs.addVetoableChangeListener(l);
     }
 
     @Override
-    public synchronized void removeVetoableChangeListener(java.beans.VetoableChangeListener l) {
+    public synchronized void removeVetoableChangeListener(VetoableChangeListener l) {
         vcs.removeVetoableChangeListener(l);
     }
 
+
     @Override
-    public void deleteBean(DestinationPoints bean, String property) throws java.beans.PropertyVetoException {
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public PropertyChangeListener[] getPropertyChangeListeners() {
+        return pcs.getPropertyChangeListeners();
+    }
+
+    @Override
+    public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
+        return pcs.getPropertyChangeListeners(propertyName);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public void addVetoableChangeListener(String propertyName, VetoableChangeListener listener) {
+        vcs.addVetoableChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public VetoableChangeListener[] getVetoableChangeListeners() {
+        return vcs.getVetoableChangeListeners();
+    }
+
+    @Override
+    public VetoableChangeListener[] getVetoableChangeListeners(String propertyName) {
+        return vcs.getVetoableChangeListeners(propertyName);
+    }
+
+    @Override
+    public void removeVetoableChangeListener(String propertyName, VetoableChangeListener listener) {
+        vcs.removeVetoableChangeListener(propertyName, listener);
+    }
+
+    @Override
+    public void deleteBean(DestinationPoints bean, String property) throws PropertyVetoException {
 
     }
 
@@ -1346,6 +1425,18 @@ public class EntryExitPairs implements jmri.Manager<DestinationPoints>, jmri.Ins
         return Bundle.getMessage("BeanNameTransit");  // NOI18N
     }
 
+    /** {@inheritDoc} */
+    public void addDataListener(ManagerDataListener<DestinationPoints> e) {
+        if (e != null) listeners.add(e);
+    }
+
+    /** {@inheritDoc} */
+    public void removeDataListener(ManagerDataListener<DestinationPoints> e) {
+        if (e != null) listeners.remove(e);
+    }
+
+    final List<ManagerDataListener<DestinationPoints>> listeners = new ArrayList<>();
+    
     // initialize logging
     private final static Logger log = LoggerFactory.getLogger(EntryExitPairs.class);
 }

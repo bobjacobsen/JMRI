@@ -47,6 +47,9 @@ public class OlcbSystemConnectionMemo extends jmri.jmrix.can.CanSystemConnection
         if (type.equals(jmri.TurnoutManager.class)) {
             return true;
         }
+        if (type.equals(jmri.ThrottleManager.class)) {
+            return true;
+        }
         return super.provides(type);
     }
 
@@ -69,6 +72,9 @@ public class OlcbSystemConnectionMemo extends jmri.jmrix.can.CanSystemConnection
         if (T.equals(jmri.TurnoutManager.class)) {
             return (T) getTurnoutManager();
         }
+        if (T.equals(jmri.ThrottleManager.class)) {
+            return (T) getThrottleManager();
+        }
         if (T.equals(OlcbInterface.class)) {
             return (T) getInterface();
         }
@@ -87,11 +93,12 @@ public class OlcbSystemConnectionMemo extends jmri.jmrix.can.CanSystemConnection
         InstanceManager.setTurnoutManager(getTurnoutManager());
 
         if (getProgrammerManager().isAddressedModePossible()) {
-            InstanceManager.setAddressedProgrammerManager(getProgrammerManager());
+            InstanceManager.store(getProgrammerManager(), jmri.AddressedProgrammerManager.class);
         }
         if (getProgrammerManager().isGlobalProgrammerAvailable()) {
             InstanceManager.store(getProgrammerManager(), GlobalProgrammerManager.class);
         }
+        InstanceManager.store(getThrottleManager(), jmri.ThrottleManager.class);
 
     }
 
@@ -121,6 +128,18 @@ public class OlcbSystemConnectionMemo extends jmri.jmrix.can.CanSystemConnection
             turnoutManager = new OlcbTurnoutManager(this);
         }
         return turnoutManager;
+    }
+
+    protected OlcbThrottleManager throttleManager;
+
+    public OlcbThrottleManager getThrottleManager() {
+        if (getDisabled()) {
+            return null;
+        }
+        if (throttleManager == null) {
+            throttleManager = new OlcbThrottleManager();
+        }
+        return throttleManager;
     }
 
     protected OlcbSensorManager sensorManager;
@@ -161,6 +180,9 @@ public class OlcbSystemConnectionMemo extends jmri.jmrix.can.CanSystemConnection
         }
         if (sensorManager != null) {
             InstanceManager.deregister(sensorManager, OlcbSensorManager.class);
+        }
+        if (throttleManager != null) {
+            InstanceManager.deregister(throttleManager, OlcbThrottleManager.class);
         }
         super.dispose();
     }

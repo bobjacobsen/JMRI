@@ -50,25 +50,24 @@ public class PrintRosterEntry implements PaneContainer {
      *
      * @param rosterEntry Roster item, either as a selection or object
      * @param parent window over which this dialog will be centered
-     * @param filename xml file name for programmer used in printing.
+     * @param programmerFilename xml file name for programmer used in printing.
      */
-    public PrintRosterEntry(RosterEntry rosterEntry, JmriJFrame parent, String filename) {
+    public PrintRosterEntry(RosterEntry rosterEntry, JmriJFrame parent, String programmerFilename) {
         _rosterEntry = rosterEntry;
         _flPane = new FunctionLabelPane(rosterEntry);
         _rMPane = new RosterMediaPane(rosterEntry);
         _parent = parent;
         JLabel progStatus = new JLabel(Bundle.getMessage("StateIdle"));
-        jmri.Programmer mProgrammer = null;
-        ResetTableModel resetModel = new ResetTableModel(progStatus, mProgrammer);
+        ResetTableModel resetModel = new ResetTableModel(progStatus, null);  // no programmer
 
-        log.debug("Try PrintRosterEntry {} from file {}", _rosterEntry.getDisplayName(), filename);
+        log.debug("Try PrintRosterEntry {} from file {}", _rosterEntry.getDisplayName(), programmerFilename);
         XmlFile pf = new XmlFile() {
         };
-        Element base = null;
+        Element base = null;  // base of programmer file
         try {
-            Element root = pf.rootFromName(filename);
+            Element root = pf.rootFromName(programmerFilename);
             if (root == null) {
-                log.error("Programmer file name incorrect {}", filename);
+                log.error("Programmer file name incorrect {}", programmerFilename);
                 return;
             }
             if ((base = root.getChild("programmer")) == null) {
@@ -77,36 +76,30 @@ public class PrintRosterEntry implements PaneContainer {
             }
             log.debug("Success: xml file top element is 'programmer'");
         } catch (JDOMException | java.io.IOException e) {
-            log.error("exception reading programmer file {}", filename, e);
+            log.error("exception reading programmer file {}", programmerFilename, e);
             return;
         }
 
-        CvTableModel cvModel = new CvTableModel(progStatus, mProgrammer);
+        CvTableModel cvModel = new CvTableModel(progStatus, null); // no programmer
 
         VariableTableModel variableModel = new VariableTableModel(progStatus, new String[]{"Name", "Value"}, cvModel); // NOI18N
-
+        
         String decoderModel = _rosterEntry.getDecoderModel();
         String decoderFamily = _rosterEntry.getDecoderFamily();
 
-        if (log.isDebugEnabled()) {
-            log.debug("selected loco uses decoder {} {}", decoderFamily, decoderModel);
-        }
+        log.debug("selected loco uses decoder {} {}", decoderFamily, decoderModel);
         // locate a decoder like that.
         List<DecoderFile> l = InstanceManager.getDefault(DecoderIndexFile.class).matchingDecoderList(null, decoderFamily, null, null, null, decoderModel);
-        if (log.isDebugEnabled()) {
-            log.debug("found {} matches", l.size());
-        }
+        log.debug("found {} matches", l.size());
         if (l.isEmpty()) {
-            log.debug("Loco uses " + decoderFamily + " " + decoderModel + " decoder, but no such decoder defined");
+            log.debug("Loco uses {} {} decoder, but no such decoder defined", decoderFamily, decoderModel);
             // fall back to use just the decoder name, not family
             l = InstanceManager.getDefault(DecoderIndexFile.class).matchingDecoderList(null, null, null, null, null, decoderModel);
-            if (log.isDebugEnabled()) {
-                log.debug("found {} matches without family key", l.size());
-            }
+            log.debug("found {} matches without family key", l.size());
         }
-        DecoderFile d = null;
+        DecoderFile decoderFile = null;
         if (l.size() > 0) {
-            d = l.get(0);
+            decoderFile = l.get(0);
         } else {
             if (decoderModel.equals("")) {
                 log.debug("blank decoderModel requested, so nothing loaded");
@@ -115,26 +108,31 @@ public class PrintRosterEntry implements PaneContainer {
             }
         }
 
-        if (d == null) {
+        if (decoderFile == null) {
             log.warn("no decoder file found for this loco");
             return;
         }
         Element decoderRoot;
+        log.debug("Try to read decoder root from {} {}", DecoderFile.fileLocation, decoderFile.getFileName());
         try {
-            decoderRoot = d.rootFromName(DecoderFile.fileLocation + d.getFileName());
+            decoderRoot = decoderFile.rootFromName(DecoderFile.fileLocation + decoderFile.getFileName());
 
         } catch (org.jdom2.JDOMException exj) {
-            log.error("could not parse " + d.getFileName() + ": " + exj.getMessage());
+            log.error("could not parse " + decoderFile.getFileName() + ": " + exj.getMessage());
             return;
         } catch (java.io.IOException exj) {
-            log.error("could not read " + d.getFileName() + ": " + exj.getMessage());
+            log.error("could not read " + decoderFile.getFileName() + ": " + exj.getMessage());
             return;
         }
 
-        d.loadVariableModel(decoderRoot.getChild("decoder"), variableModel);
-        d.loadResetModel(decoderRoot.getChild("decoder"), resetModel);
+        // load defaults
+        decoderFile.loadVariableModel(decoderRoot.getChild("decoder"), variableModel);
+        decoderFile.loadResetModel(decoderRoot.getChild("decoder"), resetModel);
+        
+        // load the specific contents for this entry
+        rosterEntry.readFile();
+        rosterEntry.loadCvModel(variableModel, cvModel);
 
-        @SuppressWarnings("unchecked")
         List<Element> rawPaneList = base.getChildren("pane");
         log.debug("rawPaneList size = {}", rawPaneList.size());
         for (Element elPane : rawPaneList) {
@@ -149,7 +147,7 @@ public class PrintRosterEntry implements PaneContainer {
             } else {
                 log.debug("Did not find name element in pane");
             }
-            PaneProgPane p = new PaneProgPane(this, name, elPane, cvModel, variableModel, d.getModelElement(), _rosterEntry);
+            PaneProgPane p = new PaneProgPane(this, name, elPane, cvModel, variableModel, decoderFile.getModelElement(), _rosterEntry);
             // Tab names _paneList.get(i).getName() show up when PrintRosterEntry is called from RosterFrame (entered here, applied in line 278)
             _paneList.add(p);
             log.debug("_paneList size = {}", _paneList.size());
@@ -201,7 +199,6 @@ public class PrintRosterEntry implements PaneContainer {
      * @param preview true if output sould got to the Preview panel, false to output to a printer
      */
     public void doPrintPanes(boolean preview) {
-        //choosePrintItems();
         HardcopyWriter w = null;
         try {
             w = new HardcopyWriter(_parent, _rosterEntry.getId(), 10, .8, .5, .5, .5, preview);
@@ -216,9 +213,7 @@ public class PrintRosterEntry implements PaneContainer {
         }
         log.debug("List size length: {}", _paneList.size());
         for (int i = 0; i < _paneList.size(); i++) {
-            if (log.isDebugEnabled()) {
-                log.debug("start printing page " + i);
-            }
+            log.debug("start printing page {}", i);
             PaneProgPane pane = (PaneProgPane) _paneList.get(i);
             if (pane.includeInPrint()) {
                 pane.printPane(w);
@@ -265,7 +260,7 @@ public class PrintRosterEntry implements PaneContainer {
             final PaneProgPane pane = (PaneProgPane) _paneList.get(i);
             pane.includeInPrint(false);
             final JCheckBox item = new JCheckBox(_paneList.get(i).getName());
-            // Tab names _paneList.get(i).getName() show up when called from RosterFrame (are entered in line 164)
+            // Tab names _paneList.get(i).getName() show up when called from RosterFrame (are entered in line 146)
             printList.put(item, pane);
             item.addActionListener(new java.awt.event.ActionListener() {
                 @Override
@@ -344,7 +339,7 @@ public class PrintRosterEntry implements PaneContainer {
                 w.write(s, 0, s.length());
             }
         } catch (IOException e) {
-            log.warn("error during printing: " + e);
+            log.warn("error during printing: ", e);
         }
         _rosterEntry.printEntry(w);
         w.setFontStyle(Font.PLAIN);

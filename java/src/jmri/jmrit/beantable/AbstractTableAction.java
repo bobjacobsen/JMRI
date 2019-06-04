@@ -1,9 +1,9 @@
 package jmri.jmrit.beantable;
 
-import javax.annotation.Nonnull;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.text.MessageFormat;
 import java.util.HashMap;
+import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -42,20 +42,20 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
      */
     protected abstract void setTitle();
 
-    protected BeanTableFrame f;
+    protected BeanTableFrame<E> f;
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // create the JTable model, with changes for specific NamedBean
         createModel();
-        TableRowSorter<BeanTableDataModel> sorter = new TableRowSorter<>(m);
+        TableRowSorter<BeanTableDataModel<E>> sorter = new TableRowSorter<>(m);
         JTable dataTable = m.makeJTable(m.getMasterClassName(), m, sorter);
 
         // allow reordering of the columns
         dataTable.getTableHeader().setReorderingAllowed(true);
 
         // create the frame
-        f = new BeanTableFrame(m, helpTarget(), dataTable) {
+        f = new BeanTableFrame<E>(m, helpTarget(), dataTable) {
 
             /**
              * Include an "add" button
@@ -65,11 +65,8 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
                 if (includeAddButton) {
                     JButton addButton = new JButton(Bundle.getMessage("ButtonAdd"));
                     addToBottomBox(addButton, this.getClass().getName());
-                    addButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            addPressed(e);
-                        }
+                    addButton.addActionListener((ActionEvent e1) -> {
+                        addPressed(e1);
                     });
                 }
             }
@@ -81,12 +78,12 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
         f.setVisible(true);
     }
 
-    public BeanTableDataModel getTableDataModel() {
+    public BeanTableDataModel<E> getTableDataModel() {
         createModel();
         return m;
     }
 
-    public void setFrame(@Nonnull BeanTableFrame frame) {
+    public void setFrame(@Nonnull BeanTableFrame<E> frame) {
         f = frame;
     }
 
@@ -100,7 +97,7 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
      *
      * @param f the Frame to add to
      */
-    public void addToFrame(@Nonnull BeanTableFrame f) {
+    public void addToFrame(@Nonnull BeanTableFrame<E> f) {
     }
 
     /**
@@ -110,7 +107,7 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
      * @param f AbstractTableTabAction for the containing frame containing these
      *          and other tabs
      */
-    public void addToPanel(AbstractTableTabAction f) {
+    public void addToPanel(AbstractTableTabAction<E> f) {
     }
 
     /**
@@ -128,7 +125,7 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
      *
      * @param f the Frame to attach the menubar to
      */
-    public void setMenuBar(BeanTableFrame f) {
+    public void setMenuBar(BeanTableFrame<E> f) {
     }
 
     public JPanel getPanel() {
@@ -140,6 +137,27 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
             m.dispose();
         }
         // should this also dispose of the frame f?
+    }
+
+    /**
+     * Increments trailing digits of a system/user name (string)
+     * I.E. "Geo7" returns "Geo8"
+     * 
+     * Note: preserves leading zeros: "Geo007" returns "Geo008"
+     * Also, if no trailing digits, appends "1": "Geo" returns "Geo1"
+     * 
+     * @param name the system or user name string
+     * @return the same name with trailing digits incremented by one
+     */
+    protected @Nonnull String nextName(@Nonnull String name) {
+        final String[] parts = name.split("(?=\\d+$)", 2);
+        String numString = "0";
+        if (parts.length == 2) {
+            numString = parts[1];
+        }
+        final int numStringLength = numString.length();
+        final int num = Integer.parseInt(numString) + 1;
+        return parts[0] + String.format("%0" + numStringLength + "d", num);
     }
 
     /**
@@ -161,7 +179,7 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
         options.put(0x00, Bundle.getMessage("DeleteAsk"));
         options.put(0x01, Bundle.getMessage("DeleteNever"));
         options.put(0x02, Bundle.getMessage("DeleteAlways"));
-        jmri.InstanceManager.getDefault(jmri.UserPreferencesManager.class).messageItemDetails(getClassName(), "deleteInUse", Bundle.getMessage("DeleteItemInUse"), options, 0x00);
+        jmri.InstanceManager.getDefault(jmri.UserPreferencesManager.class).setMessageItemDetails(getClassName(), "deleteInUse", Bundle.getMessage("DeleteItemInUse"), options, 0x00);
     }
 
     protected abstract String getClassName();
@@ -180,8 +198,8 @@ abstract public class AbstractTableAction<E extends NamedBean> extends AbstractA
      * @param headerFormat messageFormat for header
      * @param footerFormat messageFormat for footer
      */
-    public void print(javax.swing.JTable.PrintMode mode, java.text.MessageFormat headerFormat, java.text.MessageFormat footerFormat) {
-        log.error("Caught here");
+    public void print(JTable.PrintMode mode, MessageFormat headerFormat, MessageFormat footerFormat) {
+        log.error("Printing not handled for {} tables.", m.getBeanType());
     }
 
     protected abstract void addPressed(ActionEvent e);

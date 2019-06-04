@@ -1,10 +1,12 @@
 package jmri.jmrix.openlcb;
 
+import java.util.ArrayList;
+import java.util.List;
+import jmri.BooleanPropertyDescriptor;
 import jmri.JmriException;
 import jmri.NamedBean;
 import jmri.NamedBeanPropertyDescriptor;
 import jmri.Sensor;
-import jmri.BooleanPropertyDescriptor;
 import jmri.jmrix.can.CanListener;
 import jmri.jmrix.can.CanMessage;
 import jmri.jmrix.can.CanReply;
@@ -13,16 +15,14 @@ import org.openlcb.OlcbInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Manage the OpenLCB-specific Sensor implementation.
  *
- * System names are "MSnnn", where nnn is the sensor number without padding.
+ * System names are "MSnnn", where M is the user configurable system prefix,
+ * nnn is the sensor number without padding.
  *
  * @author Bob Jacobsen Copyright (C) 2008, 2010
-  */
+ */
 public class OlcbSensorManager extends jmri.managers.AbstractSensorManager implements CanListener {
 
     String prefix = "M";
@@ -38,8 +38,8 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
     }
 
     @Override
-    public List<NamedBeanPropertyDescriptor> getKnownBeanProperties() {
-        List<NamedBeanPropertyDescriptor> l = new ArrayList<>();
+    public List<NamedBeanPropertyDescriptor<?>> getKnownBeanProperties() {
+        List<NamedBeanPropertyDescriptor<?>> l = new ArrayList<>();
         l.add(new BooleanPropertyDescriptor(OlcbUtils.PROPERTY_IS_AUTHORITATIVE, OlcbTurnout
                 .DEFAULT_IS_AUTHORITATIVE) {
             @Override
@@ -97,7 +97,7 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
         // OK, make
         OlcbSensor s = new OlcbSensor(getSystemPrefix(), addr, memo.get(OlcbInterface.class));
         s.setUserName(userName);
-        
+
         synchronized (pendingSensors) {
             if (isLoading) {
                 pendingSensors.add(s);
@@ -135,7 +135,7 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
             isLoading = false;
         }
     }
-    
+
     @Override
     public boolean allowMultipleAdditions(String systemName) {
         return false;
@@ -173,17 +173,25 @@ public class OlcbSensorManager extends jmri.managers.AbstractSensorManager imple
                 throw new IllegalArgumentException("Wrong number of events in address: " + address);
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getEntryToolTip() {
+        return Bundle.getMessage("AddSensorEntryToolTip");
+    }
 
     // listen for sensors, creating them as needed
     @Override
     public void reply(CanReply l) {
-        // doesn't do anything, because for now 
+        // doesn't do anything, because for now
         // we want you to create manually
     }
 
     @Override
     public void message(CanMessage l) {
-        // doesn't do anything, because 
+        // doesn't do anything, because
         // messages come from us
     }
 

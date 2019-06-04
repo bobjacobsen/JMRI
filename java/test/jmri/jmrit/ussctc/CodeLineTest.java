@@ -7,7 +7,7 @@ import org.junit.*;
  * Tests for CodeLine class in the jmri.jmrit.ussctc package
  *
  * @author	Bob Jacobsen Copyright 2007
-  */
+ */
 public class CodeLineTest {
 
     @Test
@@ -19,6 +19,7 @@ public class CodeLineTest {
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
         JUnitUtil.initConfigureManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initInternalLightManager();

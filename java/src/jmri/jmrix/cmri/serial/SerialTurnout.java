@@ -55,7 +55,7 @@ public class SerialTurnout extends AbstractTurnout {
 
     /**
      * Create a Turnout object, with both system and user names.
-     * <P>
+     * <p>
      * 'systemName' was previously validated in SerialTurnoutManager
      */
     public SerialTurnout(@Nonnull String systemName, String userName, CMRISystemConnectionMemo memo) {
@@ -273,6 +273,7 @@ public class SerialTurnout extends AbstractTurnout {
      * Sorts by node number and then by bit
      */
     @CheckReturnValue
+     @Override
     public int compareSystemNameSuffix(@Nonnull String suffix1, @Nonnull String suffix2, @Nonnull jmri.NamedBean n) {
         return CMRISystemConnectionMemo.compareSystemNameSuffix(suffix1, suffix2);
     }

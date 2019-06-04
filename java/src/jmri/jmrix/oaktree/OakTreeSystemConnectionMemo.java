@@ -17,14 +17,8 @@ import org.slf4j.LoggerFactory;
  */
 public class OakTreeSystemConnectionMemo extends SystemConnectionMemo {
 
-    public OakTreeSystemConnectionMemo() {
-        this("O", SerialConnectionTypeList.OAK);
-
-    }
-
     public OakTreeSystemConnectionMemo(@Nonnull String prefix, @Nonnull String userName) {
         super(prefix, userName);
-
         register(); // registers general type
         InstanceManager.store(this, OakTreeSystemConnectionMemo.class); // also register as specific type
 
@@ -33,6 +27,11 @@ public class OakTreeSystemConnectionMemo extends SystemConnectionMemo {
                 jmri.jmrix.swing.ComponentFactory.class);
 
         log.debug("Created OakTreeSystemConnectionMemo");
+    }
+
+    public OakTreeSystemConnectionMemo() {
+        this("O", SerialConnectionTypeList.OAK);
+        log.debug("Created nameless OakTreeSystemConnectionMemo");
     }
 
     private SerialTrafficController tc = null;
@@ -49,10 +48,10 @@ public class OakTreeSystemConnectionMemo extends SystemConnectionMemo {
     /**
      * Get the traffic controller instance associated with this connection memo.
      */
-    public SerialTrafficController getTrafficController(){
+    public SerialTrafficController getTrafficController() {
         if (tc == null) {
-            setTrafficController(new SerialTrafficController());
-            log.debug("Auto create of SerialTrafficController for initial configuration");
+            setTrafficController(new SerialTrafficController(this));
+            log.debug("Auto create of OakTree SerialTrafficController for initial configuration");
         }
         return tc;
     }
@@ -65,14 +64,19 @@ public class OakTreeSystemConnectionMemo extends SystemConnectionMemo {
 
     public void configureManagers(){
         setTurnoutManager(new SerialTurnoutManager(this));
+        InstanceManager.setTurnoutManager(getTurnoutManager());
+
         setLightManager(new SerialLightManager(this));
+        InstanceManager.setLightManager(getLightManager());
+
         setSensorManager(new SerialSensorManager(this));
+        InstanceManager.setSensorManager(getSensorManager());
     }
 
     /**
-     * Provide access to the Sensor Manager for this particular connection.
+     * Provide access to the SensorManager for this particular connection.
      * <p>
-     * NOTE: Sensor manager defaults to NULL
+     * NOTE: SensorManager defaults to NULL
      */
     public SensorManager getSensorManager() {
         return sensorManager;
@@ -87,9 +91,9 @@ public class OakTreeSystemConnectionMemo extends SystemConnectionMemo {
 
 
     /**
-     * Provide access to the Turnout Manager for this particular connection.
+     * Provide access to the TurnoutManager for this particular connection.
      * <p>
-     * NOTE: Turnout manager defaults to NULL
+     * NOTE: TurnoutManager defaults to NULL
      */
     public TurnoutManager getTurnoutManager() {
         return turnoutManager;
@@ -103,9 +107,9 @@ public class OakTreeSystemConnectionMemo extends SystemConnectionMemo {
     private TurnoutManager turnoutManager = null;
 
     /**
-     * Provide access to the Light Manager for this particular connection.
+     * Provide access to the LightManager for this particular connection.
      * <p>
-     * NOTE: Light manager defaults to NULL
+     * NOTE: LightManager defaults to NULL
      */
     public LightManager getLightManager() {
         return lightManager;

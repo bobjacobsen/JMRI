@@ -1,4 +1,3 @@
-
 package jmri.jmrix.pi;
 
 import jmri.Sensor;
@@ -6,17 +5,17 @@ import jmri.Sensor;
 /**
  * Manage the RaspberryPi specific Sensor implementation.
  *
- * System names are "PSnnn", where nnn is the sensor number without padding.
+ * System names are "PSnnn", where P is the user configurable system prefix,
+ * nnn is the sensor number without padding.
  *
  * @author   Paul Bender Copyright (C) 2015
- * 
  */
 public class RaspberryPiSensorManager extends jmri.managers.AbstractSensorManager {
 
     // ctor has to register for RaspberryPi events
     public RaspberryPiSensorManager(String prefix) {
         super();
-        this.prefix=prefix.toUpperCase();
+        this.prefix = prefix;
     }
 
     /**
@@ -24,7 +23,9 @@ public class RaspberryPiSensorManager extends jmri.managers.AbstractSensorManage
      * This was previously called the "System letter"
      */
     @Override
-    public String getSystemPrefix(){ return prefix; }
+    public String getSystemPrefix(){
+        return prefix;
+    }
 
     private String prefix = null;
 

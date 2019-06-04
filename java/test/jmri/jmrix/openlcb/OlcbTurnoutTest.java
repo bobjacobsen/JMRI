@@ -1,36 +1,34 @@
 package jmri.jmrix.openlcb;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import jmri.util.JUnitUtil;
+import java.util.Iterator;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
-import jmri.Turnout;
-import jmri.jmrix.can.CanMessage;
-import jmri.util.MockPropertyChangeListener;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
+import org.junit.After;
 import org.junit.Assert;
-import org.mockito.Mockito;
+import org.junit.Before;
+import org.junit.Test;
 import org.openlcb.EventID;
 import org.openlcb.implementations.EventTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jmri.Turnout;
+import jmri.jmrix.can.CanMessage;
+import jmri.util.JUnitUtil;
+import jmri.util.NamedBeanComparator;
+import jmri.util.PropertyChangeListenerScaffold;
 /**
  * Tests for the jmri.jmrix.openlcb.OlcbTurnout class.
  *
  * @author	Bob Jacobsen Copyright 2008, 2010, 2011
  */
-public class OlcbTurnoutTest extends TestCase {
+public class OlcbTurnoutTest {
     private final static Logger log = LoggerFactory.getLogger(OlcbTurnoutTest.class);
 
-    protected MockPropertyChangeListener l = new MockPropertyChangeListener();
+    protected PropertyChangeListenerScaffold l; 
 
-    private static final String COMMANDED_STATE = "CommandedState";
-    private static final String KNOWN_STATE = "KnownState";
+    @Test
     public void testIncomingChange() {
         Assert.assertNotNull("exists", t);
         OlcbTurnout s = new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface);
@@ -55,19 +53,19 @@ public class OlcbTurnoutTest extends TestCase {
         Assert.assertTrue(s.getCommandedState() == Turnout.UNKNOWN);
 
         t.sendMessage(mActive);
-
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.THROWN);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.THROWN);
-        verifyNoMoreInteractions(l.m);
+      
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
         Assert.assertTrue(s.getCommandedState() == Turnout.THROWN);
 
+        l.resetPropertyChanged();
         t.sendMessage(mInactive);
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.CLOSED);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.CLOSED);
-        verifyNoMoreInteractions(l.m);
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
         Assert.assertTrue(s.getCommandedState() == Turnout.CLOSED);
     }
 
+    @Test
     public void testLocalChange() throws jmri.JmriException {
         // load dummy TrafficController
         OlcbTurnout s = new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface);
@@ -79,19 +77,18 @@ public class OlcbTurnoutTest extends TestCase {
         t.tc.rcvMessage = null;
         s.setState(Turnout.THROWN);
         t.flush();
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.THROWN);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.THROWN);
-        verifyNoMoreInteractions(l.m);
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
         Assert.assertTrue(s.getCommandedState() == Turnout.THROWN);
         log.debug("recv msg: " + t.tc.rcvMessage + " header " + Integer.toHexString(t.tc.rcvMessage.getHeader()));
         Assert.assertTrue(new OlcbAddress("1.2.3.4.5.6.7.8").match(t.tc.rcvMessage));
 
+        l.resetPropertyChanged();
         t.tc.rcvMessage = null;
         s.setState(Turnout.CLOSED);
         t.flush();
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.CLOSED);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.CLOSED);
-        verifyNoMoreInteractions(l.m);
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
         Assert.assertTrue(s.getCommandedState() == Turnout.CLOSED);
         Assert.assertTrue(new OlcbAddress("1.2.3.4.5.6.7.9").match(t.tc.rcvMessage));
 
@@ -99,61 +96,13 @@ public class OlcbTurnoutTest extends TestCase {
         t.tc.rcvMessage = null;
         s.setState(Turnout.CLOSED);
         t.flush();
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.CLOSED);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.CLOSED);
-        verifyNoMoreInteractions(l.m);
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
         Assert.assertTrue(s.getCommandedState() == Turnout.CLOSED);
         Assert.assertTrue(new OlcbAddress("1.2.3.4.5.6.7.9").match(t.tc.rcvMessage));
     }
 
-    public void testDirectFeedback() throws jmri.JmriException {
-        OlcbTurnout s = new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface);
-        s.setFeedbackMode(Turnout.DIRECT);
-        s.finishLoad();
-
-        s.addPropertyChangeListener(l);
-
-        s.setState(Turnout.THROWN);
-        t.flush();
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.THROWN);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.THROWN);
-
-        Assert.assertEquals(Turnout.THROWN, s.getCommandedState());
-        Assert.assertEquals(Turnout.THROWN, s.getKnownState());
-
-        s.setState(Turnout.CLOSED);
-        t.flush();
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.CLOSED);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.CLOSED);
-
-        Assert.assertEquals(Turnout.CLOSED, s.getCommandedState());
-        Assert.assertEquals(Turnout.CLOSED, s.getKnownState());
-
-        // message for Active and Inactive
-        CanMessage mActive = new CanMessage(
-                new int[]{1, 2, 3, 4, 5, 6, 7, 8},
-                0x195B4000
-        );
-        mActive.setExtended(true);
-
-        CanMessage mInactive = new CanMessage(
-                new int[]{1, 2, 3, 4, 5, 6, 7, 9},
-                0x195B4000
-        );
-        mInactive.setExtended(true);
-
-        //  Feedback is ignored. Neither known nor commanded state changes.
-        t.sendMessage(mActive);
-        Assert.assertEquals(Turnout.CLOSED, s.getCommandedState());
-        Assert.assertEquals(Turnout.CLOSED, s.getKnownState());
-        verifyNoMoreInteractions(l.m);
-
-        t.sendMessage(mInactive);
-        Assert.assertEquals(Turnout.CLOSED, s.getCommandedState());
-        Assert.assertEquals(Turnout.CLOSED, s.getKnownState());
-        verifyNoMoreInteractions(l.m);
-    }
-
+    @Test
     public void testAuthoritative() throws jmri.JmriException {
         OlcbTurnout s = new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface);
         s.setFeedbackMode(Turnout.MONITORING);
@@ -188,6 +137,7 @@ public class OlcbTurnoutTest extends TestCase {
         Assert.assertEquals(expected, t.tc.rcvMessage);
     }
 
+    @Test
     public void testLoopback() throws jmri.JmriException {
         // Two turnouts behaving in opposite ways. One will be used to generate an event and the
         // other will be observed to make sure it catches it.
@@ -200,19 +150,19 @@ public class OlcbTurnoutTest extends TestCase {
 
         s.setState(Turnout.THROWN);
         t.flush();
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.CLOSED);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.CLOSED);
-        verifyNoMoreInteractions(l.m);
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
         Assert.assertTrue(s.getCommandedState() == Turnout.THROWN);
 
+        l.resetPropertyChanged();
         s.setState(Turnout.CLOSED);
         t.flush();
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.THROWN);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.THROWN);
-        verifyNoMoreInteractions(l.m);
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
         Assert.assertTrue(s.getCommandedState() == Turnout.CLOSED);
     }
 
+    @Test
     public void testForgetState() {
         OlcbTurnout s = new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface);
         s.setProperty(OlcbUtils.PROPERTY_LISTEN, Boolean.FALSE.toString());
@@ -234,16 +184,15 @@ public class OlcbTurnoutTest extends TestCase {
                 ":X19544C4CN0102030405060708;");
         // Getting a state notify will not change state now.
         t.sendMessage(":X19544123N0102030405060709;");
-        Mockito.verifyZeroInteractions(l.m);
-        Mockito.reset(l.m);
-        assertEquals(Turnout.THROWN, s.getKnownState());
+        Assert.assertEquals("not called",0,l.getCallCount());
+        l.resetPropertyChanged();
+        Assert.assertEquals(Turnout.THROWN, s.getKnownState());
 
         // Resets the turnout to unknown state
         s.setState(Turnout.UNKNOWN);
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.UNKNOWN);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.UNKNOWN);
-        verifyNoMoreInteractions(l.m);
-        Mockito.reset(l.m);
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
+        l.resetPropertyChanged();
         t.assertNoSentMessages();
 
         // state is reported as unknown to the bus
@@ -251,11 +200,10 @@ public class OlcbTurnoutTest extends TestCase {
                 ":X19547C4CN0102030405060708;");
         // getting a state notify will change state
         t.sendMessage(":X19544123N0102030405060709;");
-        verify(l.m).onChange(COMMANDED_STATE, Turnout.CLOSED);
-        verify(l.m).onChange(KNOWN_STATE, Turnout.CLOSED);
-        verifyNoMoreInteractions(l.m);
-        Mockito.reset(l.m);
-        assertEquals(Turnout.CLOSED, s.getKnownState());
+        JUnitUtil.waitFor( () -> { return l.getPropertyChanged(); });
+        Assert.assertEquals("called twice",2,l.getCallCount());
+        l.resetPropertyChanged();
+        Assert.assertEquals(Turnout.CLOSED, s.getKnownState());
 
         // state is reported as known (thrown==invalid)
         t.sendMessageAndExpectResponse(":X19914123N0102030405060708;",
@@ -263,11 +211,12 @@ public class OlcbTurnoutTest extends TestCase {
 
         // getting a state notify will not change state
         t.sendMessage(":X19544123N0102030405060708;");
-        Mockito.verifyZeroInteractions(l.m);
-        Mockito.reset(l.m);
-        assertEquals(Turnout.CLOSED, s.getKnownState());
+        Assert.assertEquals("not called",0,l.getCallCount());
+        l.resetPropertyChanged();
+        Assert.assertEquals(Turnout.CLOSED, s.getKnownState());
     }
 
+    @Test
     public void testQueryState() {
         OlcbTurnout s = new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface);
         s.finishLoad();
@@ -285,6 +234,7 @@ public class OlcbTurnoutTest extends TestCase {
         t.assertNoSentMessages();
     }
 
+    @Test
     public void testEventTable() {
         OlcbTurnout s = new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface);
         s.finishLoad();
@@ -310,6 +260,7 @@ public class OlcbTurnoutTest extends TestCase {
         Assert.assertEquals("Turnout MySwitch Closed", elist[0].getDescription());
     }
 
+    @Test
     public void testNameFormatXlower() {
         // load dummy TrafficController
         OlcbTurnout s = new OlcbTurnout("M", "x0501010114FF2000;x0501010114FF2001", t.iface);
@@ -340,6 +291,7 @@ public class OlcbTurnoutTest extends TestCase {
 
     }
 
+    @Test
     public void testNameFormatXupper() {
         // load dummy TrafficController
         OlcbTurnout s = new OlcbTurnout("M", "X0501010114FF2000;X0501010114FF2001", t.iface);
@@ -370,17 +322,18 @@ public class OlcbTurnoutTest extends TestCase {
 
     }
 
+    @Test
     public void testSystemSpecificComparisonOfSpecificFormats() {
 
         // test by putting into a tree set, then extracting and checking order
-        java.util.TreeSet<Turnout> set = new java.util.TreeSet<>(new jmri.util.NamedBeanComparator());
+        TreeSet<Turnout> set = new TreeSet<>(new NamedBeanComparator<>());
         
         set.add(new OlcbTurnout("M", "1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", t.iface));
         set.add(new OlcbTurnout("M", "X0501010114FF2000;X0501010114FF2011", t.iface));
         set.add(new OlcbTurnout("M", "X0501010114FF2000;X0501010114FF2001", t.iface));
         set.add(new OlcbTurnout("M", "1.2.3.4.5.6.7.9;1.2.3.4.5.6.7.9", t.iface));
         
-        java.util.Iterator<Turnout> it = set.iterator();
+        Iterator<Turnout> it = set.iterator();
         
         Assert.assertEquals("MT1.2.3.4.5.6.7.8;1.2.3.4.5.6.7.9", it.next().getSystemName());
         Assert.assertEquals("MT1.2.3.4.5.6.7.9;1.2.3.4.5.6.7.9", it.next().getSystemName());
@@ -388,37 +341,24 @@ public class OlcbTurnoutTest extends TestCase {
         Assert.assertEquals("MTX0501010114FF2000;X0501010114FF2011", it.next().getSystemName());
     }
 
-    // from here down is testing infrastructure
-    public OlcbTurnoutTest(String s) {
-        super(s);
-    }
-
-    // Main entry point
-    static public void main(String[] args) {
-        String[] testCaseName = {OlcbTurnoutTest.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
-
-    // test suite from all defined tests
-    public static Test suite() {
-        TestSuite suite = new TestSuite(OlcbTurnoutTest.class);
-        return suite;
-    }
-
-    OlcbTestInterface t;
+    private OlcbTestInterface t;
 
     // The minimal setup for log4J
-    @Override
-    protected void setUp() {
-        apps.tests.Log4JFixture.setUp();
+    @Before
+    public void setUp() {
+        JUnitUtil.setUp();
+        l = new PropertyChangeListenerScaffold();
 
         // load dummy TrafficController
         t = new OlcbTestInterface();
         t.waitForStartup();
     }
 
-    @Override
-    protected void tearDown() {
+    @After
+    public void tearDown() {
+        l = null;
+        t.dispose();
+        t = null;
         JUnitUtil.tearDown();
     }
 }

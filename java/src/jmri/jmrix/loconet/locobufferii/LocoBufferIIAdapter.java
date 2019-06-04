@@ -1,17 +1,22 @@
 package jmri.jmrix.loconet.locobufferii;
 
+import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.locobuffer.LocoBufferAdapter;
 
 /**
  * Update the code in jmri.jmrix.loconet.locobuffer so that it refers to the
- * switch settings on the new LocoBuffer II
+ * switch settings on the new LocoBuffer-II.
  *
  * @author Bob Jacobsen Copyright (C) 2004
-  */
+ */
 public class LocoBufferIIAdapter extends LocoBufferAdapter {
 
+    public LocoBufferIIAdapter(LocoNetSystemConnectionMemo adapterMemo) {
+        super(adapterMemo);
+    }
+
     public LocoBufferIIAdapter() {
-        super();
+        this(new LocoNetSystemConnectionMemo());
     }
 
     /**
@@ -21,11 +26,11 @@ public class LocoBufferIIAdapter extends LocoBufferAdapter {
      */
     @Override
     public String[] validBaudRates() {
-        return new String[]{"19,200 baud (Sw1 off, Sw3 off)",
-            "57,600 baud (Sw1 on, Sw3 off)"};
+        return new String[]{Bundle.getMessage("Baud19200LBII"), Bundle.getMessage("Baud57600LBII")};
     }
 
     public String option1Name() {
         return Bundle.getMessage("XconnectionUsesLabel", "LocoBuffer-II");
     }
+
 }

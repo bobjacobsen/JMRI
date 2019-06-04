@@ -8,7 +8,7 @@ import org.junit.*;
  * Tests for TurnoutSection class in the jmri.jmrit.ussctc package
  *
  * @author	Bob Jacobsen Copyright 2007
-  */
+ */
 public class TurnoutSectionTest {
 
     @Test
@@ -196,13 +196,13 @@ public class TurnoutSectionTest {
     @org.junit.Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
         JUnitUtil.initConfigureManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initInternalLightManager();
         JUnitUtil.initInternalSensorManager();
         JUnitUtil.initMemoryManager();  
         JUnitUtil.initShutDownManager();
-        JUnitUtil.resetProfileManager();
         
         layoutTurnout = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("IT1"); layoutTurnout.setUserName("Sec 1 Layout TO");
         normIndicator = InstanceManager.getDefault(TurnoutManager.class).provideTurnout("IT2"); normIndicator.setUserName("Sec1 TO 1 N");

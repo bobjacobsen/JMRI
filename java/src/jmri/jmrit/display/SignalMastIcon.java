@@ -91,7 +91,7 @@ public class SignalMastIcon extends PositionableIcon implements java.beans.Prope
     }
 
     private void getIcons() {
-        _iconMap = new java.util.HashMap<String, NamedIcon>();
+        _iconMap = new java.util.HashMap<>();
         java.util.Enumeration<String> e = getSignalMast().getAppearanceMap().getAspects();
         boolean error = false;
         while (e.hasMoreElements()) {
@@ -184,10 +184,8 @@ public class SignalMastIcon extends PositionableIcon implements java.beans.Prope
         String name;
         if (getSignalMast() == null) {
             name = Bundle.getMessage("NotConnected");
-        } else if (getSignalMast().getUserName() == null) {
-            name = getSignalMast().getSystemName();
         } else {
-            name = getSignalMast().getUserName() + " (" + getSignalMast().getSystemName() + ")";
+            name = getSignalMast().getFullyFormattedDisplayName();
         }
         return name;
     }
@@ -326,7 +324,7 @@ public class SignalMastIcon extends PositionableIcon implements java.beans.Prope
     }
 
     private void addTransitPopup(JPopupMenu popup) {
-        if ((InstanceManager.getDefault(jmri.SectionManager.class).getSystemNameList().size()) > 0
+        if ((InstanceManager.getDefault(jmri.SectionManager.class).getNamedBeanSet().size()) > 0
                 && jmri.InstanceManager.getDefault(jmri.jmrit.display.layoutEditor.LayoutBlockManager.class).isAdvancedRoutingEnabled()) {
 
             if (tct == null) {
@@ -414,7 +412,8 @@ public class SignalMastIcon extends PositionableIcon implements java.beans.Prope
     }
 
     protected void editItem() {
-        makePaletteFrame(java.text.MessageFormat.format(Bundle.getMessage("EditItem"), Bundle.getMessage("BeanNameSignalMast")));
+        _paletteFrame = makePaletteFrame(java.text.MessageFormat.format(Bundle.getMessage("EditItem"),
+                Bundle.getMessage("BeanNameSignalMast")));
         _itemPanel = new SignalMastItemPanel(_paletteFrame, "SignalMast", getFamily(),
                 PickListModel.signalMastPickModelInstance(), _editor);
         ActionListener updateAction = new ActionListener() {
@@ -426,19 +425,16 @@ public class SignalMastIcon extends PositionableIcon implements java.beans.Prope
         // _iconMap keys with local names - Let SignalHeadItemPanel figure this out
         _itemPanel.init(updateAction, _iconMap);
         _itemPanel.setSelection(getSignalMast());
-        _paletteFrame.add(_itemPanel);
-        _paletteFrame.pack();
-        _paletteFrame.setVisible(true);
+        initPaletteFrame(_paletteFrame, _itemPanel);
     }
 
     void updateItem() {
+        if (!_itemPanel.oktoUpdate()) {
+            return;
+        }
         setSignalMast(_itemPanel.getTableSelection().getSystemName());
         setFamily(_itemPanel.getFamilyName());
-        _paletteFrame.dispose();
-        _paletteFrame = null;
-        _itemPanel.dispose();
-        _itemPanel = null;
-        invalidate();
+        finishItemUpdate(_paletteFrame, _itemPanel);
     }
 
     /**
@@ -622,7 +618,7 @@ public class SignalMastIcon extends PositionableIcon implements java.beans.Prope
 
     /**
      * How to handle lit vs not lit?
-     * <P>
+     * <p>
      * False means ignore (always show R/Y/G/etc appearance on screen); True
      * means show {@link jmri.SignalAppearanceMap#DARK} if lit is set false.
      */

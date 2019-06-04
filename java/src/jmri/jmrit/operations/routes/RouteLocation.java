@@ -1,6 +1,8 @@
 package jmri.jmrit.operations.routes;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.awt.Color;
 import java.awt.Point;
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsXml;
@@ -8,6 +10,9 @@ import jmri.jmrit.operations.locations.Location;
 import jmri.jmrit.operations.locations.LocationManager;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.setup.Setup;
+import jmri.jmrit.operations.trains.TrainCommon;
+import jmri.util.ColorUtil;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -22,7 +27,6 @@ import org.slf4j.LoggerFactory;
 public class RouteLocation implements java.beans.PropertyChangeListener {
 
     public static final String NONE = "";
-//    protected static final int RANGE_DEFAULT = 25;
 
     protected String _id = NONE;
     protected Location _location = null; // the location in the route
@@ -33,15 +37,14 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
     protected String _randomControl = DISABLED;
     protected boolean _drops = true; // when true set outs allowed at this location
     protected boolean _pickups = true; // when true pick ups allowed at this location
-    protected int _sequenceId = 0; // used to determine location order in a route
+    protected int _sequenceNum = 0; // used to determine location order in a route
     protected double _grade = 0; // maximum grade between locations
     protected int _wait = 0; // wait time at this location
     protected String _departureTime = NONE; // departure time from this location
     protected int _trainIconX = 0; // the x & y coordinates for the train icon
     protected int _trainIconY = 0;
-//    protected int _trainIconRangeX = RANGE_DEFAULT; // the x & y detection range for the train icon
-//    protected int _trainIconRangeY = RANGE_DEFAULT;
     protected String _comment = NONE;
+    protected Color _commentColor = Color.black;
 
     protected int _carMoves = 0; // number of moves at this location
     protected int _trainWeight = 0; // total car weight departing this location
@@ -108,13 +111,13 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
         return _location;
     }
 
-    public int getSequenceId() {
-        return _sequenceId;
+    public int getSequenceNumber() {
+        return _sequenceNum;
     }
 
-    public void setSequenceId(int sequence) {
+    public void setSequenceNumber(int sequence) {
         // property change not needed
-        _sequenceId = sequence;
+        _sequenceNum = sequence;
     }
 
     public void setComment(String comment) {
@@ -127,6 +130,30 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
 
     public String getComment() {
         return _comment;
+    }
+    
+    public void setCommentColor(Color color) {
+        Color old = _commentColor;
+        _commentColor = color;
+        if (!old.equals(_commentColor)) {
+            setDirtyAndFirePropertyChange("RouteLocationCommentColor", old, color); // NOI18N
+        }
+    }
+    
+    public Color getCommentColor() {
+        return _commentColor;
+    }
+    
+    public String getFormatedColorComment() {
+        return TrainCommon.formatColorString(getComment(), getCommentColor());
+    }
+  
+    public void setCommentTextColor(String color) {
+        setCommentColor(ColorUtil.stringToColor(color));
+    }
+    
+    public String getCommentTextColor() {
+        return ColorUtil.colorToColorName(getCommentColor());
     }
 
     public void setTrainDirection(int direction) {
@@ -463,6 +490,7 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
      *
      * @param e Consist XML element
      */
+    @SuppressWarnings("deprecation") // until there's a replacement for convertFromXmlComment()
     public RouteLocation(Element e) {
         Attribute a;
         if ((a = e.getAttribute(Xml.ID)) != null) {
@@ -554,11 +582,15 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
         }
         if ((a = e.getAttribute(Xml.SEQUENCE_ID)) != null) {
             try {
-                _sequenceId = Integer.parseInt(a.getValue());
+                _sequenceNum = Integer.parseInt(a.getValue());
             } catch (NumberFormatException ee) {
                 log.error("Route location ({}) sequence id isn't a valid number", getName(), a.getValue());
             }
         }
+        if ((a = e.getAttribute(Xml.COMMENT_COLOR)) != null) {
+            setCommentTextColor(a.getValue());
+        }
+        
         if ((a = e.getAttribute(Xml.COMMENT)) != null) {
             _comment = OperationsXml.convertFromXmlComment(a.getValue());
         }
@@ -575,7 +607,7 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
         e.setAttribute(Xml.ID, getId());
         e.setAttribute(Xml.NAME, getName());
         e.setAttribute(Xml.LOCATION_ID, getNameId());
-        e.setAttribute(Xml.SEQUENCE_ID, Integer.toString(getSequenceId()));
+        e.setAttribute(Xml.SEQUENCE_ID, Integer.toString(getSequenceNumber()));
         e.setAttribute(Xml.TRAIN_DIRECTION, Integer.toString(getTrainDirection()));
         e.setAttribute(Xml.MAX_TRAIN_LENGTH, Integer.toString(getMaxTrainLength()));
         e.setAttribute(Xml.GRADE, Double.toString(getGrade()));
@@ -595,6 +627,7 @@ public class RouteLocation implements java.beans.PropertyChangeListener {
 //            e.setAttribute(Xml.TRAIN_ICON_RANGE_Y, Integer.toString(getTrainIconRangeY()));
 //        }
         
+        e.setAttribute(Xml.COMMENT_COLOR, getCommentTextColor());
         e.setAttribute(Xml.COMMENT, getComment());
 
         return e;

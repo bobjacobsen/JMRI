@@ -4,7 +4,6 @@ import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import jmri.util.JUnitUtil;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -55,7 +54,7 @@ public class TurnoutIconTest extends PositionableIconTest {
         Assert.assertTrue("class type equality", to2.getClass().equals(to.getClass()));
     }
 
-
+    @Override
     @Test
     public void testShow() {
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
@@ -127,11 +126,10 @@ public class TurnoutIconTest extends PositionableIconTest {
         to.propertyChange(e);
     }
 
-    // The minimal setup for log4J
     @Before
     @Override
     public void setUp() {
-        JUnitUtil.setUp();
+        super.setUp();
         if (!GraphicsEnvironment.isHeadless()) {
            editor = new jmri.jmrit.display.panelEditor.PanelEditor("Test TurnoutIcon Panel");
            Editor e = new EditorScaffold();

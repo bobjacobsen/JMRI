@@ -8,8 +8,8 @@ import org.junit.Test;
 
 
 /**
- * Description:	tests for the jmri.jmrix.xpa.XpaThrottle class
- * <P>
+ * Description:	tests for the jmri.jmrix.xpa.XpaThrottle class.
+ *
  * @author	Paul Bender
  */
 public class XpaThrottleTest extends jmri.jmrix.AbstractThrottleTest {

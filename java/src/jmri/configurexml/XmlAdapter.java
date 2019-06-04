@@ -49,7 +49,7 @@ public interface XmlAdapter {
     /**
      * Create a set of configured objects from their XML description, using an
      * auxiliary object.
-     * <P>
+     * <p>
      * For example, the auxilary object o might be a manager or GUI of some type
      * that needs to be informed as each object is created.
      *
@@ -63,7 +63,7 @@ public interface XmlAdapter {
     /**
      * Create a set of configured objects from their XML description, using an
      * auxiliary object.
-     * <P>
+     * <p>
      * For example, the auxilary object o might be a manager or GUI of some type
      * that needs to be informed as each object is created.
      *
@@ -118,12 +118,14 @@ public interface XmlAdapter {
      * {@link #handleException(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.Exception)}
      * instead
      */
-    @Deprecated
-    public void creationErrorEncountered(
+    @Deprecated // 4.7.2
+    public default void creationErrorEncountered(
             String description,
             String systemName,
             String userName,
-            Exception exception) throws JmriConfigureXmlException;
+            Exception exception) throws JmriConfigureXmlException {
+        this.handleException(description, null, systemName, userName, exception);
+    }
 
     /**
      * Provide a simple handler for errors.

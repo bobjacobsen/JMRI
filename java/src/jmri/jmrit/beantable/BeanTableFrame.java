@@ -15,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SortOrder;
 import javax.swing.table.TableRowSorter;
+import jmri.NamedBean;
 import jmri.swing.RowSorterUtil;
 import jmri.util.AlphanumComparator;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provide a JFrame to display a table of NamedBeans.
- * <P>
+ * <p>
  * This frame includes the table itself at the top, plus a "bottom area" for
  * things like an Add... button and checkboxes that control display options.
  * <p>
@@ -34,9 +35,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Jacobsen Copyright (C) 2003
  */
-public class BeanTableFrame extends jmri.util.JmriJFrame {
+public class BeanTableFrame<E extends NamedBean> extends jmri.util.JmriJFrame {
 
-    BeanTableDataModel dataModel;
+    BeanTableDataModel<E> dataModel;
     JTable dataTable;
     JScrollPane dataScroll;
     Box bottomBox;  // panel at bottom for extra buttons etc
@@ -53,7 +54,7 @@ public class BeanTableFrame extends jmri.util.JmriJFrame {
         super(s);
     }
 
-    public BeanTableFrame(BeanTableDataModel model, String helpTarget, JTable dataTab) {
+    public BeanTableFrame(BeanTableDataModel<E> model, String helpTarget, JTable dataTab) {
 
         super();
         dataModel = model;
@@ -62,7 +63,7 @@ public class BeanTableFrame extends jmri.util.JmriJFrame {
         dataScroll = new JScrollPane(dataTable);
 
         // give system name column as smarter sorter and use it initially
-        TableRowSorter<BeanTableDataModel> sorter = new TableRowSorter<>(dataModel);
+        TableRowSorter<BeanTableDataModel<?>> sorter = new TableRowSorter<>(dataModel);
 
         // use NamedBean's built-in Comparator interface for sorting the system name column
         RowSorterUtil.setSortOrder(sorter, BeanTableDataModel.SYSNAMECOL, SortOrder.ASCENDING);

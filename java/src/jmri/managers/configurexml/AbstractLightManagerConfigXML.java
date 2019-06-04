@@ -13,12 +13,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides the abstract base and store functionality for configuring
  * LightManagers, working with AbstractLightManagers.
- * <P>
+ * <p>
  * Typically, a subclass will just implement the load(Element sensors) class,
  * relying on implementation here to load the individual lights. Note that these
  * are stored explicitly, so the resolution mechanism doesn't need to see *Xml
  * classes for each specific Light or AbstractLight subclass at store time.
- * <P>
+ * <p>
  * Based on AbstractSensorManagerConfigXML.java
  *
  * @author Dave Duchamp Copyright (c) 2004, 2008, 2010
@@ -40,8 +40,9 @@ public abstract class AbstractLightManagerConfigXML extends AbstractNamedBeanMan
         setStoreElementClass(lights);
         LightManager tm = (LightManager) o;
         if (tm != null) {
+            @SuppressWarnings("deprecation") // getSystemNameAddedOrderList() call needed until deprecated code removed
             java.util.Iterator<String> iter
-                    = tm.getSystemNameList().iterator();
+                    = tm.getSystemNameAddedOrderList().iterator();
 
             // don't return an element if there are not lights to include
             if (!iter.hasNext()) {
@@ -124,7 +125,6 @@ public abstract class AbstractLightManagerConfigXML extends AbstractNamedBeanMan
      *
      * @param lights Element containing the Light elements to load.
      */
-    @SuppressWarnings("unchecked")
     public boolean loadLights(Element lights) {
         boolean result = true;
         List<Element> lightList = lights.getChildren("light");
@@ -132,6 +132,7 @@ public abstract class AbstractLightManagerConfigXML extends AbstractNamedBeanMan
             log.debug("Found " + lightList.size() + " lights");
         }
         LightManager tm = InstanceManager.lightManagerInstance();
+        tm.setDataListenerMute(true);
 
         for (int i = 0; i < lightList.size(); i++) {
 
@@ -319,6 +320,8 @@ public abstract class AbstractLightManagerConfigXML extends AbstractNamedBeanMan
             // done, start it working
             lgt.activateLight();
         }
+
+        tm.setDataListenerMute(false);
         return result;
     }
 

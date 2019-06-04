@@ -6,7 +6,7 @@
 
         <title>JMRI Hardware Support - Digitrax Command Station Configuration</title>
         <meta name="keywords" content=
-              "Digitrax Command Station DCS100 DCS200 DCS240 DCS210 DCS50 DCS51 DB150 JMRI">
+              "Digitrax Command Station DCS100 DCS200 DCS240 DCS210 DCS50 DCS51 DCS52 DB150 JMRI">
         <!-- Style -->
         <meta http-equiv="content-type" content=
               "text/html; charset=us-ascii">
@@ -33,6 +33,7 @@
 
                         <tr>
                             <td align="left" valign="top" colspan="1">
+                        <ul>
                         <li><a href="#ConfigurationBasics">Configuring Digitrax Command Station Operation Switch (OpSw) Settings</a>
                             <ul>
                                 <li><a href="#Requirements">Requirements</a></li>
@@ -41,13 +42,11 @@
                         <li><a href="#ConfigViaRoster">Configuration via a &quot;Roster&quot; entry</a></li>
                         <li><a href="#ConfigViaTool">Configuration via the "Command Station Configuration tool</a></li>
                         <li><a href="#Limitation">Limitations</a></li>
-
                         <li><a href="#Support">Support</a></li>
                         </ul> </td>
                         <td align="right" colspan="1"><img src=
                                                            "images/RosterCmdStnConfig.png" alt=
                                                            "Example of the Roster-based Command Station Configuration Window"></td>
-                        </td>
                         </tr>
                     </table>
                 </div><a name="ConfigurationBasics" id=
@@ -69,9 +68,9 @@
                     effect.  For some OpSw settings, it may be necessary to change the command
                     station to a different mode before it is returned to its normal operating
                     mode.</p>
-                <p>For DCS50 and DCS51 (Zephyr and Zephyr Xtra) command stations, OpSw
+                <p>For DCS50, DCS51 and DCS52 (Zephyr, Zephyr Xtra, and Zephyr Express) command stations, OpSw
                     configuration operations can be performed from the integrated keypad.  The
-                    DCS50/DCS51 will automatically perform any necessary mode-change before
+                    DCS50/DCS51/DCS52 will automatically perform any necessary mode-change before
                     returning to normal operating mode.</p>
 
                 <p>Alternately, JMRI, when configured to communicate with LocoNet, can make
@@ -90,6 +89,7 @@
                         <ul>
                             <li>DCS50 (Zephyr&trade;)</li>
                             <li>DCS51 (Zephyr Xtra&trade;)</li>
+                            <li>DCS52 (Zephyr Express&trade;)</li>
                             <li>DB150 (Empire Builder&trade;, Empire Builder II&trade;, Super Empire Builder&trade;, Super Empire Builder Xtra&trade;, Genesis&trade;)</li>
                             <li>DCS100, DCS200 (Chief&trade;, Chief II&trade;, Super Chief&trade;, Super Chief Xtra&trade;)</li>
                             <li>DCS210 (Evolution&trade;)</li>
@@ -163,13 +163,13 @@
 
                 <p>For JMRI-specific questions, including questions about how
                     JMRI and Digitrax hardware interact, the <a href=
-                                                                "https://groups.yahoo.com/neo/groups/jmriusers/info">JMRI
-                        users Yahoo group</a> is very helpful.  Many knowledgeable 
+                                                                "https://groups.io/g/jmriusers">JMRI
+                        users "groups.io" group</a> is very helpful.  Many knowledgeable 
                         Digitrax users contribute to the group and answer questions
                         on JMRI issues.</p>
                 <p>For Digitrax-specific questions, the <a href=
-                    "https://groups.yahoo.com/neo/groups/Digitrax/info">Digitrax
-                    users Yahoo group </a> provides great support from other
+                    "https://groups.io/g/Digitrax-Users">Digitrax
+                    users "groups.io" group </a> provides great support from other
                     Digitrax users.  If you have a problem with Digitrax
                     equipment, this is a good place to pose your
                     Digitrax-specific problems. This user's group is run by and

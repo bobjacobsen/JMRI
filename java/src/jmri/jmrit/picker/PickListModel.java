@@ -26,25 +26,25 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract class to make pick lists for NamedBeans; Table model for pick lists
  * in IconAdder
- * <P>
+ * <p>
  * Concrete pick list class for many beans are include at the end of this file.
  * This class also has instantiation methods serve as a factory for those
  * classes.
- * <P>
+ * <p>
  * Note: Extensions of this class must call init() after instantiation.
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
+ * @param <E> the supported type of NamedBean
  * @author Pete Cressman Copyright (C) 2009, 2010
  */
 public abstract class PickListModel<E extends NamedBean> extends BeanTableDataModel<E> implements PropertyChangeListener {
@@ -122,6 +122,7 @@ public abstract class PickListModel<E extends NamedBean> extends BeanTableDataMo
         makePickList();
     }
 
+    @SuppressWarnings("deprecation") // needs careful unwinding for Set operations
     private void makePickList() {
         // Don't know who is added or deleted so remove all name change listeners
         if (_pickList != null) {
@@ -130,7 +131,7 @@ public abstract class PickListModel<E extends NamedBean> extends BeanTableDataMo
             }
         }
         List<String> systemNameList = getManager().getSystemNameList();
-        TreeSet<E> ts = new TreeSet<>(new NamedBeanComparator());
+        TreeSet<E> ts = new TreeSet<>(new NamedBeanComparator<>());
 
         Iterator<String> iter = systemNameList.iterator();
         while (iter.hasNext()) {
@@ -199,7 +200,7 @@ public abstract class PickListModel<E extends NamedBean> extends BeanTableDataMo
 
     /** {@inheritDoc} */
     @Override
-    public void clickOn(@Nonnull E t) {
+    public void clickOn(E t) {
     }
 
     /** {@inheritDoc} */
@@ -315,12 +316,11 @@ public abstract class PickListModel<E extends NamedBean> extends BeanTableDataMo
              */
             @Override
             public void changeSelection(int row, int col, boolean toggle, boolean extend) {
-                if (this.getValueAt(row, col) != null) {
+                if (super.getValueAt(row, col) != null) {
                     super.changeSelection(row, col, toggle, extend);
                 }
             }
         };
-        _sorter.setComparator(SNAME_COLUMN, new SystemNameComparator());
         _table.setRowSorter(_sorter);
 
         _table.setRowSelectionAllowed(true);
@@ -352,7 +352,6 @@ public abstract class PickListModel<E extends NamedBean> extends BeanTableDataMo
 
     public void makeSorter(@Nonnull JTable table) {
         _sorter = new TableRowSorter<>(this);
-        _sorter.setComparator(SNAME_COLUMN, new SystemNameComparator());
         table.setRowSorter(_sorter);
     }
 

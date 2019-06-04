@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Definition of objects to handle configuring an Anyma DMX layout connection
  * via a AnymaDMX_UsbPortAdapter object.
- * <P>
+ * <p>
  * This uses the {@link AnymaDMX_UsbPortAdapter} class to do the actual
  * connection.
  *
- * @author George Warner Copyright (c) 2017
+ * @author George Warner Copyright (c) 2017-2018
  * @since 4.9.6
  * @see AnymaDMX_UsbPortAdapter
  */
@@ -30,7 +30,8 @@ public class AnymaDMX_ConnectionConfig extends AbstractUsbConnectionConfig {
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public AnymaDMX_ConnectionConfig() {
         this(new AnymaDMX_UsbPortAdapter());
@@ -54,7 +55,6 @@ public class AnymaDMX_ConnectionConfig extends AbstractUsbConnectionConfig {
      */
     @Override
     protected void setInstance() {
-        log.debug("*    setInstance()");
         if (adapter == null) {
             adapter = new AnymaDMX_UsbPortAdapter();
         }

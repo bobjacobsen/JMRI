@@ -1,5 +1,7 @@
 package jmri.jmrix.loconet;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,10 +18,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Display and modify an Digitrax board configuration.
- * <P>
+ * <p>
  * Supports boards which can be read and write using LocoNet opcode
  * OPC_MULTI_SENSE, such as PM4x, DS64, SE8c, BDL16x.
- * <P>
+ * <p>
  * The read and write require a sequence of operations, which we handle with a
  * state variable.
  * <p>
@@ -29,14 +31,14 @@ import org.slf4j.LoggerFactory;
  * times to try to get a response from the addressed board. If the board does
  * not respond, the access sequence is aborted and a failure message is
  * populated in the "status" variable.
- * <P>
+ * <p>
  * Programming of the board is done via configuration messages, so the board
  * should not be put into programming mode via the built-in pushbutton while
  * this tool is in use.
- * <P>
+ * <p>
  * Throughout, the terminology is "closed" == true, "thrown" == false. Variables
  * are named for their closed state.
- * <P>
+ * <p>
  * Some of the message formats used in this class are Copyright Digitrax, Inc.
  * and used with permission as part of the JMRI project. That permission does
  * not extend to uses in other software products. If you wish to use this code,
@@ -46,7 +48,6 @@ import org.slf4j.LoggerFactory;
  * @author Bob Jacobsen Copyright (C) 2004, 2007
  * @author B. Milhaupt  Copyright (C) 2011, 2012, 2013, 2014, 2015, 2016, 2017
  */
-@SuppressWarnings("serial")
 abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.LnPanel
         implements LocoNetListener {
 
@@ -102,70 +103,11 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
     private String boardTypeName;
 
     /**
-     * Constructor which assumes the board ID number is 1, and does not
-     * automatically read device OpSw values upon creation.
-     *
-     * @deprecated
-     */
-    @Deprecated
-    protected AbstractBoardProgPanel() {
-        this(1, false);
-    }
-
-    /**
-     * Constructor which assumes the board ID number is 1.
-     *
-     * @param readOnInit true to read OpSw values of board ID number 1 upon panel creation
-     * @deprecated
-     */
-    @Deprecated
-    protected AbstractBoardProgPanel(boolean readOnInit) {
-        this(1, readOnInit);
-    }
-
-    /**
-     * Constructor where invoking code specifies the initial board ID number and
-     * also whether the tool automatically reads device OpSw values upon creation.
-     *
-     * @param boardNum - default board ID number upon panel creation
-     * @param readOnInit - true to read OpSw values of board 1 upon panel creation
-     * @deprecated
-     */
-    @Deprecated
-    protected AbstractBoardProgPanel(int boardNum, boolean readOnInit) {
-        super();
-        boardTypeName = Bundle.getMessage("AbstractBoardProgPanel_GenericDeviceString");
-
-        // basic formatting: Create pane to hold contents
-        // within a scroll box
-        contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
-        JScrollPane scroll = new JScrollPane(contents);
-        add(scroll);
-
-        // and prep for display
-        addrField.setText(Integer.toString(boardNum));
-        this.readOnInit = readOnInit;
-    }
-
-    /**
-     *
-     * Constructor which allows the caller to pass in the board ID number.
-     * Device OpSws will not be read upon creation.
-     *
-     * @param boardNum - default board ID number upon panel creation
-     * @deprecated
-     */
-    @Deprecated
-    protected AbstractBoardProgPanel(int boardNum) {
-        this(boardNum, false);
-    }
-
-    /**
      * Constructor which accepts a "board type" string.
      * The board number defaults to 1, and the board will not
      * be automatically read.
      *
-     * @param boardTypeName - device type name, to be included in read and write GUI buttons
+     * @param boardTypeName  device type name, to be included in read and write GUI buttons
      */
     protected AbstractBoardProgPanel(String boardTypeName) {
         this(1, false, boardTypeName);
@@ -176,8 +118,8 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
      * to automatically read the board, plus a string defining
      * the "board type".  The board number defaults to 1.
      *
-     * @param readOnInit - true to read OpSw values of board 1 upon panel creation
-     * @param boardTypeName - device type name, to be included in read and write GUI buttons
+     * @param readOnInit  true to read OpSw values of board 1 upon panel creation
+     * @param boardTypeName  device type name, to be included in read and write GUI buttons
      */
     protected AbstractBoardProgPanel(boolean readOnInit, String boardTypeName) {
         this(1, readOnInit, boardTypeName);
@@ -187,9 +129,9 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
      * Constructor which accepts parameters for the initial board number, whether
      * to automatically read the board, and a "board type" string.
      *
-     * @param boardNum - default board ID number upon panel creation
-     * @param readOnInit - true to read OpSw values of board 1 upon panel creation
-     * @param boardTypeName - device type name, to be included in read and write GUI buttons
+     * @param boardNum  default board ID number upon panel creation
+     * @param readOnInit  true to read OpSw values of board 1 upon panel creation
+     * @param boardTypeName  device type name, to be included in read and write GUI buttons
      */
     protected AbstractBoardProgPanel(int boardNum, boolean readOnInit, String boardTypeName) {
         super();
@@ -198,8 +140,6 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
         // basic formatting: Create pane to hold contents
         // within a scroll box
         contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
-        JScrollPane scroll = new JScrollPane(contents);
-        add(scroll);
 
         // and prep for display
         addrField.setText(Integer.toString(boardNum));
@@ -210,11 +150,25 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
      * Constructor which allows the caller to pass in the board ID number
      * and board type name
      *
-     * @param boardNum - default board ID number upon panel creation
-     * @param boardTypeName - device type name, to be included in read and write GUI buttons
+     * @param boardNum  default board ID number upon panel creation
+     * @param boardTypeName  device type name, to be included in read and write GUI buttons
      */
     protected AbstractBoardProgPanel(int boardNum, String boardTypeName) {
         this(boardNum, false, boardTypeName);
+    }
+
+    /**
+     * In order to get the scrollpanel on the screen it must be added at the end when
+     * all components and sub panels have been added to the one panel.
+     * This must be called as the last thing in the initComponents.
+     */
+    protected void panelToScroll() {
+        JScrollPane scroll = new JScrollPane(contents);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        setLayout(new BorderLayout()); //!! added
+        add(scroll,BorderLayout.CENTER);
+        setVisible(true);
     }
 
     @Override
@@ -243,7 +197,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
     /**
      * Set the Board ID number (also known as board address number)
      *
-     * @param boardId - board ID number to be accessed
+     * @param boardId  board ID number to be accessed
      */
     public void setBoardIdValue(Integer boardId) {
         /*
@@ -282,8 +236,8 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
      * read and write the device.  The "read" and "write" buttons have text which
      * uses the specified "board type name" from the method parameter.
      *
-     * @param boardTypeName - device type name, to be included in read and write GUI buttons
-     * @return - a JPanel containing a JTextField and read and write JButtons
+     * @param boardTypeName  device type name, to be included in read and write GUI buttons
+     * @return JPanel containing a JTextField and read and write JButtons
      */
     protected JPanel provideAddressing(String boardTypeName) {
         JPanel pane0 = new JPanel();
@@ -322,17 +276,20 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
     }
 
     /**
-     * creates the status line for the GUI
-     * @return - a JComponent which will display status updates
+     * Create the status line for the GUI.
+     *
+     * @return JComponent which will display status updates
      */
     protected JComponent provideStatusLine() {
+        status.setFont(status.getFont().deriveFont(0.9f * addrField.getFont().getSize())); // a bit smaller
+        status.setForeground(Color.gray);
         return status;
     }
 
     /**
-     * updates the status line
+     * Update the status line.
      *
-     * @param msg - to be displayed on the status line
+     * @param msg  to be displayed on the status line
      */
     protected void setStatus(String msg) {
         status.setText(msg);
@@ -340,6 +297,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
 
     /**
      * Handle GUI layout details during construction.
+     * Adds items as lines onto JPanel.
      *
      * @param c component to put on a single line
      */
@@ -377,15 +335,16 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
 
     /**
      * Configure the type word in the LocoNet messages.
-     * <P>
+     * <p>
      * Known values:
-     * </P><UL>
-     * <LI>0x70 - PM4
-     * <LI>0x71 - BDL16
-     * <LI>0x72 - SE8
-     * <LI>0x73 - DS64
+     * <ul>
+     *   <li>0x70 - PM4
+     *   <li>0x71 - BDL16
+     *   <li>0x72 - SE8
+     *   <li>0x73 - DS64
      * </ul>
-     * @param type - board type number, per list above.
+     *
+     * @param type board type number, per list above
      */
     protected void setTypeWord(int type) {
         typeWord = type;
@@ -439,7 +398,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
     }
 
     /**
-     * Starts the pacing timer, which, at timeout, will begin the next OpSw
+     * Start the pacing timer, which, at timeout, will begin the next OpSw
      * access request.
      */
     private final void nextRequest() {
@@ -449,11 +408,11 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
     }
 
     /**
-     * Converts the GUI text field containing the address into a valid integer
+     * Convert the GUI text field containing the address into a valid integer
      * address, and handles user-input errors as needed.
      *
-     * @param maxValid   highest Board ID number allowed for the given device type.
-     * @throws jmri.JmriException - when the board address is invalid
+     * @param maxValid highest Board ID number allowed for the given device type
+     * @throws jmri.JmriException when the board address is invalid
      */
     void setAddress(int maxValid) throws jmri.JmriException {
         try {
@@ -497,13 +456,13 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
     /**
      * Compute the next OpSw number to be accessed, based on the current OpSw number.
      *
-     * @param state - current OpSw number
-     * @return - computed next OpSw nubmer
+     * @param state current OpSw number
+     * @return computed next OpSw nubmer
      */
     abstract protected int nextState(int state);
 
     /**
-     * Provides a mechanism to write several OpSw values in a sequence. The
+     * Provide a mechanism to write several OpSw values in a sequence. The
      * sequence is defined by the {@link #nextState(int)} method.
      */
     public void writeAll() {
@@ -542,7 +501,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
      * to be written is taken from the appropriate entry in booleans[].
      *
      * @see jmri.jmrix.loconet.AbstractBoardProgPanel#writeAll()
-     * @param opswIndex - OpSw number
+     * @param opswIndex  OpSw number
      */
     public void writeOne(int opswIndex) {
         // check the address
@@ -575,7 +534,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
      * operation messages, and automatically advances to the next OpSw operation
      * as directed by {@link #nextState(int)}.
      *
-     *@param m - incoming LocoNet message
+     *@param m  incoming LocoNet message
      */
     @Override
     public void message(LocoNetMessage m) {
@@ -668,7 +627,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
                         // have not reached maximum number of retries, so try
                         // the access again
                         replyTryCount++;
-                        log.debug("retrying(" + replyTryCount + ") access to OpSw" + state); // NOI18N
+                        log.debug("retrying({}) access to OpSw{}", replyTryCount, state); // NOI18N
                         responseTimer.stop();
                         delayedNextRequest();
                         return;
@@ -677,8 +636,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
                     // Have reached the maximum number of retries for accessing
                     // a given OpSw.
                     // Cancel the ongoing process and update the status line.
-                    log.warn("Reached OpSw access retry limit of " + MAX_OPSW_ACCESS_RETRIES +
-                            " when accessing OpSw " + state); // NOI18N
+                    log.warn("Reached OpSw access retry limit of {} when accessing OpSw{}", MAX_OPSW_ACCESS_RETRIES, state); // NOI18N
                     awaitingReply = false;
                     responseTimer.stop();
                     state = 0;
@@ -725,7 +683,7 @@ abstract public class AbstractBoardProgPanel extends jmri.jmrix.loconet.swing.Ln
 
     @Override
     public void dispose() {
-        // Drop loconet connection
+        // Drop LocoNet connection
         if (memo.getLnTrafficController() != null) {
             memo.getLnTrafficController().removeLocoNetListener(~0, this);
         }

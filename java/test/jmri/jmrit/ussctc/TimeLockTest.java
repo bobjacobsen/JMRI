@@ -9,7 +9,7 @@ import org.junit.*;
  * Tests for TimeLock class in the jmri.jmrit.ussctc package
  *
  * @author	Bob Jacobsen Copyright 2007
-  */
+ */
 public class TimeLockTest {
 
     @Test
@@ -125,6 +125,7 @@ public class TimeLockTest {
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        jmri.util.JUnitUtil.resetProfileManager();
         JUnitUtil.initConfigureManager();
     }
 

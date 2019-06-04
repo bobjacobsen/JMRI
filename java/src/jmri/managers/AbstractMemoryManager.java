@@ -1,11 +1,9 @@
 package jmri.managers;
 
 import java.text.DecimalFormat;
-
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
-
 import jmri.Manager;
 import jmri.Memory;
 import jmri.MemoryManager;
@@ -20,16 +18,19 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractMemoryManager extends AbstractManager<Memory>
         implements MemoryManager {
 
+    /** {@inheritDoc} */
     @Override
     public int getXMLOrder() {
         return Manager.MEMORIES;
     }
 
+    /** {@inheritDoc} */
     @Override
     public char typeLetter() {
         return 'M';
     }
 
+    /** {@inheritDoc} */
     @Override
     public @Nonnull Memory provideMemory(@Nonnull String sName) {
         Memory t = getMemory(sName);
@@ -43,6 +44,7 @@ public abstract class AbstractMemoryManager extends AbstractManager<Memory>
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public Memory getMemory(@Nonnull String name) {
         Memory t = getByUserName(name);
@@ -53,16 +55,19 @@ public abstract class AbstractMemoryManager extends AbstractManager<Memory>
         return getBySystemName(name);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Memory getBySystemName(@Nonnull String name) {
         return _tsys.get(name);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Memory getByUserName(@Nonnull String key) {
         return _tuser.get(key);
     }
 
+    /** {@inheritDoc} */
     @Override
     public @Nonnull Memory newMemory(@Nonnull String systemName, @Nullable String userName) {
         log.debug("new Memory: {}; {}", systemName, userName); // NOI18N
@@ -93,7 +98,7 @@ public abstract class AbstractMemoryManager extends AbstractManager<Memory>
         // doesn't exist, make a new one
         s = createNewMemory(systemName, userName);
 
-        // if that failed, blame it on the input arguements
+        // if that failed, blame it on the input arguments
         if (s == null) {
             throw new IllegalArgumentException();
         }
@@ -117,6 +122,7 @@ public abstract class AbstractMemoryManager extends AbstractManager<Memory>
         return s;
     }
 
+    /** {@inheritDoc} */
     @Override
     public @Nonnull Memory newMemory(@Nonnull String userName) {
         int nextAutoMemoryRef = lastAutoMemoryRef + 1;
@@ -141,11 +147,19 @@ public abstract class AbstractMemoryManager extends AbstractManager<Memory>
     @Nonnull
     abstract protected Memory createNewMemory(@Nonnull String systemName, @Nullable String userName);
 
+    /** {@inheritDoc} */
     @Override
     @Nonnull 
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameMemory");
     }
 
+    @Override
+    @Nonnull
+    public Memory provide(String name) throws IllegalArgumentException {
+        return provideMemory(name);
+    }
+
     private final static Logger log = LoggerFactory.getLogger(AbstractMemoryManager.class);
+
 }

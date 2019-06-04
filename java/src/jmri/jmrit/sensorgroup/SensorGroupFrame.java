@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * User interface for creating and editing sensor groups.
- * <P>
+ * <p>
  * Sensor groups are implemented by (groups) of Routes, not by any other object.
  *
  * @author Bob Jacobsen Copyright (C) 2007
@@ -59,10 +59,11 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
     JList<String> _sensorGroupList;
 
     @Override
+    @SuppressWarnings("deprecation") // needs careful unwinding for Set operations
     public void initComponents() {
         addHelpMenu("package.jmri.jmrit.sensorgroup.SensorGroupFrame", true);
 
-        setTitle("Define Sensor Group");
+        setTitle(Bundle.getMessage("Title"));
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         // add the sensor table
@@ -70,10 +71,10 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
 
         JPanel p21s = new JPanel();
         p21s.setLayout(new BoxLayout(p21s, BoxLayout.Y_AXIS));
-        p21s.add(new JLabel("Please select"));
-        p21s.add(new JLabel("Sensors to "));
-        p21s.add(new JLabel("be included "));
-        p21s.add(new JLabel("in this group."));
+        p21s.add(new JLabel(Bundle.getMessage("SensorTableLabel1")));
+        p21s.add(new JLabel(Bundle.getMessage("SensorTableLabel2")));
+        p21s.add(new JLabel(Bundle.getMessage("SensorTableLabel3")));
+        p21s.add(new JLabel(Bundle.getMessage("SensorTableLabel4")));
         p2xs.add(p21s);
         _sensorModel = new SensorTableModel();
         JTable sensorTable = new JTable(_sensorModel);
@@ -105,14 +106,14 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
 
         // add name field
         JPanel p3 = new JPanel();
-        p3.add(new JLabel("Group Name:"));
+        p3.add(new JLabel(Bundle.getMessage("GroupName")));
         _nameField = new JTextField(20);
         p3.add(_nameField);
         getContentPane().add(p3);
 
         // button
         JPanel p4 = new JPanel();
-        JButton viewButton = new JButton(" View ");
+        JButton viewButton = new JButton(Bundle.getMessage("ButtonViewGroup"));
         viewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,7 +121,7 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
             }
         });
         p4.add(viewButton);
-        JButton addButton = new JButton("Make Group");
+        JButton addButton = new JButton(Bundle.getMessage("ButtonMakeGroup"));
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,7 +129,7 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
             }
         });
         p4.add(addButton);
-        JButton undoButton = new JButton("Undo Group");
+        JButton undoButton = new JButton(Bundle.getMessage("ButtonUndoGroup"));
         undoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -179,7 +180,7 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
         JScrollPane scrollPane = new JScrollPane(_sensorGroupList);
         p5.add(scrollPane);
         p5.add(Box.createHorizontalStrut(10));
-        JButton doneButton = new JButton(" Done ");
+        JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
         doneButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -198,7 +199,7 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
         String group = _nameField.getText();
         if (group == null || group.length() == 0) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "Please enter a name for this group.", "Error",
+                    Bundle.getMessage("MessageError1"), Bundle.getMessage("ErrorTitle"),
                     javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -216,22 +217,22 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
                 if (sensor == null || sensor.length() == 0) {
                     sensor = (String) _sensorModel.getValueAt(i, BeanTableModel.SNAME_COLUMN);
                 }
-                variableList.add(new ConditionalVariable(false, Conditional.OPERATOR_OR,
-                        Conditional.TYPE_SENSOR_ACTIVE, sensor, true));
+                variableList.add(new ConditionalVariable(false, Conditional.Operator.OR,
+                        Conditional.Type.SENSOR_ACTIVE, sensor, true));
                 actionList.add(new DefaultConditionalAction(Conditional.ACTION_OPTION_ON_CHANGE_TO_TRUE,
-                        Conditional.ACTION_SET_SENSOR, sensor,
+                        Conditional.Action.SET_SENSOR, sensor,
                         Sensor.INACTIVE, ""));
                 count++;
             }
         }
         if (count < 2) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "A Sensor Group needs to have at least 2 sensors to be useful.",
-                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("MessageError2"), Bundle.getMessage("ErrorTitle"),
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
         }
         Conditional c = new SensorGroupConditional(cSystemName, cUserName);
         c.setStateVariables(variableList);
-        c.setLogicType(Conditional.ALL_OR, "");
+        c.setLogicType(Conditional.AntecedentOperator.ALL_OR, "");
         c.setAction(actionList);
         logix.addConditional(cSystemName, 0);       // Update the Logix Conditional names list
         logix.addConditional(cSystemName, c);       // Update the Logix Conditional hash map
@@ -254,12 +255,11 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
         _nameField.setText(group);
         // Look for Sensor group in Route table
         RouteManager rm = InstanceManager.getDefault(jmri.RouteManager.class);
-        List<String> l = rm.getSystemNameList();
         String prefix = (namePrefix + group + nameDivider).toUpperCase();
         boolean isRoute = false;
         int setRow = 0;
-        for (int i = 0; i < l.size(); i++) {
-            String name = l.get(i);
+        for (Route r : rm.getNamedBeanSet()) {
+            String name = r.getSystemName();
             if (name.startsWith(prefix)) {
                 isRoute = true;
                 String sensor = name.substring(prefix.length());
@@ -285,7 +285,7 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
                     if (c == null) {
                         log.error("Conditional \"" + name + "\" expected but NOT found in Logix " + logix.getSystemName());
                     } else {
-                        ArrayList<ConditionalVariable> variableList = c.getCopyOfStateVariables();
+                        List<ConditionalVariable> variableList = c.getCopyOfStateVariables();
                         for (int k = 0; k < variableList.size(); k++) {
                             String sensor = variableList.get(k).getName();
                             if (sensor != null) {
@@ -338,8 +338,8 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
         if (group == null || group.equals("")) {
             if (showMsg) {
                 javax.swing.JOptionPane.showMessageDialog(this,
-                        "'View' the group or enter the group name in the 'Group Name' field before selecting 'Undo Group'",
-                        "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        Bundle.getMessage("MessageError3"), Bundle.getMessage("ErrorTitle"),
+                        javax.swing.JOptionPane.ERROR_MESSAGE);
             }
             return;
         }
@@ -347,13 +347,10 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
 
         // remove the old routes
         RouteManager rm = InstanceManager.getDefault(jmri.RouteManager.class);
-        List<String> l = rm.getSystemNameList();
-
-        for (int i = 0; i < l.size(); i++) {
-            String name = l.get(i);
+        for (Route r : rm.getNamedBeanSet()) {
+            String name = r.getSystemName();
             if (name.startsWith(prefix)) {
                 // OK, kill this one
-                Route r = rm.getBySystemName(l.get(i));
                 r.deActivateRoute();
                 rm.deleteRoute(r);
             }
@@ -385,11 +382,12 @@ public class SensorGroupFrame extends jmri.util.JmriJFrame {
             String[] msgs = logix.deleteConditional(sysName);
             if (msgs != null) {
                 if (showMsg) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Conditional " + msgs[0] + " ("
-                            + msgs[1] + ") is a Conditional Variable in the Conditional,\n"
-                            + msgs[2] + " (" + msgs[3] + "), of Logix, " + msgs[4] + " (" + msgs[5]
-                            + ").\nPlease remove that variable first.",
-                            "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(this, 
+                            Bundle.getMessage("MessageError41") + " " + msgs[0] + " (" + msgs[1] + ") "
+                            + Bundle.getMessage("MessageError42") + " " + msgs[2] + " (" + msgs[3] + "), "
+                            + Bundle.getMessage("MessageError43") + " " + msgs[4] + " (" + msgs[5] + "). "
+                            + Bundle.getMessage("MessageError44"),
+                            Bundle.getMessage("ErrorTitle"), javax.swing.JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 model.remove(index);

@@ -52,7 +52,7 @@ public class YardTableModel extends TrackTableModel {
         });
     }
 
-    // this table listens for changes to a location and it's yards
+    // this table listens for changes to a location and its yards
     @Override
     public void propertyChange(PropertyChangeEvent e) {
         if (Control.SHOW_PROPERTY) {
@@ -62,7 +62,7 @@ public class YardTableModel extends TrackTableModel {
         super.propertyChange(e);
         if (e.getSource().getClass().equals(Track.class)) {
             Track track = ((Track) e.getSource());
-            if (track.getTrackType().equals(Track.YARD)) {
+            if (track.isYard()) {
                 int row = tracksList.indexOf(track);
                 if (Control.SHOW_PROPERTY) {
                     log.debug("Update yard table row: {} track: ({})", row, track.getName());

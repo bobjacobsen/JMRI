@@ -1,5 +1,7 @@
 package jmri.managers;
 
+import javax.annotation.Nonnull;
+
 import jmri.Light;
 import jmri.LightManager;
 
@@ -7,7 +9,7 @@ import jmri.LightManager;
  * Implementation of a LightManager that can serve as a proxy for multiple
  * system-specific implementations.
  *
- * @author	Bob Jacobsen Copyright (C) 2010
+ * @author	Bob Jacobsen Copyright (C) 2010, 2018
  * @author	Dave Duchamp Copyright (C) 2004
  */
 public class ProxyLightManager extends AbstractProxyManager<Light>
@@ -41,6 +43,10 @@ public class ProxyLightManager extends AbstractProxyManager<Light>
     protected Light makeBean(int i, String systemName, String userName) {
         return ((LightManager) getMgr(i)).newLight(systemName, userName);
     }
+
+    @Override
+    /** {@inheritDoc} */
+    public Light provide(@Nonnull String name) throws IllegalArgumentException { return provideLight(name); }
 
     /**
      * Locate via user name, then system name if needed. If that fails, create a
@@ -82,21 +88,21 @@ public class ProxyLightManager extends AbstractProxyManager<Light>
      * two calls with the same arguments will get the same instance; there is
      * only one Light object representing a given physical light and therefore
      * only one with a specific system or user name.
-     * <P>
+     * <p>
      * This will always return a valid object reference for a valid request; a
      * new object will be created if necessary. In that case:
-     * <UL>
-     * <LI>If a null reference is given for user name, no user name will be
+     * <ul>
+     * <li>If a null reference is given for user name, no user name will be
      * associated with the Light object created; a valid system name must be
      * provided
-     * <LI>If a null reference is given for the system name, a system name will
+     * <li>If a null reference is given for the system name, a system name will
      * _somehow_ be inferred from the user name. How this is done is system
      * specific. Note: a future extension of this interface will add an
      * exception to signal that this was not possible.
-     * <LI>If both names are provided, the system name defines the hardware
+     * <li>If both names are provided, the system name defines the hardware
      * access of the desired turnout, and the user address is associated with
      * it.
-     * </UL>
+     * </ul>
      * Note that it is possible to make an inconsistent request if both
      * addresses are provided, but the given values are associated with
      * different objects. This is a problem, and we don't have a good solution
@@ -199,8 +205,7 @@ public class ProxyLightManager extends AbstractProxyManager<Light>
     /**
      * A method that determines if it is possible to add a range of lights in
      * numerical order eg 11 thru 18, primarily used to show/not show the add
-     * range box in the add Light window
-     *
+     * range box in the add Light window.
      */
     @Override
     public boolean allowMultipleAdditions(String systemName) {
@@ -210,13 +215,13 @@ public class ProxyLightManager extends AbstractProxyManager<Light>
         }
         return false;
     }
+
     /**
-     * Provide a connection system agnostic tooltip for the Add new item beantable pane.
+     * {@inheritDoc}
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = "Enter a number from 1 to 9999"; // Basic number format help
-        return entryToolTip;
+        return "Enter a number from 1 to 9999"; // Basic number format help
     }
 
     @Override

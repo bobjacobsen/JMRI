@@ -19,10 +19,9 @@ import purejavacomm.UnsupportedCommOperationException;
 
 /**
  * Implements UsbPortAdapter for the NCE system.
- * <P>
- * This connects an NCE PowerCab or PowerHouse via a USB port. Normally
+ * <p>
+ * This connects an NCE PowerCab or PowerPro via a USB port. Normally
  * controlled by the UsbDriverFrame class.
- * <P>
  *
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2002
@@ -113,6 +112,7 @@ public class UsbDriverAdapter extends NcePortController {
      */
     @Override
     public void configure() {
+        log.trace("configure with {}", getSystemConnectionMemo());
         NceTrafficController tc = new NceTrafficController();
         this.getSystemConnectionMemo().setNceTrafficController(tc);
         tc.setAdapterMemo(this.getSystemConnectionMemo());
@@ -139,7 +139,7 @@ public class UsbDriverAdapter extends NcePortController {
                         | NceTrafficController.CMDS_ALL_SYS);
                 this.getSystemConnectionMemo().configureCommandStation(NceTrafficController.OPTION_1_65);
             } else if (getOptionState(option1Name).equals(getOptionChoices(option1Name)[2])) { //PowerPro
-                tc.setUsbSystem(NceTrafficController.USB_SYSTEM_POWERHOUSE);
+                tc.setUsbSystem(NceTrafficController.USB_SYSTEM_POWERPRO);
                 tc.setCmdGroups(NceTrafficController.CMDS_OPS_PGM
                         | NceTrafficController.CMDS_AUI_READ
                         | NceTrafficController.CMDS_USB
@@ -176,7 +176,7 @@ public class UsbDriverAdapter extends NcePortController {
                         | NceTrafficController.CMDS_ALL_SYS);
                 this.getSystemConnectionMemo().configureCommandStation(NceTrafficController.OPTION_1_28);
             } else if (getOptionState(option1Name).equals(getOptionChoices(option1Name)[2])) {
-                tc.setUsbSystem(NceTrafficController.USB_SYSTEM_POWERHOUSE);
+                tc.setUsbSystem(NceTrafficController.USB_SYSTEM_POWERPRO);
                 tc.setCmdGroups(NceTrafficController.CMDS_NONE
                         | NceTrafficController.CMDS_USB
                         | NceTrafficController.CMDS_ALL_SYS);
@@ -236,7 +236,7 @@ public class UsbDriverAdapter extends NcePortController {
         return Arrays.copyOf(validSpeeds, validSpeeds.length);
     }
 
-    private String[] validSpeeds = new String[]{"9,600 baud", "19,200 baud"};
+    private String[] validSpeeds = new String[]{Bundle.getMessage("Baud9600"), Bundle.getMessage("Baud19200")};
     private int[] validSpeedValues = new int[]{9600, 19200};
 
     // private control members

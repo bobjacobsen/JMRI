@@ -55,7 +55,7 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
     /**
      * Initialise a Signal Mast Logic for a given source Signal mast.
      *
-     * @param source - The Signal Mast we are configuring an SML for
+     * @param source  The Signal Mast we are configuring an SML for
      */
     public DefaultSignalMastLogic(@Nonnull SignalMast source) {
         super(source.toString()); // default system name
@@ -145,7 +145,8 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
     @Override
     public void setDestinationMast(SignalMast dest) {
         if (destList.containsKey(dest)) {
-            log.warn("Destination mast '{}' was already defined in SML with this source mast", dest.getDisplayName());
+            // if already present, not a change
+            log.debug("Destination mast '{}' was already defined in SML with this source mast", dest.getDisplayName());
             return;
         }
         int oldSize = destList.size();
@@ -971,7 +972,7 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
                         getSourceMast().setAspect(aspectSet);
                     });
                 } catch (Exception ex) {
-                    log.error("Exception while setting Signal Logic {}", ex.getMessage());
+                    log.error("Exception while setting Signal Logic: {}", ex);
                 }
                 return;
             }
@@ -1397,6 +1398,7 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
             firePropertyChange("sensors", null, this.destination);
         }
 
+        @SuppressWarnings("unused") // not used now, preserved for later use
         void removeSensor(NamedBeanHandle<Sensor> sen) {
             for (NamedBeanSetting nbh : userSetSensors) {
                 if (nbh.getBean().equals(sen.getBean())) {
@@ -2162,11 +2164,13 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
                         if ((levelXing.getLayoutBlockAC() != null)
                                 && (levelXing.getLayoutBlockBD() != null)
                                 && (levelXing.getLayoutBlockAC() != levelXing.getLayoutBlockBD())) {
-                            if (lblks.contains(levelXing.getLayoutBlockAC())) {
+                            if (lblks.contains(levelXing.getLayoutBlockAC()) &&
+                                    levelXing.getLayoutBlockAC() != facingBlock) {  // Don't include the facing xing blocks
                                 block.put(levelXing.getLayoutBlockBD().getBlock(), Block.UNOCCUPIED);
                                 xingAutoBlocks.add(levelXing.getLayoutBlockBD().getBlock());
                                 blockInXings.add(levelXing);
-                            } else if (lblks.contains(levelXing.getLayoutBlockBD())) {
+                            } else if (lblks.contains(levelXing.getLayoutBlockBD()) &&
+                                    levelXing.getLayoutBlockBD() != facingBlock) {  // Don't include the facing xing blocks
                                 block.put(levelXing.getLayoutBlockAC().getBlock(), Block.UNOCCUPIED);
                                 xingAutoBlocks.add(levelXing.getLayoutBlockAC().getBlock());
                                 blockInXings.add(levelXing);
@@ -2477,14 +2481,14 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
 
             for (NamedBeanSetting nbh : userSetTurnouts) {
                 Turnout key = (Turnout) nbh.getBean();
-                if (key.getState() == Turnout.CLOSED) {
+                if (nbh.getSetting() == Turnout.CLOSED) {
                     if (((key.getStraightLimit() < minimumBlockSpeed) || (minimumBlockSpeed == 0)) && (key.getStraightLimit() != -1)) {
                         minimumBlockSpeed = key.getStraightLimit();
                         if (log.isDebugEnabled()) {
                             log.debug(destination.getDisplayName() + " turnout " + key.getDisplayName() + " set speed to " + minimumBlockSpeed);
                         }
                     }
-                } else if (key.getState() == Turnout.THROWN) {
+                } else if (nbh.getSetting() == Turnout.THROWN) {
                     if (((key.getDivergingLimit() < minimumBlockSpeed) || (minimumBlockSpeed == 0)) && (key.getDivergingLimit() != -1)) {
                         minimumBlockSpeed = key.getDivergingLimit();
                         if (log.isDebugEnabled()) {
@@ -2847,6 +2851,7 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
         }
     }
 
+    @Override
     public String getBeanType() {
         return Bundle.getMessage("BeanNameSignalMastLogic");
     }
@@ -2856,10 +2861,12 @@ public class DefaultSignalMastLogic extends AbstractNamedBean implements jmri.Si
      *
      * @return Always zero
      */
+    @Override
     public int getState() {
         return 0;
     }
 
+    @Override
     public void setState(int i) {
     }
 

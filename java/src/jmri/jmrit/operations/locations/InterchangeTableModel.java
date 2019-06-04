@@ -52,7 +52,7 @@ public class InterchangeTableModel extends TrackTableModel {
         });
     }
 
-    // this table listens for changes to a location and it's interchanges
+    // this table listens for changes to a location and its interchanges
     @Override
     public void propertyChange(PropertyChangeEvent e) {
         if (Control.SHOW_PROPERTY) {
@@ -62,7 +62,7 @@ public class InterchangeTableModel extends TrackTableModel {
         super.propertyChange(e);
         if (e.getSource().getClass().equals(Track.class)) {
             Track track = ((Track) e.getSource());
-            if (track.getTrackType().equals(Track.INTERCHANGE)) {
+            if (track.isInterchange()) {
                 int row = tracksList.indexOf(track);
                 if (Control.SHOW_PROPERTY) {
                     log.debug("Update interchange table row: {} track: {}", row, track.getName());

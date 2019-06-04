@@ -6,20 +6,21 @@ import org.junit.Before;
 
 /**
  * JUnit tests for the LocoNetSystemConnectionMemo class
- * <p>
  *
- * @author      Paul Bender Copyright (C) 2016
+ * @author Paul Bender Copyright (C) 2016
  */
 public class LocoNetSystemConnectionMemoTest extends jmri.jmrix.SystemConnectionMemoTestBase {
+
+    private LocoNetSystemConnectionMemo memo;
 
     @Override
     @Before
     public void setUp(){
        JUnitUtil.setUp();
-       LocoNetInterfaceScaffold lnis = new LocoNetInterfaceScaffold();
-       LocoNetSystemConnectionMemo memo = new LocoNetSystemConnectionMemo();
+       memo = new LocoNetSystemConnectionMemo();
+       LocoNetInterfaceScaffold lnis = new LocoNetInterfaceScaffold(memo);
        memo.setLnTrafficController(lnis);
-       memo.configureCommandStation(LnCommandStationType.COMMAND_STATION_DCS100,false,false);
+       memo.configureCommandStation(LnCommandStationType.COMMAND_STATION_DCS100, false, false, false);
        memo.configureManagers();
        scm = memo;
     }
@@ -27,6 +28,8 @@ public class LocoNetSystemConnectionMemoTest extends jmri.jmrix.SystemConnection
     @Override
     @After
     public void tearDown(){
+       memo.dispose();
        JUnitUtil.tearDown();
     }
+
 }

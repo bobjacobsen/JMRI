@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Table Action for dealing with all the tables in a single view with a list
  * option to the left hand side.
- * <P>
+ *
  * @author Bob Jacobsen Copyright (C) 2003
  * @author Kevin Dickerson Copyright (C) 2009
  */
@@ -19,7 +19,7 @@ public class ListedTableAction extends AbstractAction {
 
     /**
      * Create an action with a specific title.
-     * <P>
+     * <p>
      * Note that the argument is the Action title, not the title of the
      * resulting frame. Perhaps this should be changed?
      *

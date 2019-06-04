@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A Portal is a boundary between two Blocks.
  *
- * <P>
+ * <p>
  * A Portal has Lists of the OPaths that connect through it. The direction of
  * trains passing through the portal is managed from the BlockOrders of the
  * Warrant the train is running under. The Portal fires a PropertyChangeEvent
@@ -28,11 +28,11 @@ import org.slf4j.LoggerFactory;
  */
 public class Portal extends jmri.implementation.AbstractNamedBean {
 
-    private ArrayList<OPath> _fromPaths = new ArrayList<OPath>();
+    private final ArrayList<OPath> _fromPaths = new ArrayList<>();
     private OBlock _fromBlock;
     private NamedBean _fromSignal;          // may be either SignalHead or SignalMast
     private float _fromSignalOffset;           // adjustment distance for speed change
-    private ArrayList<OPath> _toPaths = new ArrayList<OPath>();
+    private final ArrayList<OPath> _toPaths = new ArrayList<>();
     private OBlock _toBlock;
     private NamedBean _toSignal;            // may be either SignalHead or SignalMast
     private float _toSignalOffset;             // adjustment distance for speed change
@@ -504,7 +504,7 @@ public class Portal extends jmri.implementation.AbstractNamedBean {
             speed = "Restricted";
         }
         if (log.isDebugEnabled()) {
-            log.debug("Signal \"{}\" has speed notch= {} from appearance \"{}\".",
+            log.debug("SignalHead \"{}\" has speed notch= {} from appearance \"{}\".",
                     signal.getDisplayName(), speed, signal.getAppearanceName(appearance));
         }
         return speed;
@@ -564,8 +564,17 @@ public class Portal extends jmri.implementation.AbstractNamedBean {
         }
         String name = block.getSystemName();
         for (int i = 0; i < paths.size(); i++) {
-            String pathName = paths.get(i).getBlock().getSystemName();
+            OPath path = paths.get(i);
+            jmri.Block blk = path.getBlock();
+            if (blk == null) {
+                log.error("Path \"{}\" belongs to null block. Cannot verify set block to \"{}\"",
+                        path.getName(), name);
+                return false;
+            }
+            String pathName = blk.getSystemName();
             if (!pathName.equals(name)) {
+                log.warn("Path \"{}\" belongs to block \"{}\". Cannot verify set block to \"{}\"",
+                        path.getName(), pathName, name);
                 return false;
             }
         }
@@ -625,6 +634,10 @@ public class Portal extends jmri.implementation.AbstractNamedBean {
     }
 
     @Override
+    // note that this doesn't properly implement the 
+    // contract in {@link NamedBean.toString()}, 
+    // which means things like tables and persistance 
+    // might not behave properly.
     public String toString() {
         StringBuilder sb = new StringBuilder("Portal \"");
         sb.append(getUserName());

@@ -44,7 +44,7 @@ public class SprogCSTurnoutTest extends jmri.implementation.AbstractTurnoutTestB
     @Override
     @Before
     public void setUp() {
-        apps.tests.Log4JFixture.setUp();
+        JUnitUtil.setUp();
         // prepare an interface
         jmri.util.JUnitUtil.resetInstanceManager();
         jmri.util.JUnitUtil.initInternalSensorManager();
@@ -63,6 +63,7 @@ public class SprogCSTurnoutTest extends jmri.implementation.AbstractTurnoutTestB
     @After
     public void tearDown() {
         m.getSlotThread().interrupt();
+        stcs.dispose();
         JUnitUtil.tearDown();
     }
 

@@ -1,61 +1,68 @@
 package jmri.server.json.util;
 
-import apps.tests.Log4JFixture;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.Locale;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.awt.GraphicsEnvironment;
 import javax.servlet.http.HttpServletResponse;
+import jmri.DccLocoAddress;
+import jmri.InstanceManager;
 import jmri.Metadata;
+import jmri.Version;
 import jmri.jmris.json.JsonServerPreferences;
+import jmri.jmrit.display.Editor;
+import jmri.jmrit.display.switchboardEditor.SwitchboardEditor;
+import jmri.profile.NullProfile;
+import jmri.profile.Profile;
 import jmri.profile.ProfileManager;
 import jmri.server.json.JSON;
 import jmri.server.json.JsonException;
+import jmri.server.json.JsonHttpServiceTestBase;
 import jmri.util.JUnitUtil;
 import jmri.util.node.NodeIdentity;
 import jmri.util.zeroconf.ZeroConfService;
 import jmri.web.server.WebServerPreferences;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.rules.TemporaryFolder;
 
 /**
  *
- * @author rhwood
+ * @author Randall Wood Copyright 2018
  */
-public class JsonUtilHttpServiceTest {
+public class JsonUtilHttpServiceTest extends JsonHttpServiceTestBase<JsonUtilHttpService> {
 
-    private final static Logger log = LoggerFactory.getLogger(JsonUtilHttpServiceTest.class);
-
-    public JsonUtilHttpServiceTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-        Log4JFixture.setUp();
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-        Log4JFixture.tearDown();
-    }
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
-    public void setUp() throws IOException {
-        JUnitUtil.resetProfileManager();
-        JUnitUtil.initConfigureManager();
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        service = new JsonUtilHttpService(mapper);
+        JUnitUtil.resetWindows(true, false); // list open windows when running tests
+        JUnitUtil.resetNodeIdentity();
+        JUnitUtil.resetProfileManager(new NullProfile("JsonUtilHttpServiceTest", "12345678", folder.newFolder(Profile.PROFILE)));
+        JUnitUtil.initConnectionConfigManager();
+        JUnitUtil.initZeroConfServiceManager();
     }
 
     @After
-    public void tearDown() {
-        JUnitUtil.resetInstanceManager();
-        ZeroConfService.stopAll();
+    @Override
+    public void tearDown() throws Exception {
+        JUnitUtil.resetZeroConfServiceManager();
+        super.tearDown();
     }
 
     /**
@@ -66,205 +73,208 @@ public class JsonUtilHttpServiceTest {
      */
     @Test
     public void testDoGet() throws JsonException {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
-        JsonServerPreferences.getDefault().setHeartbeatInterval(10);
-        Assert.assertEquals(instance.getHello(locale, 10), instance.doGet(JSON.HELLO, null, locale));
-        Assert.assertEquals(instance.getMetadata(locale, Metadata.JMRIVERCANON), instance.doGet(JSON.METADATA, Metadata.JMRIVERCANON, locale));
-        Assert.assertEquals(instance.getMetadata(locale), instance.doGet(JSON.METADATA, null, locale));
-        Assert.assertEquals(instance.getNode(locale), instance.doGet(JSON.NODE, null, locale));
-        Assert.assertEquals(instance.getNetworkServices(locale), instance.doGet(JSON.NETWORK_SERVICE, null, locale));
-        Assert.assertEquals(instance.getNetworkServices(locale), instance.doGet(JSON.NETWORK_SERVICES, null, locale));
-        JsonException exception = null;
+        InstanceManager.getDefault(JsonServerPreferences.class).setHeartbeatInterval(10);
+        assertEquals(service.getHello(locale, 10, 42), service.doGet(JSON.HELLO, null, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getMetadata(locale, Metadata.JMRIVERCANON, 42), service.doGet(JSON.METADATA, Metadata.JMRIVERCANON, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getMetadata(locale, 42), service.doGet(JSON.METADATA, null, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getNode(locale, 42), service.doGet(JSON.NODE, null, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getNetworkServices(locale, 42), service.doGet(JSON.NETWORK_SERVICE, null, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getNetworkServices(locale, 42), service.doGet(JSON.NETWORK_SERVICES, null, NullNode.getInstance(), locale, 42));
         try {
-            instance.doGet(JSON.NETWORK_SERVICE, JSON.ZEROCONF_SERVICE_TYPE, locale);
+            service.doGet(JSON.NETWORK_SERVICE, JSON.ZEROCONF_SERVICE_TYPE,
+                    NullNode.getInstance(), locale, 42);
+            fail("Expected exception not thrown.");
         } catch (JsonException ex) {
-            exception = ex;
+            assertEquals(404, ex.getCode());
         }
-        Assert.assertNotNull(exception);
-        Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, exception.getCode());
-        exception = null;
         try {
-            instance.doGet("INVALID TYPE TOKEN", null, locale);
+            service.doGet("INVALID TYPE TOKEN", null, NullNode.getInstance(), locale, 42);
+            fail("Expected exception not thrown.");
         } catch (JsonException ex) {
-            exception = ex;
+            assertEquals(500, ex.getCode());
         }
-        Assert.assertNotNull(exception);
-        Assert.assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, exception.getCode());
-        ZeroConfService service = ZeroConfService.create(JSON.ZEROCONF_SERVICE_TYPE, 9999);
-        service.publish();
-        Assume.assumeTrue("Publishing ZeroConf Service", JUnitUtil.waitFor(() -> {
-            return service.isPublished() == true;
+        ZeroConfService zcs = ZeroConfService.create(JSON.ZEROCONF_SERVICE_TYPE, 9999);
+        JUnitUtil.waitFor(() -> {
+            return zcs.isPublished() == false;
+        });
+        zcs.publish();
+        Assume.assumeTrue("Published ZeroConf Service", JUnitUtil.waitFor(() -> {
+            return zcs.isPublished() == true;
         }));
-        Assert.assertEquals(instance.getNetworkService(locale, JSON.ZEROCONF_SERVICE_TYPE), instance.doGet(JSON.NETWORK_SERVICE, JSON.ZEROCONF_SERVICE_TYPE, locale));
+        assertEquals(service.getNetworkService(locale, JSON.ZEROCONF_SERVICE_TYPE, 42), service.doGet(JSON.NETWORK_SERVICE, JSON.ZEROCONF_SERVICE_TYPE,
+                        NullNode.getInstance(), locale, 42));
+        zcs.stop();
+        JUnitUtil.waitFor(() -> {
+            return zcs.isPublished() == false;
+        });
     }
 
     /**
-     * Test of doGetList method, of class JsonUtilHttpService.
+     * Test of doGetList method, of class JsonUtilHttpService. Verifies that
+     * JSON types that are lists are reported the same if requested using GET or
+     * LIST methods.
      *
      * @throws jmri.server.json.JsonException if test fails in an unexpected
      *                                        manner
      */
     @Test
     public void testDoGetList() throws JsonException {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
-        JsonServerPreferences.getDefault().setHeartbeatInterval(10);
-        Assert.assertEquals(instance.getMetadata(locale), instance.doGetList(JSON.METADATA, locale));
-        Assert.assertEquals(instance.getNetworkServices(locale), instance.doGetList(JSON.NETWORK_SERVICES, locale));
-        Assert.assertEquals(instance.getSystemConnections(locale), instance.doGetList(JSON.SYSTEM_CONNECTIONS, locale));
-        Assert.assertEquals(instance.getConfigProfiles(locale), instance.doGetList(JSON.CONFIG_PROFILES, locale));
+        InstanceManager.getDefault(JsonServerPreferences.class).setHeartbeatInterval(10);
+        assertEquals(service.getMetadata(locale, 42), service.doGetList(JSON.METADATA, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getNetworkServices(locale, 42), service.doGetList(JSON.NETWORK_SERVICES, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getSystemConnections(locale, 42), service.doGetList(JSON.SYSTEM_CONNECTIONS, NullNode.getInstance(), locale, 42));
+        assertEquals(service.getConfigProfiles(locale, 42), service.doGetList(JSON.CONFIG_PROFILES, NullNode.getInstance(), locale, 42));
     }
 
     /**
-     * Test of doPost method, of class JsonUtilHttpService.
+     * Test of doPost method, of class JsonUtilHttpService. Verifies that POST
+     * and GET requests for HELLO message are the same.
+     *
+     * @throws jmri.server.json.JsonException if fails unexpectedly
      */
     @Test
-    public void testDoPost() {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
+    public void testDoPost() throws JsonException {
         String type = JSON.HELLO;
         String name = JSON.HELLO;
-        try {
-            Assert.assertEquals(instance.doGet(type, name, locale), instance.doPost(type, name, null, locale));
-        } catch (JsonException ex) {
-            log.error("Unexpected exception.", ex);
-            Assert.fail("Unexpected exception");
-        }
+        assertEquals(service.doGet(type, name, NullNode.getInstance(), locale, 42), service.doPost(type, name, NullNode.getInstance(), locale, 42));
     }
 
     /**
      * Test of getHello method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if messages are not schema valid
      */
     @Test
-    public void testGetHello() {
-        Locale locale = Locale.ENGLISH;
-        int heartbeat = 10;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
-        JsonNode result = instance.getHello(locale, heartbeat);
-        Assert.assertEquals(JSON.HELLO, result.path(JSON.TYPE).asText());
+    public void testGetHello() throws JsonException {
+        int heartbeat = 1000; // one second
+        JsonNode result = service.getHello(locale, heartbeat, 0);
+        validate(result);
+        assertEquals("Hello type", JSON.HELLO, result.path(JSON.TYPE).asText());
         JsonNode data = result.path(JSON.DATA);
-        Assert.assertEquals(jmri.Version.name(), data.path(JSON.JMRI).asText());
-        Assert.assertEquals(JSON.JSON_PROTOCOL_VERSION, data.path(JSON.JSON).asText());
-        Assert.assertEquals(Math.round(heartbeat * 0.9f), data.path(JSON.HEARTBEAT).asInt());
-        Assert.assertEquals(WebServerPreferences.getDefault().getRailroadName(), data.path(JSON.RAILROAD).asText());
-        Assert.assertEquals(NodeIdentity.identity(), data.path(JSON.NODE).asText());
-        Assert.assertEquals(ProfileManager.getDefault().getActiveProfile().getName(), data.path(JSON.ACTIVE_PROFILE).asText());
+        assertEquals("JMRI Version", Version.name(), data.path(JSON.JMRI).asText());
+        assertEquals("JSON Version", JSON.JSON_PROTOCOL_VERSION, data.path(JSON.JSON).asText());
+        assertEquals("Heartbeat", Math.round(heartbeat * 0.9f), data.path(JSON.HEARTBEAT).asInt());
+        assertEquals("RR Name", InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), data.path(JSON.RAILROAD).asText());
+        assertEquals("Node Identity", NodeIdentity.networkIdentity(), data.path(JSON.NODE).asText());
+        Profile profile = ProfileManager.getDefault().getActiveProfile();
+        assertNotNull(profile);
+        assertEquals("Profile", profile.getName(), data.path(JSON.ACTIVE_PROFILE).asText());
+        assertEquals("Message has 2 elements", 2, result.size());
+        assertEquals("Message data has 6 elements", 6, data.size());
+        result = service.getHello(locale, heartbeat, 42);
+        validate(result);
+        data = result.path(JSON.DATA);
+        assertEquals("Message has 2 elements", 3, result.size());
+        assertEquals("Message data has 6 elements", 6, data.size());
     }
 
     /**
      * Test of getMetadata method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if messages are not schema valid
      */
     @Test
-    public void testGetMetadata_Locale_String() {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
+    public void testGetMetadata_Locale_String() throws JsonException {
         JsonNode result;
-        try {
-            for (String metadata : Metadata.getSystemNameList()) {
-                result = instance.getMetadata(locale, metadata);
-                Assert.assertEquals(JSON.METADATA, result.path(JSON.TYPE).asText());
-                Assert.assertEquals(metadata, result.path(JSON.DATA).path(JSON.NAME).asText());
-                Assert.assertEquals(Metadata.getBySystemName(metadata), result.path(JSON.DATA).path(JSON.VALUE).asText());
-            }
-        } catch (JsonException ex) {
-            log.error("Unexpected exception.", ex);
-            Assert.fail("Unexpected exception");
+        for (String metadata : Metadata.getSystemNameList()) {
+            result = service.getMetadata(locale, metadata, 42);
+            validate(result);
+            assertEquals(JSON.METADATA, result.path(JSON.TYPE).asText());
+            assertEquals(metadata, result.path(JSON.DATA).path(JSON.NAME).asText());
+            assertEquals(Metadata.getBySystemName(metadata), result.path(JSON.DATA).path(JSON.VALUE).asText());
         }
-        JsonException exception = null;
         try {
-            instance.getMetadata(locale, "invalid_metadata_entry");
+            service.getMetadata(locale, "invalid_metadata_entry", 42);
+            fail("Expected exception not thrown");
         } catch (JsonException ex) {
-            exception = ex;
+            assertEquals(404, ex.getCode());
         }
-        Assert.assertNotNull(exception);
     }
 
     /**
      * Test of getMetadata method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if messages are not schema valid
      */
     @Test
-    public void testGetMetadata_Locale() {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
-        JsonNode result = null;
-        try {
-            result = instance.getMetadata(locale);
-        } catch (JsonException ex) {
-            log.error("Unexpected exception.", ex);
-            Assert.fail("Unexpected exception");
-        }
-        Assert.assertNotNull(result);
-        Assert.assertEquals(Metadata.getSystemNameList().size(), result.size());
+    public void testGetMetadata_Locale() throws JsonException {
+        JsonNode result = service.getMetadata(locale, 42);
+        validate(result);
+        assertEquals(Metadata.getSystemNameList().size(), result.size());
     }
 
     /**
      * Test of getNetworkServices method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if messages are not schema valid
      */
     @Test
-    public void testGetNetworkServices() {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
+    public void testGetNetworkServices() throws JsonException {
         // no services published
-        JsonNode result = instance.getNetworkServices(locale);
-        Assert.assertEquals(0, result.size());
+        JsonNode result = service.getNetworkServices(locale, 42);
+        validate(result);
+        assertEquals(0, result.size());
         // publish a service
-        ZeroConfService service = ZeroConfService.create(JSON.ZEROCONF_SERVICE_TYPE, 9999);
-        service.publish();
+        ZeroConfService zcs = ZeroConfService.create(JSON.ZEROCONF_SERVICE_TYPE, 9999);
+        JUnitUtil.waitFor(() -> {
+            return zcs.isPublished() == false;
+        });
+        zcs.publish();
         Assume.assumeTrue("Published ZeroConf Service", JUnitUtil.waitFor(() -> {
-            return service.isPublished() == true;
+            return zcs.isPublished() == true;
         }));
-        result = instance.getNetworkServices(locale);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(JSON.NETWORK_SERVICE, result.get(0).path(JSON.TYPE).asText());
+        result = service.getNetworkServices(locale, 42);
+        validate(result);
+        assertEquals(1, result.size());
+        assertEquals(JSON.NETWORK_SERVICE, result.get(0).path(JSON.TYPE).asText());
         JsonNode data = result.get(0).path(JSON.DATA);
-        Assert.assertFalse(data.isMissingNode());
-        Assert.assertEquals(WebServerPreferences.getDefault().getRailroadName(), data.path(JSON.NAME).asText());
-        Assert.assertEquals(9999, data.path(JSON.PORT).asInt());
-        Assert.assertEquals(JSON.ZEROCONF_SERVICE_TYPE, data.path(JSON.TYPE).asText());
-        Assert.assertEquals(NodeIdentity.identity(), data.path(JSON.NODE).asText());
-        Assert.assertEquals(Metadata.getBySystemName(Metadata.JMRIVERCANON), data.path("jmri").asText());
-        Assert.assertEquals(Metadata.getBySystemName(Metadata.JMRIVERSION), data.path("version").asText());
+        assertFalse(data.isMissingNode());
+        assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), data.path(JSON.NAME).asText());
+        assertEquals(9999, data.path(JSON.PORT).asInt());
+        assertEquals(JSON.ZEROCONF_SERVICE_TYPE, data.path(JSON.TYPE).asText());
+        assertEquals(NodeIdentity.networkIdentity(), data.path(JSON.NODE).asText());
+        assertEquals(Metadata.getBySystemName(Metadata.JMRIVERCANON), data.path("jmri").asText());
+        assertEquals(Metadata.getBySystemName(Metadata.JMRIVERSION), data.path("version").asText());
+        zcs.stop();
+        JUnitUtil.waitFor(() -> {
+            return zcs.isPublished() == false;
+        });
     }
 
     /**
      * Test of getNode method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if messages are not schema valid
      */
     @Test
-    public void testGetNode() {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
-        JsonNode result = instance.getNode(locale);
+    public void testGetNode() throws JsonException {
+        JsonNode result = service.getNode(locale, 42);
+        validate(result);
         // We should have a single node with no history of nodes
-        Assert.assertEquals(JSON.NODE, result.path(JSON.TYPE).asText());
-        Assert.assertEquals(NodeIdentity.identity(), result.path(JSON.DATA).path(JSON.NODE).asText());
-        Assert.assertEquals(0, result.path(JSON.DATA).path(JSON.FORMER_NODES).size());
+        // There are 3 "former" IDs when there is no history
+        assertEquals(JSON.NODE, result.path(JSON.TYPE).asText());
+        assertEquals(NodeIdentity.networkIdentity(), result.path(JSON.DATA).path(JSON.NODE).asText());
+        JsonNode nodes = result.path(JSON.DATA).path(JSON.FORMER_NODES);
+        assertTrue(nodes.isArray());
+        assertEquals(3, nodes.size());
     }
 
     /**
      * Test of getSystemConnections method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if messages are not schema valid
      */
     @Test
-    public void testGetSystemConnections() {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
-        JsonNode result = instance.getSystemConnections(locale);
+    public void testGetSystemConnections() throws JsonException {
+        JsonNode result = service.getSystemConnections(locale, 42);
+        validate(result);
         // We should only have one internal connection
-        Assert.assertEquals(1, result.size());
+        assertEquals(1, result.size());
         JsonNode connection = result.get(0);
-        Assert.assertEquals(JSON.SYSTEM_CONNECTION, connection.path(JSON.TYPE).asText());
-        Assert.assertEquals("I", connection.path(JSON.DATA).path(JSON.PREFIX).asText());
-        Assert.assertTrue(connection.path(JSON.DATA).path(JSON.NAME).isNull());
-        Assert.assertTrue(connection.path(JSON.DATA).path(JSON.MFG).isNull());
+        assertEquals(JSON.SYSTEM_CONNECTION, connection.path(JSON.TYPE).asText());
+        assertEquals("I", connection.path(JSON.DATA).path(JSON.PREFIX).asText());
+        assertTrue(connection.path(JSON.DATA).path(JSON.NAME).isNull());
+        assertTrue(connection.path(JSON.DATA).path(JSON.MFG).isNull());
     }
 
     /**
@@ -275,50 +285,137 @@ public class JsonUtilHttpServiceTest {
      */
     @Test
     public void testGetNetworkService() throws JsonException {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
         JsonNode result = null;
-        // non-existant service
-        JsonException exception = null;
+        // non-existent service
         try {
-            result = instance.getNetworkService(locale, "non-existant-service"); // NOI18N
+            result = service.getNetworkService(locale, "non-existant-service", 42); // NOI18N
+            fail("Expected exception not thrown");
         } catch (JsonException ex) {
-            exception = ex;
+            assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getCode());
         }
-        Assert.assertNull(result);
-        Assert.assertNotNull(exception);
-        Assert.assertEquals(HttpServletResponse.SC_NOT_FOUND, exception.getCode());
         // published service
-        ZeroConfService service = ZeroConfService.create(JSON.ZEROCONF_SERVICE_TYPE, 9999);
-        service.publish();
+        ZeroConfService zcs = ZeroConfService.create(JSON.ZEROCONF_SERVICE_TYPE, 9999);
+        JUnitUtil.waitFor(() -> {
+            return zcs.isPublished() == false;
+        });
+        zcs.publish();
         Assume.assumeTrue("Published ZeroConf Service", JUnitUtil.waitFor(() -> {
-            return service.isPublished() == true;
+            return zcs.isPublished() == true;
         }));
-        result = instance.getNetworkService(locale, JSON.ZEROCONF_SERVICE_TYPE);
-        Assert.assertEquals(JSON.NETWORK_SERVICE, result.path(JSON.TYPE).asText());
+        result = service.getNetworkService(locale, JSON.ZEROCONF_SERVICE_TYPE, 42);
+        validate(result);
+        assertEquals(JSON.NETWORK_SERVICE, result.path(JSON.TYPE).asText());
         JsonNode data = result.path(JSON.DATA);
-        Assert.assertFalse(data.isMissingNode());
-        Assert.assertEquals(WebServerPreferences.getDefault().getRailroadName(), data.path(JSON.NAME).asText());
-        Assert.assertEquals(9999, data.path(JSON.PORT).asInt());
-        Assert.assertEquals(JSON.ZEROCONF_SERVICE_TYPE, data.path(JSON.TYPE).asText());
-        Assert.assertEquals(NodeIdentity.identity(), data.path(JSON.NODE).asText());
-        Assert.assertEquals(Metadata.getBySystemName(Metadata.JMRIVERCANON), data.path("jmri").asText());
-        Assert.assertEquals(Metadata.getBySystemName(Metadata.JMRIVERSION), data.path("version").asText());
+        assertFalse(data.isMissingNode());
+        assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), data.path(JSON.NAME).asText());
+        assertEquals(9999, data.path(JSON.PORT).asInt());
+        assertEquals(JSON.ZEROCONF_SERVICE_TYPE, data.path(JSON.TYPE).asText());
+        assertEquals(NodeIdentity.networkIdentity(), data.path(JSON.NODE).asText());
+        assertEquals(Metadata.getBySystemName(Metadata.JMRIVERCANON), data.path("jmri").asText());
+        assertEquals(Metadata.getBySystemName(Metadata.JMRIVERSION), data.path("version").asText());
+        zcs.stop();
+        JUnitUtil.waitFor(() -> {
+            return zcs.isPublished() == false;
+        });
     }
 
     /**
      * Test of getRailroad method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if messages are not schema valid
      */
     @Test
-    public void testGetRailroad() {
-        Locale locale = Locale.ENGLISH;
-        ObjectMapper mapper = new ObjectMapper();
-        JsonUtilHttpService instance = new JsonUtilHttpService(mapper);
-        JsonNode result = instance.getRailroad(locale);
-        Assert.assertEquals(JSON.RAILROAD, result.path(JSON.TYPE).asText());
+    public void testGetRailroad() throws JsonException {
+        JsonNode result = service.getRailroad(locale, 42);
+        validate(result);
+        assertEquals(JSON.RAILROAD, result.path(JSON.TYPE).asText());
         JsonNode data = result.path(JSON.DATA);
-        Assert.assertEquals(WebServerPreferences.getDefault().getRailroadName(), data.path(JSON.NAME).asText());
+        assertEquals(InstanceManager.getDefault(WebServerPreferences.class).getRailroadName(), data.path(JSON.NAME).asText());
     }
+
+    /**
+     * Test of getPanel method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if the result cannot be validated
+     */
+    @Test
+    public void testGetPanel() throws JsonException {
+        Assume.assumeFalse("Needs GUI", GraphicsEnvironment.isHeadless());
+        Editor editor = new SwitchboardEditor("test");
+        ObjectNode result = service.getPanel(locale, editor, JSON.XML, 42);
+        validate(result);
+        JUnitUtil.dispose(editor.getTargetFrame());
+        JUnitUtil.dispose(editor);
+    }
+
+    /**
+     * Test of getPanels method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if the result cannot be validated
+     */
+    @Test
+    public void testGetPanels_Locale_String() throws JsonException {
+        Assume.assumeFalse("Needs GUI", GraphicsEnvironment.isHeadless());
+        Editor editor = new SwitchboardEditor("test");
+        JsonNode result = service.getPanels(locale, JSON.XML, 42);
+        validate(result);
+        JUnitUtil.dispose(editor.getTargetFrame());
+        JUnitUtil.dispose(editor);
+    }
+
+    /**
+     * Test of getPanels method, of class JsonUtilHttpService.
+     *
+     * @throws jmri.server.json.JsonException if the result cannot be validated
+     */
+    @Test
+    public void testGetPanels_Locale() throws JsonException {
+        Assume.assumeFalse("Needs GUI", GraphicsEnvironment.isHeadless());
+        Editor editor = new SwitchboardEditor("test");
+        JsonNode result = service.getPanels(locale, 42);
+        validate(result);
+        JUnitUtil.dispose(editor.getTargetFrame());
+        JUnitUtil.dispose(editor);
+    }
+
+    /**
+     * Test of getConfigProfiles method, of class JsonUtilHttpService. Only
+     * tests that result is schema valid and contains all profiles.
+     *
+     * @throws jmri.server.json.JsonException if unable to read profiles
+     */
+    @Test
+    public void testGetConfigProfiles() throws JsonException {
+        ArrayNode result = service.getConfigProfiles(locale, 42);
+        validate(result);
+        assertEquals("Result has every profile", ProfileManager.getDefault().getProfiles().length, result.size());
+    }
+
+    /**
+     * Test of addressForString method, of class JsonUtilHttpService.
+     */
+    @Test
+    public void testAddressForString() {
+        DccLocoAddress result = JsonUtilHttpService.addressForString("123(l)");
+        assertTrue("Address is long", result.isLongAddress());
+        assertEquals("Address is 123", 123, result.getNumber());
+        result = JsonUtilHttpService.addressForString("123(L)");
+        assertTrue("Address is long", result.isLongAddress());
+        assertEquals("Address is 123", 123, result.getNumber());
+        result = JsonUtilHttpService.addressForString("123(s)");
+        assertFalse("Address is short", result.isLongAddress());
+        assertEquals("Address is 123", 123, result.getNumber());
+        result = JsonUtilHttpService.addressForString("123");
+        assertFalse("Address is short", result.isLongAddress());
+        assertEquals("Address is 123", 123, result.getNumber());
+        result = JsonUtilHttpService.addressForString("3");
+        assertFalse("Address is short", result.isLongAddress());
+        assertEquals("Address is 3", 3, result.getNumber());
+        result = JsonUtilHttpService.addressForString("3(l)");
+        assertTrue("Address is long", result.isLongAddress());
+        assertEquals("Address is 3", 3, result.getNumber());
+    }
+
+    // private final static Logger log = LoggerFactory.getLogger(JsonUtilHttpServiceTest.class);
 
 }

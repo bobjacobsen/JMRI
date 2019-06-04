@@ -226,6 +226,13 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element name="resetPreviousStates" type="xs:string" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>
+            "yes" means that the dark turnout command should be sent before each new aspects turnout command
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
     <xs:attribute name="userName" type="userNameType">
       <xs:annotation>
@@ -397,6 +404,16 @@
           </xs:attribute>
         </xs:complexType>
       </xs:element>
+        <xs:element name="delay" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+                <xs:attribute name="duration" use="required">
+                    <xs:annotation>
+                        <xs:documentation>Specifies mast-specific delay before each separate output command
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:complexType>
+        </xs:element>
       <xs:element name="outputs" minOccurs="1" maxOccurs="1" >
         <xs:complexType>
           <xs:sequence>

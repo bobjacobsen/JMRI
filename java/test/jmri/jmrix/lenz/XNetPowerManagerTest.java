@@ -20,7 +20,7 @@ public class XNetPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBas
     private int propertyChangeCount;
     private java.beans.PropertyChangeListener listener = null;
 
-    // service routines to simulate recieving on, off from interface
+    // service routines to simulate receiving on, off from interface
     @Override
     protected void hearOn() {
         sendOnReply();
@@ -46,8 +46,22 @@ public class XNetPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBas
     }
 
     @Override
+    protected void sendIdleReply() {
+        XNetReply m = new XNetReply();
+        m.setElement(0, 0x81);
+        m.setElement(1, 0x00);
+        m.setElement(2, 0x81);
+        pm.message(m);
+    }
+
+    @Override
     protected void hearOff() {
         sendOffReply();
+    }
+
+    @Override
+    protected void hearIdle() {
+        sendIdleReply();
     }
 
     @Override
@@ -69,6 +83,12 @@ public class XNetPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBas
     @Override
     protected boolean outboundOffOK(int index) {
         XNetMessage m = XNetMessage.getEmergencyOffMsg();
+        return tc.outbound.elementAt(index).equals(m);
+    }
+
+    @Override
+    protected boolean outboundIdleOK(int index) {
+        XNetMessage m = XNetMessage.getEmergencyStopMsg();
         return tc.outbound.elementAt(index).equals(m);
     }
 
@@ -128,8 +148,8 @@ public class XNetPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBas
         m.setElement(2, 0x81);
 
         pm.message(m);
-        // and now verify power is off.
-        Assert.assertEquals("Power", jmri.PowerManager.OFF, pm.getPower());
+        // and now verify power is IDLE.
+        Assert.assertEquals("Power", jmri.PowerManager.IDLE, pm.getPower());
     }
 
     @Test
@@ -195,8 +215,8 @@ public class XNetPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBas
         m.setElement(3, 0x42);
 
         pm.message(m);
-        // and now verify power is off.
-        Assert.assertEquals("Power", jmri.PowerManager.OFF, pm.getPower());
+        // and now verify power is IDLE.
+        Assert.assertEquals("Power", jmri.PowerManager.IDLE, pm.getPower());
     }
 
     @Test
@@ -250,6 +270,12 @@ public class XNetPowerManagerTest extends jmri.jmrix.AbstractPowerManagerTestBas
         // now trigger another change, and make sure the count doesn't change.
         sendOnReply();
         Assert.assertEquals("PropertyChangeCount", 1, propertyChangeCount);
+    }
+
+    @Test
+    @Override
+    public void testImplementsIdle() {
+        Assert.assertTrue(p.implementsIdle());
     }
 
     // The minimal setup for log4J

@@ -12,9 +12,10 @@ import jmri.jmrix.cmri.serial.nodeconfigmanager.NodeConfigManagerAction;
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2003
  * @author Chuck Catania Copyright (C) 2017
-
  */
 public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig {
+
+    public final static String NAME = Bundle.getMessage("TypeSerial");
 
     /**
      * Ctor for an object being created during load process; Swing init is
@@ -25,21 +26,29 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
     }
 
     /**
-     * Ctor for a functional Swing object with no prexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
     }
 
+    @Override
+    public String name() {
+        return NAME;
+    }
+
     JButton b;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadDetails(JPanel details) {
 
         setInstance();
         b = new JButton(Bundle.getMessage("ConfigureNodesTitle"));
-//        b.addActionListener(new NodeConfigAction((CMRISystemConnectionMemo)adapter.getSystemConnectionMemo()));
-        b.addActionListener(new NodeConfigManagerAction((CMRISystemConnectionMemo)adapter.getSystemConnectionMemo())); //c2
+        b.addActionListener(new NodeConfigManagerAction((CMRISystemConnectionMemo)adapter.getSystemConnectionMemo()));
         if (!additionalItems.contains(b)) {
             additionalItems.add(b);
         }
@@ -52,15 +61,14 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         return ResourceBundle.getBundle("jmri.jmrix.cmri.CmriActionListBundle");
     }
 
-    @Override
-    public String name() {
-        return "Serial";
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
         if (adapter == null) {
             adapter = new SerialDriverAdapter();
         }
     }
+
 }

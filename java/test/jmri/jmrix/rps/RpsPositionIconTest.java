@@ -15,7 +15,7 @@ import org.junit.Test;
  * JUnit tests for the rps.Reading class.
  *
  * @author	Bob Jacobsen Copyright 2006
-  */
+ */
 public class RpsPositionIconTest {
 
     @Test
@@ -38,15 +38,17 @@ public class RpsPositionIconTest {
         Editor e = Editor.getEditor("RPS Location Test Editor");
         Assert.assertNotNull("has target frame", e.getTargetFrame());
         Assert.assertEquals("RPS Location Test", e.getTargetFrame().getTitle());
-        e.dispose(true);
+        e.dispose();
     }
 
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
         JUnitUtil.initDefaultUserMessagePreferences();
     }
 
     @After
     public void tearDown() {        JUnitUtil.tearDown();    }
+
 }

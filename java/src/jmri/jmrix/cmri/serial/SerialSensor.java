@@ -8,7 +8,7 @@ import javax.annotation.CheckReturnValue;
 
 /**
  * Extend jmri.AbstractSensor for C/MRI serial systems
- * <P>
+ *
  * @author Bob Jacobsen Copyright (C) 2003
  */
 public class SerialSensor extends AbstractSensor {
@@ -25,7 +25,7 @@ public class SerialSensor extends AbstractSensor {
 
     /**
      * Request an update on status.
-     * <P>
+     * <p>
      * Since status is continually being updated, this isn't active now.
      * Eventually, we may want to have this move the related AIU to the top of
      * the polling queue.
@@ -40,6 +40,7 @@ public class SerialSensor extends AbstractSensor {
      * Sorts by node number and then by bit
      */
     @CheckReturnValue
+    @Override
     public int compareSystemNameSuffix(@Nonnull String suffix1, @Nonnull String suffix2, @Nonnull jmri.NamedBean n) {
         return CMRISystemConnectionMemo.compareSystemNameSuffix(suffix1, suffix2);
     }

@@ -19,12 +19,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * Convention is to provide a subclass of this name
  * in each package, working off the local resource bundle name.
  *
- * @author      Bob Jacobsen  Copyright (C) 2012
- * @since       3.7.2
+ * @author Bob Jacobsen  Copyright (C) 2012
+ * @since 3.7.2
  */
 public class Bundle extends jmri.jmrix.loconet.Bundle {
 
-    @Nullable private static final String name = null; // No local resources
+    @Nullable
+    private static final String name = null; // No local resources
 
     //
     // below here is boilerplate to be copied exactly
@@ -34,7 +35,7 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
      * Provides a translated string for a given 
      * key from the package resource bundle or 
      * parent.
-     *<p>
+     * <p>
      * Note that this is intentionally package-local
      * access.
      * 
@@ -42,16 +43,16 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
      * @return Internationalized text
      */
     static String getMessage(String key) {
-        return b.handleGetMessage(key);
+        return getBundle().handleGetMessage(key);
     }
     /**
      * Merges user data with a translated string for a given 
      * key from the package resource bundle or 
      * parent.
-     *<p>
+     * <p>
      * Uses the transformation conventions of 
      * the Java MessageFormat utility.
-     *<p>
+     * <p>
      * Note that this is intentionally package-local
      * access.
      *
@@ -61,7 +62,7 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
      * @return Internationalized text
      */
     static String getMessage(String key, Object ... subs) {
-        return b.handleGetMessage(key, subs);
+        return getBundle().handleGetMessage(key, subs);
     }
 
     /**
@@ -79,12 +80,12 @@ public class Bundle extends jmri.jmrix.loconet.Bundle {
      * @return Internationalized text
      */
     static String getMessage(Locale locale, String key, Object... subs) {
-        return b.handleGetMessage(locale, key, subs);
+        return getBundle().handleGetMessage(locale, key, subs);
     }
    
     private final static Bundle b = new Bundle();
     @Override @Nullable protected String bundleName() {return name; }
-    @Override protected jmri.Bundle getBundle() { return b; }
+    protected static jmri.Bundle getBundle() { return b; }
 
     @Override 
     protected String retry(Locale locale,String key) { 

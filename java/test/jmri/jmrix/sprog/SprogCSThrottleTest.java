@@ -365,7 +365,7 @@ public class SprogCSThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     @Before
     @Override
     public void setUp() {
-        apps.tests.Log4JFixture.setUp();
+        jmri.util.JUnitUtil.setUp();
         // prepare an interface
         jmri.util.JUnitUtil.resetInstanceManager();
 
@@ -382,6 +382,7 @@ public class SprogCSThrottleTest extends jmri.jmrix.AbstractThrottleTest {
     @Override
     public void tearDown() {
         m.getSlotThread().interrupt();
+        stcs.dispose();
         JUnitUtil.tearDown();
     }
 

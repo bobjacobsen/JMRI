@@ -2,8 +2,10 @@ package jmri.jmrit.display.controlPanelEditor;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GraphicsDevice;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -11,8 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+
 import jmri.Sensor;
 import jmri.jmrit.display.IndicatorTrackIcon;
 import jmri.jmrit.display.IndicatorTurnoutIcon;
@@ -49,11 +53,11 @@ public class EditCircuitFrame extends jmri.util.JmriJFrame {
     private JButton _openPicklistButton;
 
     static int STRUT_SIZE = 10;
-    static boolean _firstInstance = true;
-    static Point _loc = null;
-    static Dimension _dim = null;
+    static Point _loc = new Point(-1, -1);
+    static Dimension _dim = new Dimension();
 
     public EditCircuitFrame(String title, CircuitBuilder parent, OBlock block) {
+        super(false, false);
         _block = block;
         setTitle(java.text.MessageFormat.format(title, _block.getDisplayName()));
         addHelpMenu("package.jmri.jmrit.display.CircuitBuilder", true);
@@ -69,7 +73,7 @@ public class EditCircuitFrame extends jmri.util.JmriJFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
-                closingEvent();
+                closingEvent(true);
             }
         });
         contentPane.add(Box.createVerticalStrut(STRUT_SIZE));
@@ -151,16 +155,24 @@ public class EditCircuitFrame extends jmri.util.JmriJFrame {
         JPanel border = new JPanel();
         border.setLayout(new java.awt.BorderLayout(20, 20));
         border.add(contentPane);
-        setContentPane(border);
+
+        setContentPane(new JScrollPane(border));
+
         pack();
-        if (_firstInstance) {
-            setLocationRelativeTo(_parent._editor);
-            _firstInstance = false;
+        if (_loc.x < 0) {
+            setLocation(jmri.util.PlaceWindow. nextTo(_parent._editor, null, this));
         } else {
             setLocation(_loc);
             setSize(_dim);
         }
         setVisible(true);
+        if (log.isDebugEnabled()) {
+            log.debug("_loc: X= {}, Y= {}", _loc.x, _loc.y);
+            Point pt1 = getLocation();
+            GraphicsDevice device = getGraphicsConfiguration().getDevice();
+            log.debug("Screen device= {}: getLocation()= [{}, {}]",
+                    device.getIDstring(), pt1.x, pt1.y);
+        }
         changeUnits();
     }
 
@@ -264,7 +276,7 @@ public class EditCircuitFrame extends jmri.util.JmriJFrame {
 
         JButton doneButton = new JButton(Bundle.getMessage("ButtonDone"));
         doneButton.addActionListener((ActionEvent a) -> {
-            closingEvent();
+            closingEvent(false);
         });
         panel.add(doneButton);
         buttonPanel.add(panel);
@@ -379,59 +391,95 @@ public class EditCircuitFrame extends jmri.util.JmriJFrame {
         _blockState.setText(stateText.toString());
     }
 
-    protected void closingEvent() {
+    protected void closingEvent(boolean close) {
+        String title = "newCircuitItem";
+        String msg = _parent.setIconGroup(_block);
+        if (msg == null) {
+            String name = _length.getText();
+            try {
+                float f = Float.parseFloat(name);
+                if (_units.isSelected()) {
+                    f *= 25.4f;
+                } else {
+                    f *= 10f;
+                }
+                if (f < 0) {
+                    msg = Bundle.getMessage("MustBeFloat", name);
+                } else if (f < .0001) {
+                    msg = Bundle.getMessage("needLength", name);
+                }
+                _block.setLength(Math.max(f, 0.0f));
+            } catch (NumberFormatException nfe) {
+                msg = Bundle.getMessage("MustBeFloat", name);
+            }
+        }
+        if (msg == null) {
+            if (!_parent.iconsConverted(_block)) {
+                msg = Bundle.getMessage("pathsNeedConversion");
+            }
+        }
         // check Sensors
-        String name = _detectorSensorName.getText();
-        if (name == null || name.trim().length() == 0) {
-            JOptionPane.showMessageDialog(this, Bundle.getMessage("noDetecterSensor"),
-                    Bundle.getMessage("noSensor"), JOptionPane.INFORMATION_MESSAGE);
+        if (msg == null) {
+            msg = checkForSensors();
+            title = "noSensor";
         }
+        if (msg != null) {
+            if (close) {
+                JOptionPane.showMessageDialog(this, msg, Bundle.getMessage(title), JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                StringBuilder sb = new StringBuilder(msg);
+                sb.append(" ");
+                sb.append(Bundle.getMessage("exitQuestion"));
+                int answer = JOptionPane.showConfirmDialog(this, sb.toString(), Bundle.getMessage(title),
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (answer == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
+        }
+        closePickList();
+        getLocation(_loc);
+        getSize(_dim);
+        _parent.closeCircuitFrame();
+        dispose();
+    }
+    
+    private String checkForSensors() {
+        String name = _detectorSensorName.getText().trim();
+        String errName = _errorSensorName.getText().trim();
+        String msg = null;
         if (!_block.setSensor(name)) {
-            JOptionPane.showMessageDialog(this, java.text.MessageFormat.format(Bundle.getMessage("badSensorName"), name),
-                    Bundle.getMessage("noSensor"), JOptionPane.INFORMATION_MESSAGE);
+            msg = java.text.MessageFormat.format(Bundle.getMessage("badSensorName"), name);
         }
-        name = _errorSensorName.getText();
-        if (name != null && name.trim().length() > 0) {
-            if (_block.getSensor() == null) {
-                int result = JOptionPane.showConfirmDialog(this, Bundle.getMessage("mixedSensors"),
-                        Bundle.getMessage("noSensor"), JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
-                if (result == JOptionPane.YES_OPTION) {
-                    if (!_block.setSensor(name)) {
-                        JOptionPane.showMessageDialog(this, java.text.MessageFormat.format(Bundle.getMessage("badSensorName"), name),
-                                Bundle.getMessage("noSensor"), JOptionPane.INFORMATION_MESSAGE);
+        if (msg == null) {
+            if (errName.length() > 0) {
+                if (_block.getSensor() == null) {
+                    int result = JOptionPane.showConfirmDialog(this, Bundle.getMessage("mixedSensors"),
+                            Bundle.getMessage("noSensor"), JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                    if (result == JOptionPane.YES_OPTION) {
+                        if (!_block.setSensor(errName)) {
+                            msg = java.text.MessageFormat.format(Bundle.getMessage("badSensorName"), errName);
+                        } else {
+                            _block.setErrorSensor(null);
+                            _detectorSensorName.setText(_block.getSensor().getDisplayName());
+                        }
                     } else {
-                        _block.setErrorSensor(null);
-                        _detectorSensorName.setText(_block.getSensor().getDisplayName());
+                        if (!_block.setErrorSensor(errName)) {
+                            msg = java.text.MessageFormat.format(Bundle.getMessage("badSensorName"), errName);
+                        }
+                    }
+                } else {
+                    if (!_block.setErrorSensor(errName)) {
+                        msg = java.text.MessageFormat.format(Bundle.getMessage("badSensorName"), errName);
                     }
                 }
-            } else {
-                if (!_block.setErrorSensor(name)) {
-                    JOptionPane.showMessageDialog(this, java.text.MessageFormat.format(Bundle.getMessage("badSensorName"), name),
-                            Bundle.getMessage("noSensor"), JOptionPane.INFORMATION_MESSAGE);
-                }
             }
-        } else {
-            _block.setErrorSensor(null);
         }
-        name = _length.getText();
-        try {
-            float f = Float.parseFloat(name);
-            if (_units.isSelected()) {
-                f *= 25.4f;
-            } else {
-                f *= 10f;
-            }
-            _block.setLength(Math.max(f, 0.0f));
-        } catch (NumberFormatException nfe) {
+        if (msg == null && _block.getSensor() == null) {
+            msg = Bundle.getMessage("noDetecterSensor");
         }
-
-        closePickList();
-
-        _parent.checkCircuitFrame(_block);
-        _loc = getLocation(_loc);
-        _dim = getSize(_dim);
-        dispose();
+        return msg;
     }
 
     protected OBlock getBlock() {

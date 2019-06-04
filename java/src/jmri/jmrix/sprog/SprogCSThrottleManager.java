@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SPROG Command Station implementation of a ThrottleManager.
- * <P>
- * Updated by Andrew Crosland February 2012 to enable 28 step speed packets</P>
+ * <p>
+ * Updated by Andrew Crosland February 2012 to enable 28 step speed packets
  *
  * @author	Andrew Crosland Copyright (C) 2006, 2012
  */

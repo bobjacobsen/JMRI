@@ -23,7 +23,7 @@ public class SerialMonFrame extends jmri.jmrix.AbstractMonFrame implements Seria
 
     @Override
     protected String title() {
-        return "Grapevine Serial Command Monitor";
+        return Bundle.getMessage("MonitorXTitle", "Grapevine");
     }
 
     @Override
@@ -32,9 +32,7 @@ public class SerialMonFrame extends jmri.jmrix.AbstractMonFrame implements Seria
         memo.getTrafficController().addSerialListener(this);
     }
 
-    /**
-     * Define system-specific help item
-     */
+    @Override
     protected void setHelp() {
         addHelpMenu("package.jmri.jmrix.grapevine.serialmon.SerialMonFrame", true);  // NOI18N
     }
@@ -47,18 +45,14 @@ public class SerialMonFrame extends jmri.jmrix.AbstractMonFrame implements Seria
 
     @Override
     public synchronized void message(SerialMessage l) {  // receive a message and log it
-        if (log.isDebugEnabled()) {
-            log.debug("Message: " + l.toString());
-        }
-        nextLine("M: " + l.format() + "\n", l.toString());
+        log.debug("Message: {}", l.toString());
+        nextLine(Bundle.getMessage("CommandLabel") + " " + l.format() + "\n", l.toString());
     }
 
     @Override
     public synchronized void reply(SerialReply l) {  // receive a reply and log it
-        if (log.isDebugEnabled()) {
-            log.debug("Reply: " + l.toString());
-        }
-        nextLine("R: " + l.format() + "\n", l.toString());
+        log.debug("Reply: {}", l.toString());
+        nextLine(Bundle.getMessage("ReplyLabel") + " " + l.format() + "\n", l.toString());
     }
 
     private final static Logger log = LoggerFactory.getLogger(SerialMonFrame.class);

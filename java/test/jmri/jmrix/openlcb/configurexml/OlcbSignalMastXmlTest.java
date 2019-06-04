@@ -21,10 +21,7 @@ import org.openlcb.IdentifyEventsMessage;
 
 import org.jdom2.Element;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 /**
  * OlcbSignalMastXmlTest
@@ -34,6 +31,11 @@ import org.junit.Test;
  * @author   Bob Jacobsen Copyright (C) 2018
  */
 public class OlcbSignalMastXmlTest {
+        
+    private static OlcbSystemConnectionMemo memo;
+    static Connection connection;
+    static NodeID nodeID = new NodeID(new byte[]{1, 0, 0, 0, 0, 0});
+    static java.util.ArrayList<Message> messages;
 
     @Test
     public void testCtor(){
@@ -42,7 +44,7 @@ public class OlcbSignalMastXmlTest {
 
     @Test
     public void testStore(){
-        OlcbSignalMast t = new OlcbSignalMast("MF$olm:AAR-1946:PL-1-high-abs(1)");
+        OlcbSignalMast t = new OlcbSignalMast("MF$olm:AAR-1946:PL-1-high-abs($1)");
         t.setLitEventId("1.2.3.4.5.6.7.1");
         t.setNotLitEventId("1.2.3.4.5.6.7.2");
         t.setHeldEventId("1.2.3.4.5.6.7.3");
@@ -57,32 +59,56 @@ public class OlcbSignalMastXmlTest {
         Element e = x.store(t);
         Assert.assertNotNull("Element", e);
         
-        Assert.assertEquals("x0102030405060701", e.getChild("lit").getChild("lit").getValue());
-        Assert.assertEquals("x0102030405060702", e.getChild("lit").getChild("notlit").getValue());
-        Assert.assertEquals("x0102030405060703", e.getChild("held").getChild("held").getValue());
-        Assert.assertEquals("x0102030405060704", e.getChild("held").getChild("notheld").getValue());
+        Assert.assertEquals("1.2.3.4.5.6.7.1", e.getChild("lit").getChild("lit").getValue());
+        Assert.assertEquals("1.2.3.4.5.6.7.2", e.getChild("lit").getChild("notlit").getValue());
+        Assert.assertEquals("1.2.3.4.5.6.7.3", e.getChild("held").getChild("held").getValue());
+        Assert.assertEquals("1.2.3.4.5.6.7.4", e.getChild("held").getChild("notheld").getValue());
     }
 
-    // The minimal setup for log4J
     @Before
     public void setUp() {
-        JUnitUtil.setUp();
+        messages = new java.util.ArrayList<>();
+    }
 
-        Connection connection = new AbstractConnection() {
+    @BeforeClass
+    static public void preClassInit() {
+        JUnitUtil.setUp();
+        JUnitUtil.initInternalTurnoutManager();
+        nodeID = new NodeID(new byte[]{1, 0, 0, 0, 0, 0});
+        
+        messages = new java.util.ArrayList<>();
+        connection = new AbstractConnection() {
             @Override
             public void put(Message msg, Connection sender) {
+                messages.add(msg);
             }
         };
 
-        OlcbSystemConnectionMemo memo = new OlcbSystemConnectionMemo(); // this self-registers as 'M'
+        memo = new OlcbSystemConnectionMemo(); // this self-registers as 'M'
         memo.setProtocol(jmri.jmrix.can.ConfigurationManager.OPENLCB);
-        memo.setInterface(new OlcbInterface(new NodeID(new byte[]{1, 0, 0, 0, 0, 0}), connection));
+        memo.setInterface(new OlcbInterface(nodeID, connection) {
+            public Connection getOutputConnection() {
+                return connection;
+            }
+        });
+        
+        jmri.util.JUnitUtil.waitFor(()->{return (messages.size()>0);},"Initialization Complete message");
     }
 
     @After
     public void tearDown() {
-        JUnitUtil.tearDown();
+        messages = null;
     }
 
+    @AfterClass
+    public static void postClassTearDown() throws Exception {
+        if(memo != null && memo.getInterface() !=null ) {
+           memo.getInterface().dispose();
+        }
+        memo = null;
+        connection = null;
+        nodeID = null;
+        JUnitUtil.tearDown();
+    }
 }
 

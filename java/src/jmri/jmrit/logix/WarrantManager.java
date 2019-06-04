@@ -10,20 +10,19 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Basic Implementation of a WarrantManager.
- * <P>
+ * <p>
  * Note this is a concrete class.
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author Pete Cressman Copyright (C) 2009
  */
@@ -177,8 +176,8 @@ public class WarrantManager extends AbstractManager<Warrant>
     
     protected void setSpeedProfiles(String id, RosterSpeedProfile merge, RosterSpeedProfile session) {
         if (_mergeProfiles == null) {
-            _mergeProfiles = new HashMap<String, RosterSpeedProfile>();
-            _sessionProfiles = new HashMap<String, RosterSpeedProfile>();
+            _mergeProfiles = new HashMap<>();
+            _sessionProfiles = new HashMap<>();
             if (jmri.InstanceManager.getNullableDefault(jmri.ShutDownManager.class) != null) {
                 ShutDownTask shutDownTask = new WarrantShutdownTask("WarrantRosterSpeedProfileCheck");
                         jmri.InstanceManager.getDefault(jmri.ShutDownManager.class).register(shutDownTask);
@@ -186,7 +185,7 @@ public class WarrantManager extends AbstractManager<Warrant>
                 log.error("No ShutDownManager for WarrantRosterSpeedProfileCheck");
             }
         }
-        if (id != null && merge != null) {
+        if (id != null) {
             _mergeProfiles.put(id, merge);
             _sessionProfiles.put(id, session);
         }

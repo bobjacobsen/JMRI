@@ -17,16 +17,16 @@ import org.slf4j.LoggerFactory;
  * sends/receives Mx1Message objects. The connection to a Mx1PortController is
  * via a pair of *Streams, which then carry sequences of characters for
  * transmission.
- * <P>
+ * <p>
  * Messages come to this via the main GUI thread, and are forwarded back to
  * listeners in that same thread. Reception and transmission are handled in
  * dedicated threads by RcvHandler and XmtHandler objects. Those are internal
  * classes defined here. The thread priorities are:
- * <UL>
- * <LI> RcvHandler - at highest available priority
- * <LI> XmtHandler - down one, which is assumed to be above the GUI
- * <LI> (everything else)
- * </UL>
+ * <ul>
+ * <li> RcvHandler - at highest available priority
+ * <li> XmtHandler - down one, which is assumed to be above the GUI
+ * <li> (everything else)
+ * </ul>
  *
  * @author	Bob Jacobsen Copyright (C) 2001
  *
@@ -206,7 +206,7 @@ public class Mx1Packetizer extends Mx1TrafficController {
 
     /**
      * Read a single byte, protecting against various timeouts, etc.
-     * <P>
+     * <p>
      * When a port is set to have a receive timeout (via the
      * enableReceiveTimeout() method), some will return zero bytes or an
      * EOFException at the end of the timeout. In that case, the read should be
@@ -256,7 +256,7 @@ public class Mx1Packetizer extends Mx1TrafficController {
         public void run() {
             int opCode;
             if (protocol) {
-                ArrayList<Integer> message = new ArrayList<>();
+                ArrayList<Integer> message;
                 while (true) {
                     try {
                         int firstByte = readByteProtected(istream) & 0xFF;
@@ -308,15 +308,15 @@ public class Mx1Packetizer extends Mx1TrafficController {
                         }
                         isAckReplyRequired(msg);
                         final Mx1Message thisMsg = msg;
-                        final Mx1Packetizer thisTC = trafficController;
+                        final Mx1Packetizer thisTc = trafficController;
                         // return a notification via the queue to ensure end
                         Runnable r = new Runnable() {
                             Mx1Message msgForLater = thisMsg;
-                            Mx1Packetizer myTC = thisTC;
+                            Mx1Packetizer myTc = thisTc;
 
                             @Override
                             public void run() {
-                                myTC.notify(msgForLater, null);
+                                myTc.notify(msgForLater, null);
                             }
                         };
                         log.debug("schedule notify of incoming packet");
@@ -361,15 +361,15 @@ public class Mx1Packetizer extends Mx1TrafficController {
                         // message is complete, dispatch it !!
                         {
                             final Mx1Message thisMsg = msg;
-                            final Mx1Packetizer thisTC = trafficController;
+                            final Mx1Packetizer thisTc = trafficController;
                             // return a notification via the queue to ensure end
                             Runnable r = new Runnable() {
                                 Mx1Message msgForLater = thisMsg;
-                                Mx1Packetizer myTC = thisTC;
+                                Mx1Packetizer myTc = thisTc;
 
                                 @Override
                                 public void run() {
-                                    myTC.notify(msgForLater, null);
+                                    myTc.notify(msgForLater, null);
                                 }
                             };
                             log.debug("schedule notify of incoming packet");
@@ -393,16 +393,16 @@ public class Mx1Packetizer extends Mx1TrafficController {
 
     void notifyLater(Mx1Message m, Mx1Listener reply) {
         final Mx1Message thisMsg = m;
-        final Mx1Packetizer thisTC = this;
+        final Mx1Packetizer thisTc = this;
         final Mx1Listener thisLst = reply;
         Runnable r = new Runnable() {
             Mx1Message msgForLater = thisMsg;
-            Mx1Packetizer myTC = thisTC;
+            Mx1Packetizer myTc = thisTc;
             Mx1Listener myListener = thisLst;
 
             @Override
             public void run() {
-                myTC.notify(msgForLater, myListener);
+                myTc.notify(msgForLater, myListener);
             }
         };
         log.debug("schedule notify of incoming packet");
@@ -548,6 +548,7 @@ public class Mx1Packetizer extends Mx1TrafficController {
             trafficController = lt;
         }
 
+        @SuppressFBWarnings(value = "UW_UNCOND_WAIT", justification="false postive, guarded by if statement")
         @Override
         public void run() {
             while (true) {   // loop permanently

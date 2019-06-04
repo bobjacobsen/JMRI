@@ -10,7 +10,7 @@ import org.junit.*;
  * Tests for SignalHeadSection class in the jmri.jmrit.ussctc package
  *
  * @author	Bob Jacobsen Copyright 2007
-  */
+ */
 public class SignalHeadSectionTest {
 
     @Test
@@ -319,6 +319,7 @@ public class SignalHeadSectionTest {
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
         JUnitUtil.initConfigureManager();
         JUnitUtil.initInternalTurnoutManager();
         JUnitUtil.initInternalSensorManager();

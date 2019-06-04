@@ -11,8 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides the functionality for persistence of a SectionManager
- * <P>
+ * Provides the functionality for persistence of a SectionManager.
  *
  * @author Dave Duchamp Copyright (c) 2008
  */
@@ -28,6 +27,7 @@ public class SectionManagerXml extends jmri.managers.configurexml.AbstractNamedB
      * @return Element containing the complete info
      */
     @Override
+    @SuppressWarnings("deprecation") // needs careful unwinding for Set operations
     public Element store(Object o) {
         Element sections = new Element("sections");
         setStoreElementClass(sections);
@@ -175,7 +175,8 @@ public class SectionManagerXml extends jmri.managers.configurexml.AbstractNamedB
             log.debug("Found " + sectionList.size() + " sections");
         }
         SectionManager tm = InstanceManager.getDefault(jmri.SectionManager.class);
-
+        tm.setDataListenerMute(true);
+        
         for (int i = 0; i < sectionList.size(); i++) {
             String sysName = getSystemName(sectionList.get(i));
             String userName = getUserName(sectionList.get(i));
@@ -249,6 +250,8 @@ public class SectionManagerXml extends jmri.managers.configurexml.AbstractNamedB
                 }
             }
         }
+
+        tm.setDataListenerMute(false);
     }
 
     @Override

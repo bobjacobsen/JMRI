@@ -49,9 +49,9 @@ table.sortable th {
       definitions for JMRI-specific terms, and links to additional
       information.<br>
       Feel free to submit suggestions for improvements or additions
-      to the <a href=
-      "https://groups.yahoo.com/neo/groups/jmriusers/info">JMRI
-      users</a> Yahoo group, titled "Glossary".</p>
+      to <a href=
+      "https://groups.io/g/jmriusers">JMRI
+      users</a> at Groups.io, posts titled "Glossary".</p>
 
       <p>Click a heading to sort the list up or down.</p>
 
@@ -1230,7 +1230,7 @@ table.sortable th {
 
           2. In JMRI OperationsPro: a table defining which trains
           will run on any given day of the week. <a href=
-          "../package/jmri/jmrit/operations/Operations.shtml#Timetable">
+          "../package/jmri/jmrit/operations/Operations.shtml#TrainSchedules">
           ...</a></td>
 
           <td class="de">Fahrplan/Kursbuch</td>
@@ -1351,7 +1351,7 @@ table.sortable th {
           <td class="descr">A JMRI app for making a smart schematic
           of your layout while constructing the logic for signals,
           routes etc. behind the scenes. <a href=
-          "../html/apps/PanelPro/PanelPro.shtml#le">...</a></td>
+          "../html/apps/PanelPro/index.shtml#le">...</a></td>
 
           <td class="de">Anlageeditor</td>
 
@@ -1389,7 +1389,7 @@ table.sortable th {
 
           <td class="descr">A variant of Panel Editor, using menus
           instead of a separate editing pane <a href=
-          "../html/apps/PanelPro/PanelPro.shtml#cpe">...</a></td>
+          "../html/apps/PanelPro/index.shtml#cpe">...</a></td>
 
           <td class="de">Kontrolltafeleditor</td>
 
@@ -1410,7 +1410,7 @@ table.sortable th {
           <td class="descr">A JMRI app for graphically drawing a
           Panel and then animate parts of it to show the state of
           items on your layout and click to control them. <a href=
-          "../html/apps/PanelPro/PanelPro.shtml#pe">...</a></td>
+          "../html/apps/PanelPro/index.shtml#pe">...</a></td>
 
           <td class="de">Gleisstellbildeditor</td>
 

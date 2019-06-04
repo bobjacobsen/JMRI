@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Implement turnout manager for EasyDcc systems.
  * <p>
- * System names are "ETnnn", where nnn is the turnout number
- * without padding, E is user configurable.
+ * System names are "ETnnn", where E is the user configurable system prefix,
+ * nnn is the turnout number without padding.
  *
  * @author Bob Jacobsen Copyright (C) 2001
-  */
+ */
 public class EasyDccTurnoutManager extends jmri.managers.AbstractTurnoutManager implements EasyDccListener {
 
     EasyDccSystemConnectionMemo _memo = null;
@@ -20,9 +20,14 @@ public class EasyDccTurnoutManager extends jmri.managers.AbstractTurnoutManager 
     public final static int MAX_ACC_DECODER_ADDRESS = 511;
 
     public EasyDccTurnoutManager() {
-        log.debug("EasyDCC Turnout Manager null");
+        log.debug("EasyDCC TurnoutManager null");
     }
 
+    /**
+     * Create an new EasyDCC TurnoutManager.
+     *
+     * @param memo the SystemConnectionMemo for this connection (contains the prefix string needed to parse names)
+     */
     public EasyDccTurnoutManager(EasyDccSystemConnectionMemo memo) {
         _memo = memo;
         prefix = memo.getSystemPrefix();
@@ -30,7 +35,7 @@ public class EasyDccTurnoutManager extends jmri.managers.AbstractTurnoutManager 
         trafficController = memo.getTrafficController();
         // listen for turnout creation
         trafficController.addEasyDccListener(this);
-        log.debug("EasyDCC Turnout Manager prefix={}", prefix);
+        log.debug("EasyDCC TurnoutManager prefix={}", prefix);
     }
 
     @Override
@@ -41,7 +46,7 @@ public class EasyDccTurnoutManager extends jmri.managers.AbstractTurnoutManager 
     @Override
     public Turnout createNewTurnout(String systemName, String userName) {
         Turnout t;
-        int addr = Integer.valueOf(systemName.substring(prefix.length() + 1)).intValue();
+        int addr = Integer.parseInt(systemName.substring(prefix.length() + 1));
         t = new EasyDccTurnout(prefix, addr, _memo);
         t.setUserName(userName);
 
@@ -77,8 +82,8 @@ public class EasyDccTurnoutManager extends jmri.managers.AbstractTurnoutManager 
         // name must be in the ETnnnnn format (E is user configurable)
         int num = 0;
         try {
-            num = Integer.valueOf(systemName.substring(
-                    getSystemPrefix().length() + 1, systemName.length())).intValue();
+            num = Integer.parseInt(systemName.substring(
+                    getSystemPrefix().length() + 1, systemName.length()));
         } catch (Exception e) {
             log.debug("invalid character in number field of system name: {}", systemName);
             return (0);
@@ -104,28 +109,12 @@ public class EasyDccTurnoutManager extends jmri.managers.AbstractTurnoutManager 
     }
 
     /**
-     * Provide a manager-specific tooltip for the Add new item beantable pane.
+     * {@inheritDoc}
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddOutputEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddOutputEntryToolTip");
     }
-
-    /**
-     * @deprecated JMRI Since 4.9.5 instance() shouldn't be used, convert to JMRI multi-system support structure
-     */
-    @Deprecated
-    static public EasyDccTurnoutManager instance() {
-        log.warn("deprecated instance() call for EasyDccTurnoutManager");
-        return null;
-    }
-
-    /**
-     * @deprecated JMRI Since 4.9.5 instance() shouldn't be used, convert to JMRI multi-system support structure
-     */
-    @Deprecated
-    static EasyDccTurnoutManager _instance = null;
 
     private final static Logger log = LoggerFactory.getLogger(EasyDccTurnoutManager.class);
 

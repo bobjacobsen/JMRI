@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts Stream-based I/O to/from messages. The "SerialInterface" side
  * sends/receives message objects.
- * <P>
+ * <p>
  * The connection to a SerialPortController is via a pair of *Streams, which
  * then carry sequences of characters for transmission. Note that this
  * processing is handled in an independent thread.
- * <P>
+ * <p>
  * This maintains a list of nodes, but doesn't currently do anything with it.
  * <p>
  * This implementation is complete and can be instantiated, but is not
@@ -25,9 +25,12 @@ import org.slf4j.LoggerFactory;
  * @author Bob Jacobsen Copyright (C) 2001, 2003, 2005, 2006, 2008 Converted to
  * multiple connection
  * @author kcameron Copyright (C) 2011
-  */
+ */
 abstract public class SerialTrafficController extends AbstractMRTrafficController implements SerialInterface {
 
+    /**
+     * Create a new TrafficController instance. Simple implementation.
+     */
     public SerialTrafficController() {
         super();
         logDebug = log.isDebugEnabled();
@@ -37,15 +40,6 @@ abstract public class SerialTrafficController extends AbstractMRTrafficControlle
         setAllowUnexpectedReply(true);
         mWaitBeforePoll = 1000;  // can take a long time to send
 
-    }
-
-    /**
-     * instance use of the traffic controller is no longer used for multiple
-     * connections
-     */
-    @Deprecated
-    @Override
-    public void setInstance() {
     }
 
     /**

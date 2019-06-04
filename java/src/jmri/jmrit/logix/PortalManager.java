@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Basic Implementation of a PortalManager.
- * <P>
+ * <p>
  * Note that this does not enforce any particular system naming convention.
- * <P>
+ * <p>
  * Note this is an 'after thought' manager. Portals have been in use since 2009.
  * Their use has now expanded well beyond what was expected. A Portal factory is
  * needed for development to continue.
@@ -18,15 +18,14 @@ import org.slf4j.LoggerFactory;
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author Pete Cressman Copyright (C) 2014
  */
@@ -99,22 +98,34 @@ public class PortalManager extends AbstractManager<Portal>
         do {
             name = "IP" + Integer.toString(_nextSName++);
         } while (getBySystemName(name) != null);
-        return name;
+        if (log.isDebugEnabled()) log.debug("generateSystemName \"{}\"", name);
+       return name;
     }
 
     /**
      * Method to get an existing Portal. First looks up assuming that name is a
      * User Name. If this fails looks up assuming that name is a System Name. If
      * both fail, returns null.
-     * @param name - either System name or user name
+     * @param name  either System name or user name
      * @return Portal, if found
      */
     public Portal getPortal(String name) {
+        if (name == null) {
+            return null;
+        }
         Portal portal = getByUserName(name);
         if (portal != null) {
+            if (log.isDebugEnabled()) log.debug("getPortal with User Name \"{}\"", name);
             return portal;
         }
-        return getBySystemName(name);
+        if (name.length() > 2 && name.startsWith("IP")) {
+            portal = getBySystemName(name);
+            if (portal != null) {
+                if (log.isDebugEnabled()) log.debug("getPortal with System Name \"{}\"", name);
+                return portal;
+            }
+        }
+        return null;
     }
 
     public Portal getBySystemName(String name) {

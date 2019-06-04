@@ -70,7 +70,7 @@ public class JmriSRCPThrottleServer extends AbstractThrottleServer {
             // we will use getThrottleInfo to request information about the
             // address, so we need to convert the address to a DccLocoAddress
             // object first.
-            DccLocoAddress addr = new DccLocoAddress(address, t.canBeLongAddress(address));
+            DccLocoAddress addr = new DccLocoAddress(address, !(t.canBeShortAddress(address)));
             Boolean isForward = (Boolean) t.getThrottleInfo(addr, "IsForward");
             Float speedSetting = (Float) t.getThrottleInfo(addr, "SpeedSetting");
             Integer speedStepMode = (Integer) t.getThrottleInfo(addr, "SpeedStepMode");
@@ -224,7 +224,7 @@ public class JmriSRCPThrottleServer extends AbstractThrottleServer {
             DccLocoAddress addr = new DccLocoAddress(address, isLong);
             busList.add(bus);
             addressList.add(addr);
-            t.requestThrottle(addr, this);
+            t.requestThrottle(addr, this, false);
         }
     }
 
@@ -390,6 +390,7 @@ public class JmriSRCPThrottleServer extends AbstractThrottleServer {
             switch (e.getPropertyName()) {
                 case "SpeedSetting":
                 case "SpeedSteps":
+                case "IsForward":
                     try {
                         clientServer.sendStatus(bus, address);
                     } catch (IOException ioe) {

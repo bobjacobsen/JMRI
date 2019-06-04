@@ -178,7 +178,12 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
             eep.setDispatcherIntegration(true);
         }
         if (shared.getChild("colourwhilesetting") != null) {
-            eep.setSettingRouteColor(ColorUtil.stringToColor(shared.getChild("colourwhilesetting").getText()));  // NOI18N
+            try {
+                eep.setSettingRouteColor(ColorUtil.stringToColor(shared.getChild("colourwhilesetting").getText()));  // NOI18N
+            } catch (IllegalArgumentException e) {
+                eep.setSettingRouteColor(Color.BLACK);
+                log.error("Invalid color {}; using black", shared.getChild("colourwhilesetting").getText());
+            }
             int settingTimer = 2000;
             try {
                 settingTimer = Integer.parseInt(shared.getChild("settingTimer").getText());  // NOI18N
@@ -227,6 +232,9 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
                         String id = null;
                         if (destinationList.get(j).getAttribute("uniqueid") != null) {  // NOI18N
                             id = destinationList.get(j).getAttribute("uniqueid").getValue();  // NOI18N
+                            if (!id.startsWith("IN:")) {     // NOI18N
+                                id = "IN:" + id;    // NOI18N
+                            }
                         }
                         String destType = destinationList.get(j).getAttribute("type").getValue();  // NOI18N
                         String destItem = destinationList.get(j).getAttribute("item").getValue();  // NOI18N
@@ -280,31 +288,6 @@ public class EntryExitPairsXml extends AbstractXmlAdapter {
         }
         return true;
     }
-
-    /**
-     * Get a descriptive name for a given color value.
-     *
-     * @param color Integer value of a color to display on screen
-     * @return lower case color name in English; None if color entered is null
-     * @deprecated since 4.9.4; use {@link jmri.util.ColorUtil#colorToColorName(Color)} instead
-     */
-    @Deprecated
-    public static String colorToString(Color color) {
-        return ColorUtil.colorToColorName(color);
-    }
-
-    /**
-     * Get a color value for a color name.
-     *
-     * @param string String describing a color
-     * @return integer representing a screen color
-     * @deprecated since 4.9.4; use {@link jmri.util.ColorUtil#stringToColor(String)} instead
-     *
-     */
-    @Deprecated
-    public static Color stringToColor(String string) {
-        return ColorUtil.stringToColor(string);
-    }   // stringToColor
 
     @Override
     public int loadOrder() {

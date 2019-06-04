@@ -331,7 +331,6 @@ public class SectionTableAction extends AbstractTableAction<Section> {
     // add/create variables
     JmriJFrame addFrame = null;
     JTextField sysName = new JTextField(5);
-    JLabel sysNameFixed = new JLabel("");
     JTextField userName = new JTextField(17);
     JLabel sysNameLabel = new JLabel(Bundle.getMessage("LabelSystemName"));
     JLabel userNameLabel = new JLabel(Bundle.getMessage("LabelUserName"));
@@ -359,7 +358,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
     @Override
     protected void addPressed(ActionEvent e) {
         editMode = false;
-        if ((blockManager.getSystemNameList().size()) > 0) {
+        if ((blockManager.getNamedBeanSet().size()) > 0) {
             addEditPressed();
         } else {
             JOptionPane.showMessageDialog(null, rbx
@@ -374,7 +373,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             // no section - should never happen, but protects against a $%^#@ exception
             return;
         }
-        sysNameFixed.setText(sName);
+        sysName.setText(sName);
         editMode = true;
         addEditPressed();
     }
@@ -389,7 +388,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             JPanel p = new JPanel();
             p.setLayout(new FlowLayout());
             p.add(sysNameLabel);
-            p.add(sysNameFixed);
+            sysNameLabel.setLabelFor(sysName);
             p.add(sysName);
             p.add(_autoSystemName);
             _autoSystemName.addActionListener(new ActionListener() {
@@ -407,6 +406,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             JPanel pu = new JPanel();
             pu.setLayout(new FlowLayout());
             pu.add(userNameLabel);
+            userNameLabel.setLabelFor(userName);
             pu.add(userName);
             userName.setToolTipText(rbx.getString("SectionUserNameHint"));
             addFrame.getContentPane().add(pu);
@@ -463,6 +463,14 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             addBlock.setToolTipText(rbx.getString("AddBlockButtonHint"));
             p1.add(p13);
             addFrame.getContentPane().add(p1);
+            // add hint for order of blocks irt direction of travel
+            JPanel p34 = new JPanel();
+            p34.setLayout(new FlowLayout());
+            JLabel direction = new JLabel(rbx.getString("DirectionNote")); // placed below first table
+            direction.setFont(direction.getFont().deriveFont(0.9f * blockBox.getFont().getSize())); // a bit smaller
+            direction.setForeground(Color.gray);
+            p34.add(direction);
+            addFrame.getContentPane().add(p34);
             addFrame.getContentPane().add(new JSeparator());
             JPanel p31 = new JPanel();
             p31.setLayout(new FlowLayout());
@@ -532,13 +540,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             p33.add(entryPointTableScrollPane, BorderLayout.CENTER);
             addFrame.getContentPane().add(p33);
             p33.setVisible(true);
-            JPanel p34 = new JPanel();
-            p34.setLayout(new FlowLayout());
-            JLabel direction = new JLabel(rbx.getString("DirectionNote"));
-            direction.setFont(direction.getFont().deriveFont(0.9f * blockBox.getFont().getSize())); // a bit smaller
-            direction.setForeground(Color.gray);
-            p34.add(direction);
-            addFrame.getContentPane().add(p34);
+            // hint p34 is displayed 1 table up
             addFrame.getContentPane().add(new JSeparator());
             // set up pane for direction sensors
             forwardSensorBox = new JmriBeanComboBox(InstanceManager.sensorManagerInstance());
@@ -620,8 +622,8 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             sysNameLabel.setEnabled(true);
             create.setVisible(false);
             update.setVisible(true);
-            sysName.setVisible(false);
-            sysNameFixed.setVisible(true);
+            sysName.setVisible(true);
+            sysName.setEnabled(false);
             initializeEditInformation();
             addFrame.setTitle(Bundle.getMessage("TitleEditSection"));
         } else {
@@ -630,7 +632,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             create.setVisible(true);
             update.setVisible(false);
             sysName.setVisible(true);
-            sysNameFixed.setVisible(false);
+            sysName.setEnabled(true);
             autoSystemName();
             clearForCreate();
             addFrame.setTitle(Bundle.getMessage("TitleAddSection"));
@@ -970,42 +972,35 @@ public class SectionTableAction extends AbstractTableAction<Section> {
     }
 
     /**
-     * Build a combo box to select Blocks for his Section.
+     * Build a combo box to select Blocks for this Section.
      */
     private void initializeBlockCombo() {
-        List<String> allBlocks = blockManager.getSystemNameList();
         blockBox.removeAllItems();
         for (int j = blockBoxList.size(); j > 0; j--) {
             blockBoxList.remove(j - 1);
         }
         if (blockList.size() == 0) {
             // No blocks selected, all blocks are eligible
-            for (int i = 0; i < allBlocks.size(); i++) {
-                String bName = allBlocks.get(i);
-                Block b = blockManager.getBySystemName(bName);
-                if (b != null) {
-                    String uname = b.getUserName();
-                    if ((uname != null) && (!uname.equals(""))) {
-                        bName = bName + "( " + uname + " )";
-                    }
-                    blockBox.addItem(bName);
-                    blockBoxList.add(b);
+            for (Block b : blockManager.getNamedBeanSet()) {
+                String bName = b.getSystemName();
+                String uname = b.getUserName();
+                if ((uname != null) && (!uname.equals(""))) {
+                    bName = bName + " ( " + uname + " )";
                 }
+                blockBox.addItem(bName);
+                blockBoxList.add(b);
             }
         } else {
             // limit combo list to Blocks bonded to the currently selected Block that are not already in the Section
-            for (int i = 0; i < allBlocks.size(); i++) {
-                String bName = allBlocks.get(i);
-                Block b = blockManager.getBySystemName(bName);
-                if (b != null) {
-                    if ((!inSection(b)) && connected(b, endBlock)) {
-                        String uname = b.getUserName();
-                        if ((uname != null) && (!uname.equals(""))) {
-                            bName = bName + "( " + uname + " )";
-                        }
-                        blockBox.addItem(bName);
-                        blockBoxList.add(b);
+            for (Block b : blockManager.getNamedBeanSet()) {
+                String bName = b.getSystemName();
+                if ((!inSection(b)) && connected(b, endBlock)) {
+                    String uname = b.getUserName();
+                    if ((uname != null) && (!uname.equals(""))) {
+                        bName = bName + " ( " + uname + " )";
                     }
+                    blockBox.addItem(bName);
+                    blockBoxList.add(b);
                 }
             }
         }
@@ -1138,11 +1133,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
      */
     private void deleteSectionPressed(String sName) {
         final Section s = jmri.InstanceManager.getDefault(jmri.SectionManager.class).getBySystemName(sName);
-        String fullName = sName;
-        String uname = s.getUserName();
-        if (uname != null && uname.length() > 0) {
-            fullName = fullName + "(" + uname + ")";
-        }
+        String fullName = s.getFullyFormattedDisplayName();
         ArrayList<Transit> affectedTransits = jmri.InstanceManager.getDefault(jmri.TransitManager.class).getListUsingSection(s);
         final JDialog dialog = new JDialog();
         String msg = "";
@@ -1158,11 +1149,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             dialog.add(p1);
             for (int i = 0; i < affectedTransits.size(); i++) {
                 Transit aTransit = affectedTransits.get(i);
-                String tFullName = aTransit.getSystemName();
-                uname = aTransit.getUserName();
-                if (uname != null && uname.length() > 0) {
-                    tFullName = tFullName + "(" + uname + ")";
-                }
+                String tFullName = aTransit.getFullyFormattedDisplayName();
                 p1 = new JPanel();
                 p1.setLayout(new FlowLayout());
                 iLabel = new JLabel("   " + tFullName);
@@ -1173,6 +1160,8 @@ public class SectionTableAction extends AbstractTableAction<Section> {
             JPanel p3 = new JPanel();
             p3.setLayout(new FlowLayout());
             JLabel question = new JLabel(rbx.getString("Message18"));
+            p3.add(question);
+            dialog.add(p3);
             JPanel p4 = new JPanel();
             p4.setLayout(new FlowLayout());
             question = new JLabel(rbx.getString("Message18a"));
@@ -1550,7 +1539,7 @@ public class SectionTableAction extends AbstractTableAction<Section> {
                     String s = entryPointList.get(rx).getBlock().getSystemName();
                     String u = entryPointList.get(rx).getBlock().getUserName();
                     if ((u != null) && (!u.equals(""))) {
-                        s = s + "( " + u + " )";
+                        s = s + " ( " + u + " )";
                     }
                     return s;
 

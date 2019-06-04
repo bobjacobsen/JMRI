@@ -4,28 +4,26 @@ import java.util.List;
 
 /**
  * Interface for obtaining Logixs
- * <P>
+ * <p>
  * This doesn't have a "new" method, since Logixs are separately implemented,
  * instead of being system-specific.
- *
- *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ *
  * @author Dave Duchamp Copyright (C) 2007
  */
 public interface LogixManager extends Manager<Logix> {
 
     /**
-     * Method to create a new Logix if the Logix does not exist.
+     * Create a new Logix if the Logix does not exist.
      *
      * @param systemName the system name
      * @param userName   the user name
@@ -60,14 +58,6 @@ public interface LogixManager extends Manager<Logix> {
      * after a configuration file is loaded.
      */
     public void activateAllLogixs();
-
-    /**
-     * Get a list of all Logix system names.
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> getSystemNameList();
 
     /**
      * Delete Logix by removing it from the manager. The Logix must first be

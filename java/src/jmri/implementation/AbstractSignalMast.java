@@ -1,13 +1,15 @@
 package jmri.implementation;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Vector;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
+
+import javax.annotation.*;
+
 import jmri.InstanceManager;
 import jmri.SignalAppearanceMap;
 import jmri.SignalMast;
 import jmri.SignalSystem;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +110,7 @@ public abstract class AbstractSignalMast extends AbstractNamedBean
 
     /**
      * Set the held property of the signal mast.
-     * <P>
+     * <p>
      * Note that this does not directly effect the output on the layout; the
      * held property is a local variable which effects the aspect only via
      * higher-level logic.
@@ -165,6 +167,16 @@ public abstract class AbstractSignalMast extends AbstractNamedBean
         }
         return v;
     }
+
+    /**
+     * {@inheritDoc }
+     */
+    public String getMastType() { return mastType; }
+    public void setMastType(@Nonnull String type) { 
+        Objects.requireNonNull(type, "MastType cannot be null");
+        mastType = type;
+    }
+    String mastType;
 
     /**
      * Get a list of all the known aspects for this mast, including those that

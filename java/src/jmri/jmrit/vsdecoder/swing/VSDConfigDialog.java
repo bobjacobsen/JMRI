@@ -39,21 +39,19 @@ import org.slf4j.LoggerFactory;
  * Configuration dialog for setting up a new VSDecoder
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under
  * the terms of version 2 of the GNU General Public License as published
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- * <P>
  *
  * @author   Mark Underwood Copyright (C) 2011
  */
-@SuppressWarnings("deprecation")
 public class VSDConfigDialog extends JDialog {
 
     public static final String CONFIG_PROPERTY = "Config";
@@ -340,8 +338,8 @@ public class VSDConfigDialog extends JDialog {
             RosterEntry r = rosterSelector.getSelectedRosterEntries()[0];
             String profile = profileComboBox.getSelectedItem().toString();
             String path = VSDecoderManager.instance().getProfilePath(profile);
-            if ((path == null) || (profile == null)) {
-                log.debug("Path and/or Profile not selected.  Ignore Save button press.");
+            if (path == null) {
+                log.debug("Path not selected.  Ignore Save button press.");
                 return;
             } else {
                 r.setOpen(true);

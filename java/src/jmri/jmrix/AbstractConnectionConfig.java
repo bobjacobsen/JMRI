@@ -14,20 +14,52 @@ import javax.swing.JTextField;
 import jmri.InstanceManager;
 
 /**
- * Abstract base class for common implementation of the ConnectionConfig
+ * Abstract base class for common implementation of the ConnectionConfig.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2003
  */
 abstract public class AbstractConnectionConfig implements ConnectionConfig {
 
     /**
-     * Ctor for a functional object with no prexisting adapter. Expect that the
+     * Ctor for a functional object with no preexisting adapter. Expect that the
      * subclass setInstance() will fill the adapter member.
      */
+    @SuppressWarnings("deprecation")  // two temporary references during migration
     public AbstractConnectionConfig() {
         try {
+            // The next commented-out line replacing the following when Issue #4670 is resolved; see Manager
             // systemPrefixField = new JFormattedTextField(new jmri.util.swing.RegexFormatter("[A-Za-z]\\d*"));
-            systemPrefixField = new JFormattedTextField(new SystemPrefixFormatter());
+            systemPrefixField = new JFormattedTextField(new SystemPrefixFormatter()) {
+                @Override
+                public void setValue(Object value) {
+                    log.debug("setValue {} {}", value, getBackground());
+                    if (getBackground().equals(java.awt.Color.RED)) { // only if might have set before, leaving default otherwise
+                        setBackground(java.awt.Color.WHITE); 
+                        setToolTipText(null);
+                    }
+                    super.setValue(value);
+                    // check for legacy, and if so paint red (will have not gotten here if not valid)
+                    if (jmri.Manager.isLegacySystemPrefix(value.toString())) { // temporary reference during migration, see @SuppressWarnings above
+                        setBackground(java.awt.Color.RED);
+                        setToolTipText("This is a legacy prefix that should be migrated, ask on JMRIusers");
+                    }                    
+                }
+                
+                @Override
+                public void setText(String value) {
+                    log.debug("setText {} {}", value, getBackground());
+                    if (getBackground().equals(java.awt.Color.RED)) { // only if might have set before, leaving default otherwise
+                        setBackground(java.awt.Color.WHITE); 
+                        setToolTipText(null);
+                    }
+                    super.setText(value);
+                    // check for legacy, and if so paint red (will have not gotten here if not valid)
+                    if (jmri.Manager.isLegacySystemPrefix(value)) { // temporary reference during migration, see @SuppressWarnings above
+                        setBackground(java.awt.Color.RED);
+                        setToolTipText("This is a legacy prefix that should be migrated, ask on JMRIusers");
+                    }                    
+                }
+            };
             
             systemPrefixField.setPreferredSize(new JTextField("P123").getPreferredSize());
             systemPrefixField.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
@@ -37,6 +69,7 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
     }
 
     static public class SystemPrefixFormatter extends javax.swing.text.DefaultFormatter {
+        @Override
         public Object stringToValue(String text) throws java.text.ParseException {
             try {
                 if (jmri.Manager.getSystemPrefixLength(text)!= text.length()) {
@@ -49,6 +82,15 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
         }
     }
 
+    /**
+     * Complete connection adapter initialization, adding desired options to the
+     * Connection Configuration pane. Required action: set init to true.
+     * Optional actions:
+     * <ul>
+     *     <li>fill in connectionNameField</li>
+     *     <li>add ActionListeners to config fields eg. systemPrefixField to update adapter after change by the user</li>
+     * </ul>
+     */
     abstract protected void checkInitDone();
 
     abstract public void updateAdapter();
@@ -98,7 +140,7 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
         String optionDisplayName;
         JComponent optionSelection;
         Boolean advanced = true;
-        JLabel label = null;
+	JLabel label = null;
 
         public Option(String name, JComponent optionSelection, Boolean advanced) {
             this.optionDisplayName = name;
@@ -142,7 +184,7 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
 
     /**
      * Load the adapter with an appropriate object
-     * <i>unless</I> its already been set.
+     * <i>unless</i> it's already been set.
      */
     abstract protected void setInstance();
 
@@ -158,7 +200,7 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
      * JPanel contents need to handle their own gets/sets to the underlying
      * Connection content.
      *
-     * @param details The specific Swing object to be configured and filled.
+     * @param details the specific Swing object to be configured and filled
      */
     @Override
     abstract public void loadDetails(final JPanel details);
@@ -187,6 +229,7 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
             cL.gridy = i;
             gbLayout.setConstraints(systemPrefixLabel, cL);
             gbLayout.setConstraints(systemPrefixField, cR);
+	    systemPrefixLabel.setLabelFor(systemPrefixField);
             _details.add(systemPrefixLabel);
             _details.add(systemPrefixField);
             i++;
@@ -194,6 +237,7 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
             cL.gridy = i;
             gbLayout.setConstraints(connectionNameLabel, cL);
             gbLayout.setConstraints(connectionNameField, cR);
+	    connectionNameLabel.setLabelFor(connectionNameField);
             _details.add(connectionNameLabel);
             _details.add(connectionNameField);
             i++;
@@ -247,4 +291,5 @@ abstract public class AbstractConnectionConfig implements ConnectionConfig {
     }
 
     private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractThrottle.class);
+
 }

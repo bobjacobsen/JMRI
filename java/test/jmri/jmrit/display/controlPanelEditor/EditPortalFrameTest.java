@@ -21,7 +21,7 @@ public class EditPortalFrameTest {
         ControlPanelEditor frame = new ControlPanelEditor();
         CircuitBuilder cb = new CircuitBuilder(frame);
         OBlock ob = new OBlock("OB01");
-        EditPortalFrame t = new EditPortalFrame("Edit Portal Frame", cb, ob, false);
+        EditPortalFrame t = new EditPortalFrame("Edit Portal Frame", cb, ob);
         Assert.assertNotNull("exists", t);
         JUnitUtil.dispose(frame);
         JUnitUtil.dispose(t);
@@ -31,6 +31,7 @@ public class EditPortalFrameTest {
     @Before
     public void setUp() {
         JUnitUtil.setUp();
+        JUnitUtil.resetProfileManager();
     }
 
     @After

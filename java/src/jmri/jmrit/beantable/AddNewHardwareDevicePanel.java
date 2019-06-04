@@ -15,7 +15,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
 /**
- * JPanel to create a new JMRI devices HiJacked to serve other beantable tables.
+ * JPanel to create a new JMRI hardware device (used to add Turnout, Sensor, Reporter).
  *
  * @author Bob Jacobsen Copyright (C) 2009
  * @author Pete Cressman Copyright (C) 2010
@@ -44,13 +44,14 @@ public class AddNewHardwareDevicePanel extends jmri.util.swing.JmriPanel {
         c.gridx = 0;
         c.gridy = 1;
         p.add(sysAddressLabel, c);
+        sysAddressLabel.setLabelFor(sysAddress);
         c.gridy = 2;
         p.add(userNameLabel, c);
         c.gridx = 2;
         c.gridy = 1;
         c.anchor = java.awt.GridBagConstraints.WEST;
         c.weightx = 1.0;
-        c.fill = java.awt.GridBagConstraints.HORIZONTAL;  // text field will expand
+        c.fill = java.awt.GridBagConstraints.HORIZONTAL; // text field will expand
         c.gridy = 0;
         p.add(prefixBox, c);
         c.gridx = 3;
@@ -99,16 +100,6 @@ public class AddNewHardwareDevicePanel extends jmri.util.swing.JmriPanel {
                     }
                 });
         prefixBox.addActionListener(rangeListener);
-
-        /* System.out.println(jmri.InstanceManager.getList(jmri.jmrix.SystemConnectionMemo.class));
-         java.util.List<jmri.jmrix.SystemConnectionMemo> list 
-         = jmri.InstanceManager.getList(jmri.jmrix.SystemConnectionMemo.class);
-         if (list != null) {
-         for (jmri.jmrix.SystemConnectionMemo memo : list) {
-         System.out.println(memo.getUserName());
-         //if (menu != null) m.add(menu);
-         }
-         }*/
     }
 
     public void addLabels(String labelSystemName, String labelUserName) {

@@ -7,9 +7,9 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.WiringPiGpioProviderBase;
 
 /**
- * <P>
- * Tests for RaspberryPiSensorManager
- * </P>
+ * Implementation of RaspberryPiAdapter that eases
+ * checking whether data was forwarded or not
+ *
  * @author Paul Bender Copyright (C) 2016
  */
 public class PiGpioProviderScaffold extends WiringPiGpioProviderBase {
@@ -21,7 +21,7 @@ public class PiGpioProviderScaffold extends WiringPiGpioProviderBase {
 
      @Override
      public boolean hasPin(Pin pin) {
-        return false;
+        return true;
      }
 
      @Override

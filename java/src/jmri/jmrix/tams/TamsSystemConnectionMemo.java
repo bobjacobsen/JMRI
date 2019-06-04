@@ -14,7 +14,6 @@ import jmri.InstanceManager;
  * Based on work by Bob Jacobsen
  *
  * @author	Kevin Dickerson Copyright (C) 2012
- *
  */
 public class TamsSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo {
 
@@ -61,7 +60,7 @@ public class TamsSystemConnectionMemo extends jmri.jmrix.SystemConnectionMemo {
         jmri.InstanceManager.store(powerManager, jmri.PowerManager.class);
 
         InstanceManager.store(getProgrammerManager(), GlobalProgrammerManager.class);
-        InstanceManager.setAddressedProgrammerManager(getProgrammerManager());
+        InstanceManager.store(getProgrammerManager(), jmri.AddressedProgrammerManager.class);
 
         turnoutManager = new jmri.jmrix.tams.TamsTurnoutManager(this);
         jmri.InstanceManager.setTurnoutManager(turnoutManager);

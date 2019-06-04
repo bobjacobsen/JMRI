@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * Traffic controller for loopback CAN simulation.
  *
  * @author Bob Jacobsen Copyright (C) 2008
-  */
+ */
 public class LoopbackTrafficController extends jmri.jmrix.can.TrafficController {
 
     public LoopbackTrafficController() {
@@ -52,6 +52,15 @@ public class LoopbackTrafficController extends jmri.jmrix.can.TrafficController 
     }
 
     /**
+     * Forward a preformatted reply to the actual interface.
+     */
+    @Override
+    public void sendCanReply(CanReply r, CanListener reply) {
+        log.debug("TrafficController sendCanReply() " + r.toString());
+        notifyReply(r, reply);
+    }
+
+    /**
      * Add trailer to the outgoing byte stream.
      *
      * @param msg    The output byte stream
@@ -63,7 +72,7 @@ public class LoopbackTrafficController extends jmri.jmrix.can.TrafficController 
     }
 
     /**
-     * Determine how much many bytes the entire message will take, including
+     * Determine how many bytes the entire message will take, including
      * space for header and trailer
      *
      * @param m The message to be sent
@@ -125,7 +134,7 @@ public class LoopbackTrafficController extends jmri.jmrix.can.TrafficController 
     }
 
     /*
-     * Dummy; lookback doesn't parse serial messages
+     * Dummy; loopback doesn't parse serial messages
      */
     @Override
     protected boolean endOfMessage(AbstractMRReply r) {
@@ -134,7 +143,7 @@ public class LoopbackTrafficController extends jmri.jmrix.can.TrafficController 
     }
 
     /*
-     * Dummy; lookback doesn't parse serial messages
+     * Dummy; loopback doesn't parse serial messages
      */
     boolean endNormalReply(AbstractMRReply r) {
         log.error("endNormalReply unexpected");
@@ -142,7 +151,5 @@ public class LoopbackTrafficController extends jmri.jmrix.can.TrafficController 
     }
 
     private final static Logger log = LoggerFactory.getLogger(LoopbackTrafficController.class);
+
 }
-
-
-

@@ -13,20 +13,19 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation of the AudioSource class.
- * <P>
+ * <p>
  * Specific implementations will extend this base class.
- * <BR>
+ * <br>
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * </P><P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * </P>
  *
  * @author Matthew Harris copyright (c) 2009
  */
@@ -49,7 +48,6 @@ public abstract class AbstractAudioSource extends AbstractAudio implements Audio
     private int fadeInTime = 1000;
     private int fadeOutTime = 1000;
     private float fadeGain = 1.0f;
-    private float dopplerFactor = 1.0f;
     private long timeOfLastFadeCheck = 0;
     private long timeOfLastPositionCheck = 0;
     private int fading = Audio.FADE_NONE;
@@ -519,16 +517,6 @@ public abstract class AbstractAudioSource extends AbstractAudio implements Audio
         return this.fadeOutTime;
     }
 
-    @Override
-    public void setDopplerFactor(float dopplerFactor) {
-        this.dopplerFactor = dopplerFactor;
-    }
-
-    @Override
-    public float getDopplerFactor() {
-        return this.dopplerFactor;
-    }
-
     /**
      * Used to return the current calculated fade gain for this AudioSource
      *
@@ -843,6 +831,10 @@ public abstract class AbstractAudioSource extends AbstractAudio implements Audio
         return this.fading;
     }
 
+    // note that this doesn't properly implement the 
+    // contract in {@link NamedBean.toString()}, 
+    // which means things like tables and persistance 
+    // might not behave properly.
     @Override
     public String toString() {
         return "Pos: " + this.getPosition().toString()

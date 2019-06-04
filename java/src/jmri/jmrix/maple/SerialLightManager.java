@@ -6,19 +6,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implement light manager for Maple serial systems
- * <P>
- * System names are "KLnnn", where nnn is the bit number without padding.
- * <P>
+ * Implement LightManager for Maple serial systems.
+ * <p>
+ * System names are "KLnnn", where K is the user configurable system prefix,
+ * nnn is the bit number without padding.
+ * <p>
  * Based in part on SerialTurnoutManager.java
  *
  * @author Bob Jacobsen Copyright (C) 2008
  * @author Dave Duchamp Copyright (C) 2004, 2010
-  */
+ */
 public class SerialLightManager extends AbstractLightManager {
 
     MapleSystemConnectionMemo _memo = null;
-    protected String prefix = "M";
+    protected String prefix = "K";
 
     public SerialLightManager() {
 
@@ -114,8 +115,7 @@ public class SerialLightManager extends AbstractLightManager {
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddOutputEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddOutputEntryToolTip");
     }
 
     /**

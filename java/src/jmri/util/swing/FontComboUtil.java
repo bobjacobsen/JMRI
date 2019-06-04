@@ -1,10 +1,10 @@
 package jmri.util.swing;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
-import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -19,20 +19,19 @@ import org.slf4j.LoggerFactory;
 /**
  * This utility class provides methods that initialise and return a JComboBox
  * containing a specific sub-set of fonts installed on a users system.
- * <P>
+ * <p>
  * Optionally, the JComboBox can be displayed with a preview of the specific
  * font in the drop-down list itself.
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author Matthew Harris Copyright (C) 2011
  * @since 2.13.1
@@ -51,24 +50,25 @@ public class FontComboUtil {
     private static List<String> character = null;
     private static List<String> symbol = null;
 
-    private static boolean prepared = false;
+    private static volatile boolean prepared = false;
+    private static volatile boolean preparing = false;
 
     public static List<String> getFonts(int which) {
-        if (!prepared) {
+        if (!prepared && !preparing) { // prepareFontLists is synchronized; don't do it if you don't have to
             prepareFontLists();
         }
 
         switch (which) {
             case MONOSPACED:
-                return monospaced;
+                return new ArrayList<>(monospaced);
             case PROPORTIONAL:
-                return proportional;
+                return new ArrayList<>(proportional);
             case CHARACTER:
-                return character;
+                return new ArrayList<>(character);
             case SYMBOL:
-                return symbol;
+                return new ArrayList<>(symbol);
             default:
-                return all;
+                return new ArrayList<>(all);
         }
 
     }
@@ -80,7 +80,7 @@ public class FontComboUtil {
      * @return true if a symbol font; false if not
      */
     public static boolean isSymbolFont(String font) {
-        if (!prepared) {
+        if (!prepared && !preparing) { // prepareFontLists is synchronized; don't do it if you don't have to
             prepareFontLists();
         }
         return symbol.contains(font);
@@ -89,15 +89,14 @@ public class FontComboUtil {
     /**
      * Method to initialise the font lists on first access
      */
-    @SuppressFBWarnings(value="FE_FLOATING_POINT_EQUALITY", justification="font sizes are really quantized")
     public static synchronized void prepareFontLists() {
-
-        if (prepared) {
+        if (prepared || preparing) {
             // Normally we shouldn't get here except when the initialisation
             // thread has taken a bit longer than normal.
             log.debug("Subsequent call - no need to prepare");
             return;
         }
+        preparing = true;
 
         log.debug("Prepare font lists...");
 
@@ -109,8 +108,7 @@ public class FontComboUtil {
         all = new ArrayList<>();
 
         // Create a font render context to use for the comparison
-        FontRenderContext frc = new FontRenderContext(null, false, false);
-
+        Canvas c = new Canvas();
         // Loop through all available font families
         for (String s : GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()) {
 
@@ -119,6 +117,7 @@ public class FontComboUtil {
 
             // Retrieve a plain version of the current font family
             Font f = new Font(s, Font.PLAIN, 12);
+            FontMetrics fm = c.getFontMetrics(f);
 
             // Fairly naive test if this is a symbol font
 //            if (f.canDisplayUpTo("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")==-1) {
@@ -129,11 +128,8 @@ public class FontComboUtil {
 
                 // Check if the widths of a 'narrow' letter (I)
                 // a 'wide' letter (W) and a 'space' ( ) are the same.
-                double w;
-                // next line is the FE_FLOATING_POINT_EQUALITY annotated above
-                if (f.getStringBounds("I", frc).getWidth()
-                        == (w = f.getStringBounds("W", frc).getWidth())
-                        && w == f.getStringBounds(" ", frc).getWidth()) {
+                int w = fm.charWidth('I');
+                if (fm.charWidth('W') == w && fm.charWidth(' ') == w) {
                     // Yes, they're all the same width - add to the monospaced list
                     monospaced.add(s);
                 } else {
@@ -257,17 +253,18 @@ public class FontComboUtil {
      */
     public static JComboBox<String> getFontCombo(int which, final int size, final boolean previewOnly) {
         // Create a JComboBox containing the specified list of font families
-        JComboBox<String> fontList = new JComboBox<>(getFonts(which).toArray(new String[0]));
+        List<String> fonts = getFonts(which);
+        JComboBox<String> fontList = new JComboBox<>(fonts.toArray(new String[fonts.size()]));
 
         // Assign a custom renderer
         fontList.setRenderer((JList<? extends String> list, String family, // name of the current font family
                 int index, boolean isSelected, boolean hasFocus) -> {
             JPanel p = new JPanel();
             p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-            
+
             // Opaque only when rendering the actual list items
             p.setOpaque(index > -1);
-            
+
             // Invert colours when item selected in the list
             if (isSelected && index > -1) {
                 p.setBackground(list.getSelectionBackground());
@@ -327,6 +324,20 @@ public class FontComboUtil {
 
         });
         return fontList;
+    }
+
+    /**
+     * Determine if usable; starts the process of making it so if needed
+     *
+     * @return true if ready for use; false otherwise
+     */
+    public static boolean isReady() {
+        if (!prepared && !preparing) { // prepareFontLists is synchronized; don't do it if you don't have to
+            new Thread(() -> {
+                prepareFontLists();
+            }, "FontComboUtil Prepare").start();
+        }
+        return prepared;
     }
 
     private static final Logger log = LoggerFactory.getLogger(FontComboUtil.class);

@@ -1,16 +1,10 @@
 package jmri.jmrit.beantable;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
 import jmri.SignalMast;
 import jmri.jmrit.beantable.signalmast.SignalMastTableDataModel;
 import org.slf4j.Logger;
@@ -25,7 +19,7 @@ public class SignalMastTableAction extends AbstractTableAction<SignalMast> {
 
     /**
      * Create an action with a specific title.
-     * <P>
+     * <p>
      * Note that the argument is the Action title, not the title of the
      * resulting frame. Perhaps this should be changed?
      *
@@ -41,7 +35,7 @@ public class SignalMastTableAction extends AbstractTableAction<SignalMast> {
 
     /**
      * Create the JTable DataModel, along with the changes for the specific case
-     * of Signal Masts
+     * of Signal Masts.
      */
     @Override
     protected void createModel() {
@@ -87,7 +81,7 @@ public class SignalMastTableAction extends AbstractTableAction<SignalMast> {
         JMenuBar menuBar = f.getJMenuBar();
         int pos = menuBar.getMenuCount() -1; // count the number of menus to insert the TableMenu before 'Window' and 'Help'
         int offset = 1;
-        log.debug("setMenuBar number of menu items = " + pos);
+        log.debug("setMenuBar number of menu items = {}", pos);
         for (int i = 0; i <= pos; i++) {
             if (menuBar.getComponent(i) instanceof JMenu) {
                 if (((JMenu) menuBar.getComponent(i)).getText().equals(Bundle.getMessage("MenuHelp"))) {
@@ -106,44 +100,6 @@ public class SignalMastTableAction extends AbstractTableAction<SignalMast> {
                 frame.setVisible(true);
             }
         });
-    }
-
-    /**
-     * @deprecated since 4.5.7
-     */
-    @Deprecated
-    public static class MyComboBoxEditor extends DefaultCellEditor {
-
-        public MyComboBoxEditor(Vector<String> items) {
-            super(new JComboBox<String>(items));
-        }
-    }
-
-    /**
-     * @deprecated since 4.5.7
-     */
-    @Deprecated
-    public static class MyComboBoxRenderer extends JComboBox<String> implements TableCellRenderer {
-
-        public MyComboBoxRenderer(Vector<String> items) {
-            super(items);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                setForeground(table.getSelectionForeground());
-                super.setBackground(table.getSelectionBackground());
-            } else {
-                setForeground(table.getForeground());
-                setBackground(table.getBackground());
-            }
-
-            // Select the current value
-            setSelectedItem(value);
-            return this;
-        }
     }
 
     @Override

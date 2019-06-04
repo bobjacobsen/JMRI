@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Table data model for display of Roster variable values.
- * <P>
+ * <p>
  * Any desired ordering, etc, is handled outside this class.
- * <P>
+ * <p>
  * The initial implementation doesn't automatically update when roster entries
  * change, doesn't allow updating of the entries, and only shows some of the
  * fields. But it's a start....
@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
  * @since 2.7.5
  */
 public class LayoutBlockRouteTableModel extends javax.swing.table.AbstractTableModel implements PropertyChangeListener {
-
-    //static final ResourceBundle rb = ResourceBundle.getBundle("jmri.jmrit.display.layoutEditor.LayoutEditorBundle");
 
     public static final int DESTCOL = 0;
     static final int NEXTHOPCOL = 1;

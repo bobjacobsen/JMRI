@@ -4,7 +4,7 @@ import java.util.ResourceBundle;
 import jmri.InstanceManager;
 
 /**
- * Does configuration for Nmra Net communications implementations.
+ * Does configuration for CAN communications implementations.
  *
  * @author Bob Jacobsen Copyright (C) 2010
  */
@@ -34,7 +34,6 @@ public class CanConfigurationManager extends ConfigurationManager {
         return false; // nothing, by default
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T get(Class<?> T) {
         if (adapterMemo.getDisabled()) {

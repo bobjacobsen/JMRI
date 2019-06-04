@@ -7,31 +7,34 @@ import javax.annotation.Nonnull;
 
 /**
  * Interface for obtaining Lights.
- * <P>
+ * <p>
  * This doesn't have a "new" method, as Lights are separately implemented,
  * instead of being system-specific.
- * <P>
+ * <p>
  * Based on SignalHeadManager.java
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ *
  * @author Dave Duchamp Copyright (C) 2004
  */
-public interface LightManager extends Manager<Light> {
+public interface LightManager extends ProvidingManager<Light> {
 
     /**
-     * Locate via user name, then system name if needed. If that fails, create a
-     * new Light: If the name is a valid system name, it will be used for the
-     * new Light. Otherwise, the makeSystemName method will attempt to turn it
+     * Get the Light with the user name, then system name if needed; if that fails, create a
+     * new Light. 
+     * If the name is a valid system name, it will be used for the new Light.
+     * Otherwise, the {@link Manager#makeSystemName} method will attempt to turn it
      * into a valid system name.
+     * <p>This provides the same function as {@link ProvidingManager#provide}
+     * which has a more generic form.
      *
      * @param name User name, system name, or address which can be promoted to
      *             system name
@@ -40,13 +43,18 @@ public interface LightManager extends Manager<Light> {
     @Nonnull
     public Light provideLight(@Nonnull String name);
 
-    // to free resources when no longer used
+    /** {@inheritDoc} */
+    @Override
+    default public Light provide(@Nonnull String name) throws IllegalArgumentException { return provideLight(name); }
+
+    /** {@inheritDoc} */
     @Override
     public void dispose();
 
     /**
-     * Locate via user name, then system name if needed. Does not create a new
-     * one if nothing found
+     * Get an existing Light or return null if it doesn't exist. 
+     * 
+     * Locates via user name, then system name if needed.
      *
      * @param name User name, system name, or address which can be promoted to
      *             system name
@@ -61,21 +69,22 @@ public interface LightManager extends Manager<Light> {
     public Light getLight(@Nonnull String name);
 
     /**
-     * Return an instance with the specified system and user names. Note that
+     * Return a Light with the specified system and user names. 
+     * Note that
      * two calls with the same arguments will get the same instance; there is
      * only one Light object representing a given physical Light and therefore
      * only one with a specific system or user name.
-     * <P>
+     * <p>
      * This will always return a valid object reference; a new object will be
      * created if necessary. In that case:
-     * <UL>
-     * <LI>If a null reference is given for user name, no user name will be
+     * <ul>
+     * <li>If a null reference is given for user name, no user name will be
      * associated with the Light object created; a valid system name must be
      * provided
-     * <LI>If both names are provided, the system name defines the hardware
+     * <li>If both names are provided, the system name defines the hardware
      * access of the desired sensor, and the user address is associated with it.
      * The system name must be valid.
-     * </UL>
+     * </ul>
      * Note that it is possible to make an inconsistent request if both
      * addresses are provided, but the given values are associated with
      * different objects. This is a problem, and we don't have a good solution
@@ -122,11 +131,11 @@ public interface LightManager extends Manager<Light> {
     public boolean validSystemNameConfig(@Nonnull String systemName);
 
     /**
-     * Normalize the system name
-     * <P>
+     * Normalize the system name.
+     * <p>
      * This routine is used to ensure that each system name is uniquely linked
      * to one C/MRI bit, by removing extra zeros inserted by the user.
-     * <P>
+     * <p>
      * This routine is implemented in AbstractLightManager to return the same
      * name. If a system implementation has names that could be normalized, the
      * system-specific Light Manager should override this routine and supply a
@@ -137,14 +146,15 @@ public interface LightManager extends Manager<Light> {
      */
     @CheckReturnValue
     @Nonnull
+    @Override
     public String normalizeSystemName(@Nonnull String systemName);
 
     /**
-     * Convert the system name to a normalized alternate name
-     * <P>
+     * Convert the system name to a normalized alternate name.
+     * <p>
      * This routine is to allow testing to ensure that two Lights with alternate
      * names that refer to the same output bit are not created.
-     * <P>
+     * <p>
      * This routine is implemented in AbstractLightManager to return "". If a
      * system implementation has alternate names, the system specific Light
      * Manager should override this routine and supply the alternate name.
@@ -155,16 +165,6 @@ public interface LightManager extends Manager<Light> {
     @CheckReturnValue
     @Nonnull
     public String convertSystemNameToAlternate(@Nonnull String systemName);
-
-    /**
-     * Get a list of all Light system names.
-     *
-     * @return a list of all system names
-     */
-    @CheckReturnValue
-    @Nonnull
-    @Override
-    public List<String> getSystemNameList();
 
     /**
      * Activate the control mechanism for each Light controlled by this

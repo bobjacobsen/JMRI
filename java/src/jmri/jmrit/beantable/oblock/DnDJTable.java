@@ -33,15 +33,14 @@ import org.slf4j.LoggerFactory;
  * GUI to define OBlocks
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author	Pete Cressman (C) 2010
  */
@@ -67,6 +66,7 @@ public class DnDJTable extends JTable implements DropTargetListener,
         new DropTarget(this, DnDConstants.ACTION_COPY, this);
     }
 
+    @Override
     public boolean editCellAt(int row, int column, java.util.EventObject e) {
         boolean res = super.editCellAt(row, column, e);
         java.awt.Component c = this.getEditorComponent();
@@ -299,10 +299,12 @@ public class DnDJTable extends JTable implements DropTargetListener,
         }
 
         //////////////export
+        @Override
         public int getSourceActions(JComponent c) {
             return COPY;
         }
 
+        @Override
         public Transferable createTransferable(JComponent c) {
             JTable table = (JTable) c;
             int col = table.getSelectedColumn();
@@ -318,12 +320,14 @@ public class DnDJTable extends JTable implements DropTargetListener,
                     (String) table.getModel().getValueAt(row, col), row, col, _table);
             return new TableCellTransferable(tcss);
         }
-
+    
+        @Override
         public void exportDone(JComponent c, Transferable t, int action) {
             //if (log.isDebugEnabled()) log.debug("DnDHandler.exportDone at table ");
         }
 
         /////////////////////import
+        @Override
         public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
             //if (log.isDebugEnabled()) log.debug("DnDHandler.canImport ");
 
@@ -343,6 +347,7 @@ public class DnDJTable extends JTable implements DropTargetListener,
             return true;
         }
 
+        @Override
         public boolean importData(JComponent comp, Transferable tr) {
             //if (log.isDebugEnabled()) log.debug("DnDHandler.importData ");
             DataFlavor[] flavors = new DataFlavor[]{TABLECELL_FLAVOR, DataFlavor.stringFlavor};

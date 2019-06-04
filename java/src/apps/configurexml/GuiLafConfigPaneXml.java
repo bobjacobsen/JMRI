@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handle XML persistance of SwingGuiLaf default values.
- * <P>
+ * <p>
  * This class is named as being the persistant form of the GuiLafConfigPane
  * class, but there's no object of that form created when this is read back.
  * Instead, this interacts directly with Swing and the default Locale.
@@ -94,6 +94,7 @@ public class GuiLafConfigPaneXml extends jmri.configurexml.AbstractXmlAdapter {
         if (countryAttr != null && langAttr != null && varAttr != null) {
             Locale locale = new Locale(langAttr.getValue(), countryAttr.getValue(), varAttr.getValue());
             
+            log.debug("About to setDefault Locale", new Exception(""));
             Locale.setDefault(locale);
             javax.swing.JComponent.setDefaultLocale(locale);
             javax.swing.JOptionPane.setDefaultLocale(locale);

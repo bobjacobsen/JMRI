@@ -8,14 +8,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Table data model for display the through path of a layoutblock
- * <P>
+ * <p>
  * Any desired ordering, etc, is handled outside this class.
  *
  * @author Kevin Dickerson Copyright (C) 2011
  */
 public class LayoutBlockThroughPathsTableModel extends javax.swing.table.AbstractTableModel implements PropertyChangeListener {
-
-    //static final ResourceBundle rb = ResourceBundle.getBundle("jmri.jmrit.display.layoutEditor.LayoutEditorBundle");
 
     public static final int SOURCECOL = 0;
     static final int DESTINATIONCOL = 1;

@@ -9,11 +9,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manage the C/MRI serial-specific Sensor implementation.
- * <P>
- * System names are "CSnnnn", where nnnn is the sensor number without padding.
- * <P>
+ * <p>
+ * System names are "CSnnnn", where C is the user-configurable system prefix,
+ * nnnn is the sensor number without padding.
+ * <p>
  * Sensors are numbered from 1.
- * <P>
+ * <p>
  * This is a SerialListener to handle the replies to poll messages. Those are
  * forwarded to the specific SerialNode object corresponding to their origin for
  * processing of the data.
@@ -26,10 +27,10 @@ public class SerialSensorManager extends jmri.managers.AbstractSensorManager
 
     /**
      * Number of sensors per UA in the naming scheme.
-     * <P>
+     * <p>
      * The first UA (node address) uses sensors from 1 to SENSORSPERUA-1, the
      * second from SENSORSPERUA+1 to SENSORSPERUA+(SENSORSPERUA-1), etc.
-     * <P>
+     * <p>
      * Must be more than, and is generally one more than,
      * {@link SerialNode#MAXSENSORS}
      *
@@ -125,6 +126,7 @@ public class SerialSensorManager extends jmri.managers.AbstractSensorManager
     /**
      * Method to register any orphan Sensors when a new Serial Node is created
      */
+    @SuppressWarnings("deprecation") // needs careful unwinding for Set operations
     public void registerSensorsForNode(SerialNode node) {
         // get list containing all Sensors
         java.util.Iterator<String> iter
@@ -168,8 +170,8 @@ public class SerialSensorManager extends jmri.managers.AbstractSensorManager
             //Address format passed is in the form node:address
             int seperator = curAddress.indexOf(":");
             try {
-                nAddress = Integer.valueOf(curAddress.substring(0, seperator)).intValue();
-                bitNum = Integer.valueOf(curAddress.substring(seperator + 1)).intValue();
+                nAddress = Integer.parseInt(curAddress.substring(0, seperator));
+                bitNum = Integer.parseInt(curAddress.substring(seperator + 1));
             } catch (NumberFormatException ex) {
                 log.error("Unable to convert {} Hardware Address to a number", curAddress);
                 throw new JmriException("Unable to convert " + curAddress + " to a valid Hardware Address");
@@ -270,8 +272,7 @@ public class SerialSensorManager extends jmri.managers.AbstractSensorManager
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddInputEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddInputEntryToolTip");
     }
 
     private final static Logger log = LoggerFactory.getLogger(SerialSensorManager.class);

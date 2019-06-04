@@ -1,9 +1,9 @@
 package jmri.jmrit.operations.locations.tools;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.text.MessageFormat;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -12,6 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jmri.InstanceManager;
 import jmri.jmrit.operations.OperationsFrame;
 import jmri.jmrit.operations.locations.Location;
@@ -22,8 +27,6 @@ import jmri.jmrit.operations.routes.RouteLocation;
 import jmri.jmrit.operations.setup.Control;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Frame to show which trains can service this location
@@ -155,21 +158,24 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
                             .acceptsTypeName((String) typeComboBox.getSelectedItem()))
                             && (train.isLocalSwitcher() || (rl.getTrainDirection() & _location.getTrainDirections()) != 0)
                             && (train.isLocalSwitcher() || _track == null || ((rl.getTrainDirection() & _track
-                            .getTrainDirections()) != 0)) && (_track == null || _track.acceptsDropTrain(train))) {
+                            .getTrainDirections()) != 0)) 
+                            && (_track == null || _track.acceptsDropTrain(train))) {
                         setout = true;
                     }
                     // now display results
                     if (showAllTrainsCheckBox.isSelected() || pickup || setout) {
                         addItemLeft(pTrains, new JLabel(train.getName()), 0, y);
+                        // train direction when servicing this location
+                        addItem(pTrains, new JLabel(rl.getTrainDirectionString()), 1, y);
                         if (pickup) {
-                            addItem(pTrains, new JLabel(Bundle.getMessage("OkayPickUp")), 1, y);
+                            addItem(pTrains, new JLabel(Bundle.getMessage("OkayPickUp")), 2, y);
                         } else {
-                            addItem(pTrains, new JLabel(Bundle.getMessage("NoPickUp")), 1, y);
+                            addItem(pTrains, new JLabel(Bundle.getMessage("NoPickUp")), 2, y);
                         }
                         if (setout) {
-                            addItem(pTrains, new JLabel(Bundle.getMessage("OkaySetOut")), 2, y);
+                            addItem(pTrains, new JLabel(Bundle.getMessage("OkaySetOut")), 3, y);
                         } else {
-                            addItem(pTrains, new JLabel(Bundle.getMessage("NoSetOut")), 2, y);
+                            addItem(pTrains, new JLabel(Bundle.getMessage("NoSetOut")), 3, y);
                         }
                     }
                     y++;
@@ -231,7 +237,9 @@ public class ShowTrainsServingLocationFrame extends OperationsFrame implements j
 
     @Override
     public void dispose() {
-        _location.removePropertyChangeListener(this);
+        if (_location != null) {
+            _location.removePropertyChangeListener(this);
+        }
         if (_track != null) {
             _track.removePropertyChangeListener(this);
         }

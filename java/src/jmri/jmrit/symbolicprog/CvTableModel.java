@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Table data model for display of CvValues in symbolic programmer.
- * <P>
+ * <p>
  * This represents the contents of a single decoder, so the Programmer used to
  * access it is a data member.
  *
@@ -387,7 +387,11 @@ public class CvTableModel extends javax.swing.table.AbstractTableModel implement
         _compareButtons.removeAllElements();
         _compareButtons = null;
 
+        _cvAllMap.clear();
+        _cvAllMap = null;
+        
         _status = null;
+        
     }
 
     private final static Logger log = LoggerFactory.getLogger(CvTableModel.class);

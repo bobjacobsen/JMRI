@@ -7,10 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implement light manager for CMRI serial systems
- * <P>
- * System names are "CLnnn", where nnn is the bit number without padding.
- * <P>
+ * Implement LightManager for CMRI serial systems.
+ * <p>
+ * System names are "CLnnn", where C is the user-configurable system prefix,
+ * nnn is the bit number without padding.
+ * <p>
  * Based in part on SerialTurnoutManager.java
  *
  * @author Dave Duchamp Copyright (C) 2004
@@ -128,8 +129,7 @@ public class SerialLightManager extends AbstractLightManager {
      */
     @Override
     public String getEntryToolTip() {
-        String entryToolTip = Bundle.getMessage("AddOutputEntryToolTip");
-        return entryToolTip;
+        return Bundle.getMessage("AddOutputEntryToolTip");
     }
 
     private final static Logger log = LoggerFactory.getLogger(SerialLightManager.class);

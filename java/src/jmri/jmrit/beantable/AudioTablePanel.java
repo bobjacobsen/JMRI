@@ -16,7 +16,6 @@ import javax.swing.SortOrder;
 import javax.swing.table.TableRowSorter;
 import jmri.jmrit.beantable.AudioTableAction.AudioTableDataModel;
 import jmri.swing.RowSorterUtil;
-import jmri.util.SystemNameComparator;
 import jmri.util.swing.XTableColumnModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +24,15 @@ import org.slf4j.LoggerFactory;
  *
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
+ * <p>
  *
  * @author Bob Jacobsen Copyright (C) 2003
  * @author Matthew Harris copyright (c) 2009
@@ -76,7 +75,6 @@ public class AudioTablePanel extends JPanel {
 
         bufferDataModel = bufferModel;
         sorter = new TableRowSorter<>(bufferDataModel);
-        sorter.setComparator(AudioTableDataModel.SYSNAMECOL, new SystemNameComparator());
         RowSorterUtil.setSortOrder(sorter, AudioTableDataModel.SYSNAMECOL, SortOrder.ASCENDING);
         bufferDataTable = bufferDataModel.makeJTable(bufferDataModel.getMasterClassName(), bufferDataModel, sorter);
         bufferDataScroll = new JScrollPane(bufferDataTable);
@@ -85,7 +83,6 @@ public class AudioTablePanel extends JPanel {
 
         sourceDataModel = sourceModel;
         sorter = new TableRowSorter<>(sourceDataModel);
-        sorter.setComparator(AudioTableDataModel.SYSNAMECOL, new SystemNameComparator());
         RowSorterUtil.setSortOrder(sorter, AudioTableDataModel.SYSNAMECOL, SortOrder.ASCENDING);
         sourceDataTable = sourceDataModel.makeJTable(sourceDataModel.getMasterClassName(), sourceDataModel, sorter);
         sourceDataScroll = new JScrollPane(sourceDataTable);

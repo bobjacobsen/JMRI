@@ -12,26 +12,25 @@ import javax.annotation.Nonnull;
 
 /**
  * Implementation of a Transit Manager
- * <P>
+ * <p>
  * This doesn't need an interface, since Transits are globaly implemented,
  * instead of being system-specific.
- * <P>
+ * <p>
  * Note that Transit system names must begin with IZ, and be followed by a
  * string, usually, but not always, a number. All alphabetic characters in a
  * Transit system name must be upper case. This is enforced when a Transit is
  * created.
- * <BR>
+ * <br>
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * </P><P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * </P>
  *
  * @author Dave Duchamp Copyright (C) 2008, 2011
  */
@@ -189,17 +188,10 @@ public class TransitManager extends AbstractManager<Transit> implements Property
      */
     public ArrayList<Transit> getListUsingSection(Section s) {
         ArrayList<Transit> list = new ArrayList<>();
-        List<String> tList = getSystemNameList();
-        for (int i = 0; i < tList.size(); i++) {
-            String tName = tList.get(i);
-            if ((tName != null) && (tName.length() > 0)) {
-                Transit tTransit = getTransit(tName);
-                if (tTransit != null) {
-                    if (tTransit.containsSection(s)) {
-                        // this Transit uses the specified Section
-                        list.add(tTransit);
-                    }
-                }
+        for (Transit tTransit : getNamedBeanSet()) {
+            if (tTransit.containsSection(s)) {
+                // this Transit uses the specified Section
+                list.add(tTransit);
             }
         }
         return list;
@@ -207,17 +199,10 @@ public class TransitManager extends AbstractManager<Transit> implements Property
 
     public ArrayList<Transit> getListUsingBlock(Block b) {
         ArrayList<Transit> list = new ArrayList<>();
-        List<String> tList = getSystemNameList();
-        for (int i = 0; i < tList.size(); i++) {
-            String tName = tList.get(i);
-            if ((tName != null) && (tName.length() > 0)) {
-                Transit tTransit = getTransit(tName);
-                if (tTransit != null) {
-                    if (tTransit.containsBlock(b)) {
-                        // this Transit uses the specified Section
-                        list.add(tTransit);
-                    }
-                }
+        for (Transit tTransit : getNamedBeanSet()) {
+            if (tTransit.containsBlock(b)) {
+                // this Transit uses the specified Section
+                list.add(tTransit);
             }
         }
         return list;
@@ -225,18 +210,11 @@ public class TransitManager extends AbstractManager<Transit> implements Property
 
     public ArrayList<Transit> getListEntryBlock(Block b) {
         ArrayList<Transit> list = new ArrayList<>();
-        List<String> tList = getSystemNameList();
-        for (int i = 0; i < tList.size(); i++) {
-            String tName = tList.get(i);
-            if ((tName != null) && (tName.length() > 0)) {
-                Transit tTransit = getTransit(tName);
-                if (tTransit != null) {
-                    ArrayList<Block> entryBlock = tTransit.getEntryBlocksList();
-                    if (entryBlock.contains(b)) {
-                        // this Transit uses the specified Section
-                        list.add(tTransit);
-                    }
-                }
+        for (Transit tTransit : getNamedBeanSet()) {
+            ArrayList<Block> entryBlock = tTransit.getEntryBlocksList();
+            if (entryBlock.contains(b)) {
+                // this Transit uses the specified Section
+                list.add(tTransit);
             }
         }
         return list;
@@ -250,6 +228,7 @@ public class TransitManager extends AbstractManager<Transit> implements Property
      */
     @Deprecated
     static public TransitManager instance() {
+        jmri.util.Log4JUtil.deprecationWarning(log, "instance");        
         return InstanceManager.getDefault(TransitManager.class);
     }
 
@@ -257,4 +236,6 @@ public class TransitManager extends AbstractManager<Transit> implements Property
     public String getBeanTypeHandled() {
         return Bundle.getMessage("BeanNameTransit");
     }
+
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TransitManager.class);
 }

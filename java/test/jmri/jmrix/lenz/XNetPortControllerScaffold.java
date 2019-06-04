@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of XNetPortController that eases
- * checking whether data was forwarded or not
+ * checking whether data was forwarded or not.
  * 
  * @author	Bob Jacobsen Copyright (C) 2006, 2015
  */
@@ -17,10 +17,10 @@ public class XNetPortControllerScaffold extends XNetSimulatorPortController {
 
     private final static Logger log = LoggerFactory.getLogger(XNetPortControllerScaffold.class);
 
-    @Override
+    /*@Override
     public java.util.Vector<String> getPortNames() {
         return null;
-    }
+    }*/
 
     @Override
     public String openPort(String portName, String appName) {
@@ -29,6 +29,11 @@ public class XNetPortControllerScaffold extends XNetSimulatorPortController {
 
     @Override
     public void configure() {
+    }
+
+    @Override
+    public String getCurrentPortName() {
+         return("testport");
     }
 
     @Override

@@ -12,20 +12,18 @@ import purejavacomm.UnsupportedCommOperationException;
 
 /**
  * Implements SerialPortAdapter for GridConnect adapters.
- * <P>
+ * <p>
  * This connects a CAN-USB CAN adapter via a serial com port. Normally
  * controlled by the SerialDriverFrame class.
- * <P>
  *
  * @author Andrew Crosland Copyright (C) 2008
  * @author Bob Jacobsen Copyright (C) 2009, 2012
- * 
  */
 public class SerialDriverAdapter extends GcSerialDriverAdapter implements jmri.jmrix.SerialPortAdapter {
 
     public SerialDriverAdapter() {
         super();
-        mBaudRate = "230,400";
+        mBaudRate = Bundle.getMessage("Baud230400");
     }
 
     /**
@@ -33,7 +31,10 @@ public class SerialDriverAdapter extends GcSerialDriverAdapter implements jmri.j
      */
     @Override
     public String[] validBaudRates() {
-        return new String[]{"57,600", "115,200", "230,400", "250,000", "288,000", "333,333", "460,800"};
+        return new String[]{Bundle.getMessage("Baud57600"), Bundle.getMessage("Baud115200"),
+                Bundle.getMessage("Baud230400"), Bundle.getMessage("Baud250000"),
+                Bundle.getMessage("Baud288000"), Bundle.getMessage("Baud333333"),
+                Bundle.getMessage("Baud460800")};
     }
 
     /**

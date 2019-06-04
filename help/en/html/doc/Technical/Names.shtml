@@ -24,11 +24,11 @@
   media="print">
   <link rel="icon" href="/images/jmri.ico" type="image/png">
   <link rel="home" title="Home" href="/"><!-- /Style -->
-</head><!--#include virtual="/Header" -->
+</head><!--#include virtual="/Header.shtml" -->
 
 <body>
   <div id="mBody">
-    <!--#include virtual="Sidebar" -->
+    <!--#include virtual="Sidebar.shtml" -->
 
     <div id="mainContent">
       <h1>JMRI: Names and Naming</h1>
@@ -66,33 +66,21 @@
 
       <ul>
         <li>Aspects for signals</li>
-
         <li>Blocks (track segments)</li>
-
         <li>Conditionals (for logiX, although these are not entirely named beans)</li>
-
         <li>signal mast Groups</li>
-        
         <li>signal Heads</li>
-        
         <li>signal masts (F, for some reason)</li>
-
         <li>Lights (a type of output)</li>
-
+        <li>eNtry/exit destiNation points</li>
         <li>Memories</li>
-
         <li>Outputs</li>
-
         <li>Power districts and subdistricts</li>
-
-        <li>Routes</li>
-
+        <li>Reporters</li>
+        <li>Routes (shared for historical reasons with Reporters)</li>
         <li>input Sensors</li>
-
         <li>Turnouts</li>
-
         <li>logiX</li>
-        
         <li>Sections (Y, for some reason)</li>
         
       </ul>Some of these are associated with a specific hardware
@@ -119,22 +107,22 @@
       these "system names". JMRI code will map these to and from
       whatever information the hardware may need.</p>
 
+      <a name="format" id="format"></a>
       <h2>System Name Format</h2>
       
-      A system name is formed from a
-      short "system prefix" representing the hardware system, followed by a
-      single upper case "type letter" indicating the type of the object, 
-      followed by a
-      system- and type-specific "suffix string" identifying a specific
-      object. 
+      A system name is formed from a short "system prefix" representing
+      the hardware system, followed by a single upper case "type letter"
+      indicating the type of the object, followed by a system- and
+      type-specific "suffix string" identifying a specific object.
       <ul>
-        <li>The system prefix is a single uppercase or lowercase letter, optionally followed
-            by one or more digits. Special characters are not allowed.
-            This simple form allows us to always fine the system prefix
+        <li>The system prefix is a single uppercase or lowercase letter,
+            optionally followed by one or more digits. Special characters
+            are not allowed.
+            This simple form allows us to always find the system prefix
             and type letter even if we don't know the full list of 
             hardware systems involved.
         <li>The type letter defines the type of model-railroad object, 
-            such as (T)urnout or (S)ensor.
+            such as (T)urnout or (S)ensor, see <a href="#types">below</a>.
         <li>The suffix string is meant to be related to the hardware
             addressing for the specific hardware system, but is otherwise unconstrained.
             Some are simple numbers, such as a device address. Others
@@ -145,7 +133,7 @@
       <p>Examples:</p>
 
       Note: These assume the default values of system prefix letters,
-      but they certainly could have been defined to be something else.
+      but they certainly could have been defined differently.
       
       <ul>
         <li>LT23 - <u>L</u>ocoNet <u>T</u>urnout <u>23</u>.</li>
@@ -180,9 +168,18 @@
       "Y". You can also use an upper case letter followed by
       digits, e.g. "N1" and "N2".</p>
 
-      <h4>Default System Letters</h4>Note that some of these are
-      placeholders, and have no underlying implementation. (Links
-      are to JMRI pages with more information)
+      <h4>Default System Letters</h4>
+      <p>Note that some of these are placeholders, and have no underlying
+      implementation. (Links are to JMRI pages with more information)</p>
+      
+      <p>Also note that some older implementations used 
+      formats that don't meet the current standard, with 
+      system <u>letters</u> such as
+      "DX", "DCCPP", "DP", "MR", "MC", "PI", "TM".
+      These 
+      <a href="../../setup/MigrateSystemPrefixes.shtml">need to be migrated</a>,
+      and we have a have a 
+      <a href="../../setup/MigrateSystemPrefixes.shtml">process in place to do that</a>.
 
       <ul>
         <li>A CTI <a href=
@@ -226,8 +223,7 @@
 
         <li>M Model railroad layout control buses, including
         <a href="../../hardware/openlcb/index.shtml">OpenLCB</a>
-        and <a href="../../hardware/can/cbus/index.shtml">MERG
-        CBUS</a>
+        and <a href="../../hardware/can/cbus/index.shtml">MERG CBUS</a>
         <br><a href="../../hardware/mrc/index.shtml">Model Rectifier Corp (MRC)</a>
         <br><a href="../../hardware/marklin/index.shtml">Marklin CS2</a>
         </li>
@@ -308,6 +304,13 @@
         mast with two heads looks like an F from the side? All the
         good letters were taken)</li>
 
+        <li>G signal Group - A set of signal heads to a main masts.
+        For new items using IG at the start is recommended; the example
+        name is "IG12". For historical reasons, Groups were not required to have
+        a system prefix or type letter until late;
+        <span class="since">Since JMRI 4.13.4</span>Using only one single letter
+        in the system name is no longer compatible with system name normalization.
+
         <li>H signal Head - One part of a signal (which may have
         multiple heads). Also interpreted to include indicators on
         control panels that are acting to display signal
@@ -324,6 +327,8 @@
         <li>L Light - another form of output, used to e.g. control
         lights on a layout</li>
 
+        <li>N eNtry/exit destination points</li>
+
         <li>P Power manager i.e. layout, district, subdistrict; not
         all systems distinguish between these, so the device type
         letter doesn't either. The system-specific part of the name
@@ -336,19 +341,16 @@
         identification from some transponding hardware, RFID tag
         numbers, etc.</li>
 
+        <li>R Routes - a tool for setting multiple Turnout states at once.
+        The "R" letter is shared with Reporters for historical reasons.</li>
+
         <li>S Sensors - general purpose input sensors that can
         generally be either ACTIVE or INACTIVE. This is most
         commonly used for block occupancy detectors.</li>
 
         <li>Y Sections - holds a map of trackwork.
-        Section</b> system names are all upper case, have no trailing whitespace and start with IY.</li>
+        Section system names are all upper case, have no trailing whitespace and start with IY.</li>
         
-        <li>SignalGroups - hold a set of signal heads or masts.
-            SignalGroup system names are all upper case and have no trailing whitespace.
-            For historical reasons, they're not required to have a system prefix or 
-            type letter; the example name is "R12".  This might change, so
-            using "IG" at the start is recommended.
-
         <li>T Turnout - actually a general purpose output on the
         layout</li>
 
@@ -367,8 +369,7 @@
         implemented as three different outputs, LT1, LT2 and LT3, the
         signal head object might be called IH3. 
         
-     <a name="special" id=
-                "special"></a></p>
+     <a name="special" id="special"></a></p>
       <p>Each different hardware system
       can specify the "suffix string" that follows the system and type
       letters. Generally, these are small numbers, but their exact
@@ -389,7 +390,10 @@
         <li><a href=
         "../../hardware/XPressNet/XNetAddressing.shtml">Lenz
         XPressNet</a></li>
-
+        
+        <li><a href=
+        "../../hardware/can/cbus/Names.shtml">MERG-CBUS</a></li>
+        
         <li><a href=
         "../../hardware/nce/NCE.shtml#names">NCE</a></li>
 
@@ -622,6 +626,19 @@
           <td>124/224/324/424</td>
         </tr>
         <tr>
+          <td>Internal</td>
+          <td>i/o</td>
+          <td>some string</td>
+          <td>whatever meaning the user wants to assign;<br>see 
+            <a href="#convention">below</a>
+            for special cases</td>
+          <td>ITsome string</td>
+          <td> </td>
+          <td> </td>
+          <td> </td>
+          <td> </td>
+        </tr>
+        <tr>
           <td>LocoNet</td>
           <td>i</td>
           <td>34</td>
@@ -666,7 +683,30 @@
           <td>8000</td>
         </tr>
         <tr>
-          <td>MERG CBUS</td>
+          <td>MERG-CBUS</td>
+          <td>io</td>
+          <td>18</td>
+          <td>Event 18 On; 18 Off</td>
+          <td>MT+18</td>
+          <td>integer</td>
+          <td>+18;-18</td>
+          <td>01</td>
+          <td>65535</td>
+        </tr>
+        <tr>
+          <td>MERG-CBUS</td>
+          <td>io</td>
+          <td>+N2E18;-N2E18;</td>
+          <td>Node 2 Event 18; On Event = Active; Off Event = Inactive</td>
+          <td>MS+N2E18;-N2E18</td>
+          <td></td>
+          <td> </td>
+          <td>Node 1 Event 1</td>
+          <td>Node 65535 Event 65535 </td>
+
+        </tr>
+        <tr>
+          <td>MERG-CBUS</td>
           <td>i</td>
           <td>200018M07</td>
           <td>listen to Events 18 .. 1F</td>
@@ -677,70 +717,49 @@
           <td> </td>
         </tr>
         <tr>
-          <td>MERG CBUS</td>
-          <td>i</td>
-          <td>X91012;X91019</td>
-          <td>hex CAN frame msg. Active; Inactive</td>
-          <td>MTX91012;X91019</td>
+          <td>MERG-CBUS</td>
+          <td>io</td>
+          <td>X9000020012;X91FFFFFFFE</td>
+          <td>hex CAN frame msg. Active; Inactive
+          <br>N2 E18 active; N65535 E65534 inactive
+          </td>
+          <td>MSX9000020012;X91FFFFFFFE</td>
           <td>hex ; hex</td>
           <td>N/A</td>
-          <td> </td>
-          <td> </td>
+          <td colspan="2">Depends on Opscode</td>
         </tr>
         <tr>
-          <td>MERG CBUS</td>
+          <td>MERG-CBUS</td>
           <td>io</td>
-          <td>18</td>
-          <td>event 18 On; 18 Off</td>
-          <td>MT18</td>
-          <td>integer</td>
-          <td>+18;-18</td>
-          <td> </td>
-          <td> </td>
-        </tr>
-        <tr>
-          <td>MERG CBUS</td>
-          <td>io</td>
-          <td>18;21</td>
-          <td>event 18 On; 21 On</td>
+          <td>+18;+21</td>
+          <td>Event 18 On; 21 On</td>
           <td>MT18;21</td>
           <td>integer ; integer</td>
           <td>+18;+21</td>
-          <td> </td>
-          <td> </td>
+          <td>1;1</td>
+          <td>65535;65535</td>
         </tr>
         <tr>
-          <td>MERG CBUS</td>
+          <td>MERG-CBUS</td>
           <td>io</td>
           <td>+18;-21</td>
-          <td>event 18 On; 21 Off</td>
-          <td>MT+18;-21</td>
+          <td>Event 18 On; 21 Off</td>
+          <td>ML+18;-21</td>
           <td>idem signed</td>
           <td>N/A</td>
-          <td> </td>
-          <td> </td>
+          <td>1;1</td>
+          <td>65535,65535</td>
         </tr>
         <tr>
-          <td>MERG CBUS</td>
+          <td>MERG-CBUS</td>
           <td>io</td>
-          <td>2000018</td>
+          <td>200018</td>
           <td>Node 2 Event 18; On Event = Active; Off Event = Inactive</td>
-          <td>MT200018</td>
+          <td>MS+200018</td>
           <td>node + (5 digits)</td>
           <td>N2E18</td>
-          <td>Note: not working</td>
-          <td> </td>
-        </tr>
-        <tr>
-          <td>MERG CBUS</td>
-          <td>io</td>
-          <td>N2E18</td>
-          <td>Node 2 Event 18; On Event = Active; Off Event = Inactive</td>
-          <td>MTN2E18</td>
-          <td>N + number + E + number</td>
-          <td>2000018</td>
-          <td>Note: not working</td>
-          <td> </td>
+          <td>100001</td>
+          <td>6553565535</td>
         </tr>
         <tr>
           <td>NCE</td>
@@ -845,7 +864,9 @@
       <!-- this table is maintained on the help/en/html/doc/Technical/Names.shtml based on information from the
       Hardware help pages by Egbert Broerse @silverailscolo July 2017 -->
     
-      <h2>Naming Conventions For Automated Use</h2>Some
+      <a id="convention" name="convention"></a>
+      <h2>Naming Conventions For Automated Use</h2>
+      Some
       higher-level constructs create their own items. For example,
       a "Sensor Group" is really just a collection of Routes that
       implements the sensor group logic; there is no specific
@@ -862,9 +883,10 @@ SENSOR GROUP:my group:LS2
       <p>To make this possible, two informal rules are used:</p>
 
       <ul>
-        <li>Users should not use the : (colon, ASCII 0x3A), "
-        (double quote, ASCII 0x22), nor $ (dollar sign, ASCII 0x24
-        ) characters in their system or user names. Automatic tools
+        <li>Users should not use the <code>:</code> (colon,
+        ASCII 0x3A), <code>"</code> (double quote, ASCII
+        0x22), nor <code>$</code> (dollar sign, ASCII 0x24)
+        characters in their system or user names. Automatic tools
         should use at least one of these to make sure they don't
         collide with user-selected names. Quotes should always be
         used in pairs to allow nesting.</li>
@@ -878,7 +900,7 @@ SENSOR GROUP:my group:LS2
 
       <ul>
         <li>Logix - auto-generated 
-            <a href="http://www.jmri.org/JavaDoc/doc/java/src/jmri/Logix.html">Logix</a> 
+            <a href="http://jmri.org/JavaDoc/doc/jmri/Logix.html">Logix</a> 
             system names are of the form IX:AUTO:0001</li>
         <li>SENSOR GROUPS - <a href=
         "http://www.jmri.org/JavaDoc/doc/jmri/jmrit/sensorgroup/package-summary.html">
@@ -901,11 +923,11 @@ SENSOR GROUP:my group:LS2
         of more than one yet. The DCC programmer is the first
         example, but there may be others.</li>
 
-        <li><a href="http://www.jmri.org/JavaDoc/doc/java/src/jmri/Conditional.html">Conditionals</a>
+        <li><a href="http://jmri.org/JavaDoc/doc/jmri/Conditional.html">Conditionals</a>
         are a special case.  Although they have things called
         "System Names" and "User Names", they don't really obey the 
         conventions here.  See the 
-        <a href="http://www.jmri.org/JavaDoc/doc/java/src/jmri/ConditionalManager.html">ConditionalManager Javadoc</a>
+        <a href="http://jmri.org/JavaDoc/doc/jmri/ConditionalManager.html">ConditionalManager Javadoc</a>
         for more information.</li>
         
         <li>The system name convention doesn't provide a specific
@@ -940,23 +962,39 @@ SENSOR GROUP:my group:LS2
 <pre style="font-family: monospace;">
           String userName = NamedBean.normalizeUserName(input);
 </pre><br>
+          Please use that, and only that, when creating a user name
+          from human input or other source. Do not explicitly
+          call <code>String#toUpper()</code>, <code>String#strip()</code>
+          or any other formatting operation; having those spread across the code is unmaintainable.
+          
+        <p>
           Because system names may vary from type to type 
-          and manager to manager, this is manager-specific for them:
-          <br>
-<pre style="font-family: monospace;">
-          String systemName = manager.normalizeSystemName(input);
-</pre><br>
+          and manager to manager, there are two manager-specific 
+          methods of interest: <code>manager.normalizeSystemName(input)</code>
+          and <code>manager.makeSystemName(input)</code>.
+          Since most NamedBeans are created by managers, and 
+          managers know about the complete set of NamedBeans, that's the right place to
+          put them.  But it means that an individual NameBean, i.e. 
+          <code>jmri.jmrix.internal.InternalTurnout</code>, constructor can't
+          access it.  If one of those constructors discovers it can't parse a 
+          provided system name argument because it's invalid, it should throw
+          a <code>NamedBean.BadSystemNameException</code>. The constructor should
+          not in any way transform the system name that it was given. It has to use
+          it as given or, if it can't, throw the exception.
+        <p>
           For more information, see the Javadoc for
-            <a href="http://jmri.org/JavaDoc/doc/jmri/NamedBean.html#normalizeUserName-java.lang.String-">normalizeUserName</a>
+            <a href="http://jmri.org/JavaDoc/doc/jmri/NamedBean.html#normalizeUserName-java.lang.String-">normalizeUserName</a>, 
+            <a href="http://jmri.org/JavaDoc/doc/jmri/Manager.html#normalizeSystemName-java.lang.String-">normalizeSystemName</a>,
+            <a href="http://jmri.org/JavaDoc/doc/jmri/Manager.html#makeSystemName-java.lang.String-">makeSystemName</a>,
+            <a href="http://jmri.org/JavaDoc/doc/jmri/NamedBean.BadUserNameException.html">BadUserNameException</a>,
             and
-            <a href="http://jmri.org/JavaDoc/doc/jmri/Manager.html#normalizeSystemName-java.lang.String-">normalizeSystemName</a>
-      
+            <a href="http://jmri.org/JavaDoc/doc/jmri/NamedBean.BadSystemNameException.html">BadSystemNameException</a>.         
         <p>
         In general, it's better to use an input method that already handles all this.  Two are available
         now:
         <ul>
         <li>JComboBox format:
-            <a href="images/ComboBox.png"><img src="images/ComboBox.png" align="right" height="50" width="75"/></a>
+            <a href="images/ComboBox.png"><img src="images/ComboBox.png" align="right" height="50" width="75" alt="combobox"></a>
             
 <pre style="font-family: monospace;">
         import jmri.util.swing.JmriBeanComboBox;
@@ -975,7 +1013,7 @@ SENSOR GROUP:my group:LS2
 </pre>
 
         <li>Table format:
-            <a href="images/TableSelector.png"><img src="images/TableSelector.png" align="right" height="119" width="175"/></a>
+            <a href="images/TableSelector.png"><img src="images/TableSelector.png" align="right" height="119" width="175" alt="table selector"></a>
 <pre style="font-family: monospace;">
 
         import jmri.jmrit.picker.*;
@@ -1010,8 +1048,8 @@ SENSOR GROUP:my group:LS2
         in selection boxes and lists, etc.  We have two <code>java.util.Comparator&lt;&gt;</code>
         implementations to handle this:
         <ul>
-            <li><code>SystemNameComparator</code> - a comparison on Strings
             <li><code>NamedBeanComparator</code> - a comparison on the NamedBeans themselves
+            <li><code>SystemNameComparator</code> - a comparison on Strings (deprecated)
         </ul>
         Please use one of these whenever you need to compare or sort by system names to keep the complexity in one place.
         <p>
@@ -1019,17 +1057,17 @@ SENSOR GROUP:my group:LS2
         If there are objects of multiple types, the type letter is put in alphabetical order next.
         Finally, the system-specific suffix is sorted.
         <p>
-        Because it works with String values, <code>SystemNameComparator</code> can only
-        do a default ordering of the system-specific suffix; it can't do anything that
+        <code>NamedBeanComparator</code> is the standard method going forward as it can 
+        do type-specific sorting of the suffix part of the names: 
+        It knows what the C/MRI suffixes in 
+        "CT2003" and "C2B2" mean and can take that into account.
+        <p>
+        Because it works with String values, <code>SystemNameComparator</code> could only
+        do a default ordering of the system-specific suffix; it couldn't do anything that
         uses any information about the system-specific meaning of that string. It therefore
         uses an alphanumeric-by-chunks sort.
         Because it's comparing on the actual NamedBean objects, <code>NamedBeanComparator</code>
-        can do more specific comparisons:  It knows what the C/MRI suffixes in 
-        "CT2003" and "C2B2" mean and can take that into account.
-        <p>
-        Therefore, if you can, do the sort/comparison with <code>NamedBeanComparator</code> and
-        then convert to Strings, rather than converting NamedBeans to Strings and using 
-        <code>SystemNameComparator</code>.
+        can do more specific comparisons.
         <p>
         Also, if you've created a system that has complex information in the suffix,
         please have your <code>NamedBean</code> subclasses implement a system-specific
@@ -1039,7 +1077,7 @@ SENSOR GROUP:my group:LS2
         For an example, see the bottom of jmri.jmrix.cmri.serial.SerialTurnout
         and jmri.jmrix.cmri.serial.SerialTurnoutTest.
       
-      <!--#include virtual="/Footer" -->
+      <!--#include virtual="/Footer.shtml" -->
     </div><!-- closes #mainContent-->
   </div><!-- closes #mBody-->
 </body>

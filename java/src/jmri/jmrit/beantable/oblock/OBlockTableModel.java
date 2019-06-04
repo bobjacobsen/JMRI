@@ -15,11 +15,11 @@ import javax.swing.JTextField;
 import jmri.Block;
 import jmri.InstanceManager;
 import jmri.Manager;
-import jmri.NamedBean;
 import jmri.Reporter;
 import jmri.Sensor;
 import jmri.jmrit.logix.OBlock;
 import jmri.jmrit.logix.OBlockManager;
+import jmri.jmrit.logix.Warrant;
 import jmri.util.IntlUtilities;
 import jmri.util.NamedBeanComparator;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * GUI to define OBlocks
- * <P>
+ * <p>
  * Duplicates the JTable model for BlockTableAction and adds a column for the
  * occupancy sensor. Configured for use within an internal frame.
  *
@@ -48,9 +48,10 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
     static public final int REPORT_CURRENTCOL = 10;
     static public final int PERMISSIONCOL = 11;
     static public final int SPEEDCOL = 12;
-    static public final int ERR_SENSORCOL = 13;
-    static public final int CURVECOL = 14;
-    static public final int NUMCOLS = 15;
+    static public final int WARRANTCOL = 13;
+    static public final int ERR_SENSORCOL = 14;
+    static public final int CURVECOL = 15;
+    static public final int NUMCOLS = 16;
 
     static public final String noneText = Bundle.getMessage("BlockNone");
     static public final String gradualText = Bundle.getMessage("BlockGradual");
@@ -121,18 +122,18 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
         return OBlockTableModel.class.getName();
     }
 
-    protected List<NamedBean> getBeanList() {
-        TreeSet<NamedBean> ts = new TreeSet<NamedBean>(new NamedBeanComparator());
+    protected List<OBlock> getBeanList() {
+        TreeSet<OBlock> ts = new TreeSet<>(new NamedBeanComparator<>());
 
         Iterator<String> iter = sysNameList.iterator();
         while (iter.hasNext()) {
             ts.add(getBySystemName(iter.next()));
         }
-        ArrayList<NamedBean> list = new ArrayList<>(sysNameList.size());
+        ArrayList<OBlock> list = new ArrayList<>(sysNameList.size());
 
-        Iterator<NamedBean> it = ts.iterator();
+        Iterator<OBlock> it = ts.iterator();
         while (it.hasNext()) {
-            NamedBean elt = it.next();
+            OBlock elt = it.next();
             list.add(elt);
         }
         return list;
@@ -328,6 +329,14 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
             case SPEEDCOL:
                 if (b != null) {
                     return b.getBlockSpeed();
+                }
+                return tempRow[col];
+            case WARRANTCOL:
+                if (b != null) {
+                    Warrant w = b.getWarrant();
+                    if (w != null) {
+                        return w.getDisplayName();                        
+                    }
                 }
                 return tempRow[col];
             case EDIT_COL:
@@ -582,6 +591,23 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 block.setPermissiveWorking(((Boolean) value).booleanValue());
                 fireTableRowsUpdated(row, row);
                 return;
+            case WARRANTCOL:
+                Warrant warrant = block .getWarrant();
+                jmri.jmrit.logix.WarrantManager mgr = InstanceManager
+                            .getDefault(jmri.jmrit.logix.WarrantManager.class);
+                Warrant newWarrant = mgr.getWarrant((String)value);
+                if (warrant != null && !warrant.equals(newWarrant)) {
+                    block.deAllocate(warrant);
+                    if (newWarrant != null) {
+                        String msg = block.allocate(newWarrant);
+                        if (msg != null) {
+                            JOptionPane.showMessageDialog(null, msg,
+                                    Bundle.getMessage("ErrorTitle"), JOptionPane.WARNING_MESSAGE);                    
+                        }                    
+                    }
+                }
+                fireTableRowsUpdated(row, row);
+                return;
             case SPEEDCOL:
                 block.setBlockSpeedName((String) value);
                 fireTableRowsUpdated(row, row);
@@ -631,6 +657,8 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 return Bundle.getMessage("RepCurrentCol");
             case PERMISSIONCOL:
                 return Bundle.getMessage("PermissionCol");
+            case WARRANTCOL:
+                return Bundle.getMessage("WarrantCol");
             case SPEEDCOL:
                 return Bundle.getMessage("SpeedCol");
             case EDIT_COL:
@@ -651,7 +679,7 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
         if (log.isDebugEnabled()) {
             log.debug("Delete with {} remaining listeners", count);
             //java.beans.PropertyChangeSupport pcs = new java.beans.PropertyChangeSupport(bean);
-            PropertyChangeListener[] listener = ((jmri.implementation.AbstractNamedBean) bean).getPropertyChangeListeners();
+            PropertyChangeListener[] listener = bean.getPropertyChangeListeners();
             for (int i = 0; i < listener.length; i++) {
                 log.debug("{}) {}", i, listener[i].getClass().getName());
             }
@@ -676,7 +704,7 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                     new Object[]{Bundle.getMessage("ButtonYes"),
                         Bundle.getMessage("ButtonYesPlus"),
                         Bundle.getMessage("ButtonNo")},
-                    Bundle.getMessage("ButtonNo"));
+                    Bundle.getMessage("ButtonNo")); // default choice = No
             if (val == 2) {
                 return;  // return without deleting
             }
@@ -737,6 +765,8 @@ public class OBlockTableModel extends jmri.jmrit.beantable.BeanTableDataModel<OB
                 return new JTextField(6).getPreferredSize().width;
             case SPEEDCOL:
                 return new JTextField(8).getPreferredSize().width;
+            case WARRANTCOL:
+                return new JTextField(15).getPreferredSize().width;
             case EDIT_COL:
                 return new JButton("DELETE").getPreferredSize().width;
             case DELETE_COL:

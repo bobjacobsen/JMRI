@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,10 +19,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An icon to display and input a Memory value in a TextField.
- * <P>
+ * <p>
  * Handles the case of either a String or an Integer in the Memory, preserving
  * what it finds.
- * <P>
+ *
  * @author Pete Cressman Copyright (c) 2009
  * @since 2.7.2
  */
@@ -148,12 +149,15 @@ public class MemoryInputIcon extends PositionableJPanel implements java.beans.Pr
         String name;
         if (namedMemory == null) {
             name = Bundle.getMessage("NotConnected");
-        } else if (getMemory().getUserName() != null) {
-            name = getMemory().getUserName() + " (" + getMemory().getSystemName() + ")";
         } else {
-            name = getMemory().getSystemName();
+            name = getMemory().getFullyFormattedDisplayName();
         }
         return name;
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        updateMemory();
     }
 
     private void updateMemory() {
@@ -249,7 +253,6 @@ public class MemoryInputIcon extends PositionableJPanel implements java.beans.Pr
         if (_textBox != null) {
             _textBox.removeMouseMotionListener(this);
             _textBox.removeMouseListener(this);
-            _textBox = null;
         }
         namedMemory = null;
     }

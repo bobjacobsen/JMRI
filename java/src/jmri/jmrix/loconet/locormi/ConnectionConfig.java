@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * RMI.
  *
  * @author Bob Jacobsen Copyright (C) 2001, 2003
-  */
+ */
  //@todo This class could ideally do with refactoring to the NetworkConnectionConfig and also multi-connection
 public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig {
 
@@ -30,7 +30,8 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
     }
 
     /**
-     * Ctor for a functional Swing object with no preexisting adapter
+     * Ctor for a connection configuration with no preexisting adapter.
+     * {@link #setInstance()} will fill the adapter member.
      */
     public ConnectionConfig() {
         super();
@@ -67,6 +68,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         return lmc;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadDetails(JPanel details) {
         //details.setLayout(new BoxLayout(details, BoxLayout.X_AXIS));
@@ -80,6 +84,9 @@ public class ConnectionConfig extends jmri.jmrix.AbstractSerialConnectionConfig 
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setInstance() {
         log.warn("Unexpected call to setInstance, multi-replica capability not yet present");

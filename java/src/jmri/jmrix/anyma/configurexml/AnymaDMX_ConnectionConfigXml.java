@@ -13,12 +13,12 @@ import org.slf4j.LoggerFactory;
  * AnymaDMX_UsbPortAdapter. Note this is named as the XML version of a
  * AnymaDMX_ConnectionConfig object, but it's actually persisting the
  * AnymaDMX_UsbPortAdapter.
- * <P>
+ * <p>
  * This class is invoked from jmrix.JmrixConfigPaneXml on write, as that class
  * is the one actually registered. Reads are brought here directly via the class
  * attribute in the XML.
  *
- * @author George Warner Copyright (c) 2017
+ * @author George Warner Copyright (c) 2017-2018
  * @since 4.9.6
  */
 public class AnymaDMX_ConnectionConfigXml extends AbstractUsbConnectionConfigXml {

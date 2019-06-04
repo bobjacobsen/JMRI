@@ -23,19 +23,20 @@ import org.junit.BeforeClass;
 
 
 @RunWith(Cucumber.class)
-@CucumberOptions(plugin = {"junit:cucumber-results.xml","progress"},
+@CucumberOptions(plugin = {"junit:cucumber-results.xml","progress","json:cucumber-results.json"},
                  features="java/acceptancetest/features",
                  tags = {"not @webtest"})
 public class RunCucumberTest {
    
    @BeforeClass
    public static void beforeTests(){
-      apps.tests.Log4JFixture.setUp();
+     jmri.util.JUnitUtil.setUp();
    }
 
    @AfterClass
    public static void afterTests(){
-      apps.tests.Log4JFixture.tearDown();
+      jmri.util.web.BrowserFactory.CloseAllDriver();
+      jmri.util.JUnitUtil.tearDown();
    }
 
 }

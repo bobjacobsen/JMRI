@@ -393,15 +393,15 @@ abstract public class PaneProgFrame extends JmriJFrame
 
     /**
      * Initialization sequence:
-     * <UL>
-     * <LI> Ask the RosterEntry to read its contents
-     * <LI> If the decoder file is specified, open and load it, otherwise get
+     * <ul>
+     * <li> Ask the RosterEntry to read its contents
+     * <li> If the decoder file is specified, open and load it, otherwise get
      * the decoder filename from the RosterEntry and load that. Note that we're
      * assuming the roster entry has the right decoder, at least w.r.t. the loco
      * file.
-     * <LI> Fill CV values from the roster entry
-     * <LI> Create the programmer panes
-     * </UL>
+     * <li> Fill CV values from the roster entry
+     * <li> Create the programmer panes
+     * </ul>
      *
      * @param pDecoderFile    XML file defining the decoder contents; if null,
      *                        the decoder definition is found from the
@@ -461,28 +461,6 @@ abstract public class PaneProgFrame extends JmriJFrame
                 resetMenu.setEnabled(true);
             }
         }
-        // and build the GUI
-        loadProgrammerFile(pRosterEntry);
-
-        // optionally, add extra panes from the decoder file
-        Attribute a;
-        if ((a = programmerRoot.getChild("programmer").getAttribute("decoderFilePanes")) != null
-                && a.getValue().equals("yes")) {
-            if (decoderRoot != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("will process " + decoderPaneList.size() + " pane definitions from decoder file");
-                }
-                for (int i = 0; i < decoderPaneList.size(); i++) {
-                    // load each pane
-                    String pname = jmri.util.jdom.LocaleSelector.getAttribute(decoderPaneList.get(i), "name");
-
-                    // handle include/exclude
-                    if (isIncludedFE(decoderPaneList.get(i), modelElem, _rosterEntry, "", "")) {
-                        newPane(pname, decoderPaneList.get(i), modelElem, true, false);  // show even if empty not a programmer pane
-                    }
-                }
-            }
-        }
 
         // set the programming mode
         if (pProg != null) {
@@ -516,6 +494,8 @@ abstract public class PaneProgFrame extends JmriJFrame
                 // done after setting facades in case new possibilities appear
                 if (programming != null) {
                     pickProgrammerMode(programming);
+                    // reset the read buttons if the mode changes
+                    enableReadButtons();
                 } else {
                     log.debug("Skipping programmer setup because found no programmer element");
                 }
@@ -525,12 +505,35 @@ abstract public class PaneProgFrame extends JmriJFrame
             }
         }
 
+        // and build the GUI (after programmer mode because it depends on what's available)
+        loadProgrammerFile(pRosterEntry);
+
+        // optionally, add extra panes from the decoder file
+        Attribute a;
+        if ((a = programmerRoot.getChild("programmer").getAttribute("decoderFilePanes")) != null
+                && a.getValue().equals("yes")) {
+            if (decoderRoot != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("will process " + decoderPaneList.size() + " pane definitions from decoder file");
+                }
+                for (int i = 0; i < decoderPaneList.size(); i++) {
+                    // load each pane
+                    String pname = jmri.util.jdom.LocaleSelector.getAttribute(decoderPaneList.get(i), "name");
+
+                    // handle include/exclude
+                    if (isIncludedFE(decoderPaneList.get(i), modelElem, _rosterEntry, "", "")) {
+                        newPane(pname, decoderPaneList.get(i), modelElem, true, false);  // show even if empty not a programmer pane
+                    }
+                }
+            }
+        }
+
         // now that programmer is configured, set the programming GUI
-        setProgrammingGui(tempPane);
+        setProgrammingGui(tempPane);        
 
         pack();
 
-        if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {  // because size elements take time
             log.debug("PaneProgFrame \"" + pFrameTitle
                     + "\" constructed for file " + _rosterEntry.getFileName()
                     + ", unconstrained size is " + super.getPreferredSize()
@@ -544,7 +547,7 @@ abstract public class PaneProgFrame extends JmriJFrame
      * <li>Retrieves "productID" and "model attributes from the "model" element
      * and "family" attribute from the roster entry. </li>
      * <li>Then invokes DecoderFile.isIncluded() with the retrieved values.</li>
-     * <li>Deals deals gracefully with null or missing elements and
+     * <li>Deals gracefully with null or missing elements and
      * attributes.</li>
      * </ul>
      *
@@ -1321,7 +1324,7 @@ abstract public class PaneProgFrame extends JmriJFrame
     /**
      * Enable the read/write buttons.
      * <p>
-     * In addition, if a programming mode pane is present, it's "set" button is
+     * In addition, if a programming mode pane is present, its "set" button is
      * enabled.
      *
      * @param stat Are reads possible? If false, so not enable the read buttons.

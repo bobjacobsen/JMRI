@@ -1,4 +1,3 @@
-//JmrisTest.java
 package jmri.jmris;
 
 import org.junit.runner.RunWith;
@@ -6,7 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        jmri.jmris.srcp.SRCPTest.class,
+        jmri.jmris.srcp.PackageTest.class,
         jmri.jmris.simpleserver.PackageTest.class,
         jmri.jmris.json.PackageTest.class,
         jmri.jmris.JmriServerTest.class,

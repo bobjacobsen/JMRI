@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Minimum required SystemConnectionMemo for Maple.
+ * Expanded for multichar/multiconnection support.
  *
  * @author Randall Wood randall.h.wood@alexandriasoftware.com
  */
@@ -56,6 +57,11 @@ public class MapleSystemConnectionMemo extends SystemConnectionMemo {
         return tc;
     }
 
+    /**
+     * Provide menu strings.
+     *
+     * @return null as there is no menu for Maple connections
+     */
     @Override
     protected ResourceBundle getActionModelResourceBundle() {
         return null;
@@ -63,14 +69,17 @@ public class MapleSystemConnectionMemo extends SystemConnectionMemo {
 
     public void configureManagers(){
         setTurnoutManager(new SerialTurnoutManager(this));
+        InstanceManager.setTurnoutManager(getTurnoutManager());
         setLightManager(new SerialLightManager(this));
+        InstanceManager.setLightManager(getLightManager());
         setSensorManager(new SerialSensorManager(this));
+        InstanceManager.setSensorManager(getSensorManager());
     }
 
     /**
-     * Provide access to the Sensor Manager for this particular connection.
+     * Provide access to the SensorManager for this particular connection.
      * <p>
-     * NOTE: Sensor manager defaults to NULL
+     * NOTE: SensorManager defaults to NULL
      */
     public SensorManager getSensorManager() {
         return sensorManager;
@@ -84,9 +93,9 @@ public class MapleSystemConnectionMemo extends SystemConnectionMemo {
     private SensorManager sensorManager = null;
 
     /**
-     * Provide access to the Turnout Manager for this particular connection.
+     * Provide access to the TurnoutManager for this particular connection.
      * <p>
-     * NOTE: Turnout manager defaults to NULL
+     * NOTE: TurnoutManager defaults to NULL
      */
     public TurnoutManager getTurnoutManager() {
         return turnoutManager;
@@ -100,9 +109,9 @@ public class MapleSystemConnectionMemo extends SystemConnectionMemo {
     private TurnoutManager turnoutManager = null;
 
     /**
-     * Provide access to the Light Manager for this particular connection.
+     * Provide access to the LightManager for this particular connection.
      * <p>
-     * NOTE: Light manager defaults to NULL
+     * NOTE: LightManager defaults to NULL
      */
     public LightManager getLightManager() {
         return lightManager;
@@ -145,6 +154,8 @@ public class MapleSystemConnectionMemo extends SystemConnectionMemo {
         }
         return super.get(T);
     }
+
+    // no dispose() for Maple
 
     private final static Logger log = LoggerFactory.getLogger(MapleSystemConnectionMemo.class);
 

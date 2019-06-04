@@ -39,7 +39,7 @@ public class XNetSystemConnectionMemoTest extends jmri.jmrix.SystemConnectionMem
         // so we need to do this ourselves.
         t.setXNetTrafficController(tc);
         Assert.assertNotNull(t.getXNetTrafficController());
-        // and while we're doing that, we should also set the SystemMemo 
+        // and while we're doing that, we should also set the SystemConnectionMemo
         // parameter in the traffic controller.
         Assert.assertNotNull(t.getXNetTrafficController().getSystemConnectionMemo());
     }
@@ -58,6 +58,22 @@ public class XNetSystemConnectionMemoTest extends jmri.jmrix.SystemConnectionMem
         t.setXNetTrafficController(tc);
         t.setCommandStation(tc.getCommandStation());
         Assert.assertFalse(t.provides(jmri.ConsistManager.class));
+    }
+
+    @Test
+    public void testProivdesCommandStaitonCompact() {
+        // infrastructure objects
+        XNetInterfaceScaffold tc = new XNetInterfaceScaffold(new LenzCommandStation(){
+          @Override
+          public int getCommandStationType(){
+              return(0x02); // Lenz Compact/Atlas Commander
+          }
+        });
+
+        XNetSystemConnectionMemo t = new XNetSystemConnectionMemo();
+        t.setXNetTrafficController(tc);
+        t.setCommandStation(tc.getCommandStation());
+        Assert.assertFalse(t.provides(jmri.CommandStation.class));
     }
 
     // The minimal setup for log4J

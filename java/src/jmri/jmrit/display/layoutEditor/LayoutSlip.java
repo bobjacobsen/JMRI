@@ -1,11 +1,13 @@
 package jmri.jmrit.display.layoutEditor;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.Math.PI;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -38,32 +40,35 @@ import org.slf4j.LoggerFactory;
  * A LayoutSlip is a crossing of two straight tracks designed in such a way as
  * to allow trains to change from one straight track to the other, as well as
  * going straight across.
- * <P>
+ * <p>
  * A LayoutSlip has four connection points, designated A, B, C, and D. A train
  * may proceed between A and D, A and C, B and D and in the case of
  * double-slips, B and C.
- * <P>
+ * <p>
  * {@literal
- * ==A==-==D==
+ * \\      //
+ *   A==-==D
  *    \\ //
  *      X
  *    // \\
- * ==B==-==C==
+ *   B==-==C
+ *  //      \\
  * literal}
- * <P>
+ * <p>
  * For drawing purposes, each LayoutSlip carries a center point and
  * displacements for A and B. The displacements for C = - the displacement for
  * A, and the displacement for D = - the displacement for B. The center point
  * and these displacements may be adjusted by the user when in edit mode.
- * <P>
+ * <p>
  * When LayoutSlips are first created, there are no connections. Block
  * information and connections are added when available.
- * <P>
+ * <p>
  * SignalHead names are saved here to keep track of where signals are.
  * LayoutSlip only serves as a storage place for SignalHead names. The names are
  * placed here by Set Signals at Level Crossing in Tools menu.
  *
  * @author Dave Duchamp Copyright (c) 2004-2007
+ * @author George Warner Copyright (c) 2017-2019
  */
 public class LayoutSlip extends LayoutTurnout {
 
@@ -92,6 +97,7 @@ public class LayoutSlip extends LayoutTurnout {
     }
 
     // this should only be used for debugging...
+    @Override
     public String toString() {
         return String.format("LayoutSlip %s (%s)", getId(), getSlipStateString(getSlipState()));
     }
@@ -183,9 +189,10 @@ public class LayoutSlip extends LayoutTurnout {
                 return connectC;
             case SLIP_D:
                 return connectD;
+            default:
+                log.error("Invalid Connection Type " + connectionType); //I18IN
+                throw new jmri.JmriException("Invalid Connection Type " + connectionType);
         }
-        log.error("Invalid Connection Type " + connectionType); //I18IN
-        throw new jmri.JmriException("Invalid Connection Type " + connectionType);
     }
 
     /**
@@ -323,6 +330,9 @@ public class LayoutSlip extends LayoutTurnout {
                     }
                     break;
                 }
+                default:
+                    jmri.util.Log4JUtil.warnOnce(log, "Unexpected selectedPointType = {}", selectedPointType);
+                    break;
             }   // switch
             setSlipState(newSlipState);
         }
@@ -449,6 +459,7 @@ public class LayoutSlip extends LayoutTurnout {
      * @param connectionType the connection type
      * @return the Point2D coordinates
      */
+    @Override
     public Point2D getCoordsForConnectionType(int connectionType) {
         Point2D result = center;
         switch (connectionType) {
@@ -482,10 +493,12 @@ public class LayoutSlip extends LayoutTurnout {
      * {@inheritDoc}
      */
     // just here for testing; should be removed when I'm done...
+    @Override
     public Rectangle2D getBounds() {
         return super.getBounds();
     }
 
+    @Override
     protected void updateBlockInfo() {
         LayoutBlock b1 = null;
         LayoutBlock b2 = null;
@@ -525,6 +538,7 @@ public class LayoutSlip extends LayoutTurnout {
      * connecting track segment is mainline Defaults to not mainline if
      * connecting track segments are missing
      */
+    @Override
     public boolean isMainline() {
         if (((connectA != null) && (((TrackSegment) connectA).isMainline()))
                 || ((connectB != null) && (((TrackSegment) connectB).isMainline()))
@@ -581,7 +595,7 @@ public class LayoutSlip extends LayoutTurnout {
             // see if the passed in point is in one of those rectangles
             // we can create a rectangle for the passed in point and then
             // test if any of the points below are in that rectangle instead.
-            Rectangle2D r = layoutEditor.trackControlPointRectAt(hitPoint);
+            Rectangle2D r = layoutEditor.trackEditControlRectAt(hitPoint);
 
             if (!requireUnconnected || (getConnectA() == null)) {
                 //check the A connection point
@@ -745,7 +759,7 @@ public class LayoutSlip extends LayoutTurnout {
             jmi.setEnabled(false);
 
             boolean blockAssigned = false;
-            if ((blockName == null) || (blockName.isEmpty())) {
+            if (getBlockName().isEmpty()) {
                 jmi = popup.add(Bundle.getMessage("NoBlock"));
                 jmi.setEnabled(false);
             } else {
@@ -867,7 +881,7 @@ public class LayoutSlip extends LayoutTurnout {
             popup.add(new AbstractAction(Bundle.getMessage("ButtonDelete")) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (layoutEditor.removeLayoutSlip(LayoutSlip.this)) {
+                    if (canRemove() && layoutEditor.removeLayoutSlip(LayoutSlip.this)) {
                         // Returned true if user did not cancel
                         remove();
                         dispose();
@@ -987,7 +1001,7 @@ public class LayoutSlip extends LayoutTurnout {
     public String[] getBlockBoundaries() {
         final String[] boundaryBetween = new String[4];
 
-        if ((blockName != null) && (!blockName.isEmpty()) && (getLayoutBlock() != null)) {
+        if ((!getBlockName().isEmpty()) && (getLayoutBlock() != null)) {
             if ((connectA instanceof TrackSegment) && (((TrackSegment) connectA).getLayoutBlock() != getLayoutBlock())) {
                 try {
                     boundaryBetween[0] = (((TrackSegment) connectA).getLayoutBlock().getDisplayName() + " - " + getLayoutBlock().getDisplayName());
@@ -1106,182 +1120,469 @@ public class LayoutSlip extends LayoutTurnout {
     }
 
     /**
-     * draw this slip
+     * Check if either turnout is inconsistent. This is used to create an
+     * alternate slip image.
      *
-     * @param g2 the graphics port to draw to
+     * @return true if either turnout is inconsistent.
      */
-    protected void draw(Graphics2D g2) {
-        LayoutBlock b = getLayoutBlock();
-        Color mainColourA = defaultTrackColor;
-        Color subColourA = defaultTrackColor;
-        if (b != null) {
-            mainColourA = b.getBlockColor();
-            subColourA = b.getBlockTrackColor();
+    private boolean isTurnoutInconsistent() {
+        Turnout tA = getTurnout();
+        if (tA != null && tA.getKnownState() == INCONSISTENT) {
+            return true;
+        }
+        Turnout tB = getTurnoutB();
+        if (tB != null && tB.getKnownState() == INCONSISTENT) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void draw1(Graphics2D g2, boolean drawMain, boolean isBlock) {
+        if (isBlock && getLayoutBlock() == null) {
+            // Skip the block layer since there is no block assigned.
+            return;
         }
 
-        b = getLayoutBlockB();
-        Color mainColourB = defaultTrackColor;
-        Color subColourB = defaultTrackColor;
-        if (b != null) {
-            mainColourB = b.getBlockColor();
-            subColourB = b.getBlockTrackColor();
+        Point2D pA = getCoordsA();
+        Point2D pB = getCoordsB();
+        Point2D pC = getCoordsC();
+        Point2D pD = getCoordsD();
+
+        boolean mainlineA = isMainlineA();
+        boolean mainlineB = isMainlineB();
+        boolean mainlineC = isMainlineC();
+        boolean mainlineD = isMainlineD();
+
+        boolean drawUnselectedLeg = layoutEditor.isTurnoutDrawUnselectedLeg();
+
+        Color color = g2.getColor();
+
+        // if this isn't a block line all these will be the same color
+        Color colorA = color;
+        Color colorB = color;
+        Color colorC = color;
+        Color colorD = color;
+
+        if (isBlock) {
+            LayoutBlock lb = getLayoutBlock();
+            colorA = (lb == null) ? color : lb.getBlockColor();
+            lb = getLayoutBlockB();
+            colorB = (lb == null) ? color : lb.getBlockColor();
+            lb = getLayoutBlockC();
+            colorC = (lb == null) ? color : lb.getBlockColor();
+            lb = getLayoutBlockD();
+            colorD = (lb == null) ? color : lb.getBlockColor();
         }
 
-        b = getLayoutBlockC();
-        Color mainColourC = defaultTrackColor;
-        Color subColourC = defaultTrackColor;
-        if (b != null) {
-            mainColourC = b.getBlockColor();
-            subColourC = b.getBlockTrackColor();
+        Point2D oneForthPointAC = MathUtil.oneFourthPoint(pA, pC);
+        Point2D oneThirdPointAC = MathUtil.oneThirdPoint(pA, pC);
+        Point2D midPointAC = MathUtil.midPoint(pA, pC);
+        Point2D twoThirdsPointAC = MathUtil.twoThirdsPoint(pA, pC);
+        Point2D threeFourthsPointAC = MathUtil.threeFourthsPoint(pA, pC);
+
+        Point2D oneForthPointBD = MathUtil.oneFourthPoint(pB, pD);
+        Point2D oneThirdPointBD = MathUtil.oneThirdPoint(pB, pD);
+        Point2D midPointBD = MathUtil.midPoint(pB, pD);
+        Point2D twoThirdsPointBD = MathUtil.twoThirdsPoint(pB, pD);
+        Point2D threeFourthsPointBD = MathUtil.threeFourthsPoint(pB, pD);
+
+        Point2D midPointAD = MathUtil.midPoint(oneThirdPointAC, twoThirdsPointBD);
+        Point2D midPointBC = MathUtil.midPoint(oneThirdPointBD, twoThirdsPointAC);
+
+        if (isTurnoutInconsistent()) {
+            // If either turnout is inconsistent, draw an alternate slip image
+            // draw A<= =>C
+            if (drawMain == mainlineA) {
+                g2.setColor(colorA);
+                g2.draw(new Line2D.Double(pA, oneForthPointAC));
+            }
+            if (drawMain == mainlineC) {
+                g2.setColor(colorC);
+                g2.draw(new Line2D.Double(threeFourthsPointAC, pC));
+            }
+            // draw B<= =>D
+            if (drawMain == mainlineB) {
+                g2.setColor(colorB);
+                g2.draw(new Line2D.Double(pB, oneForthPointBD));
+            }
+            if (drawMain == mainlineD) {
+                g2.setColor(colorD);
+                g2.draw(new Line2D.Double(threeFourthsPointBD, pD));
+            }
+            return;
         }
 
-        b = getLayoutBlockD();
-        Color mainColourD = defaultTrackColor;
-        Color subColourD = defaultTrackColor;
-        if (b != null) {
-            mainColourD = b.getBlockColor();
-            subColourD = b.getBlockTrackColor();
+        int slipState = getSlipState();
+
+        if (slipState == STATE_AD) {
+            // draw A<===>D
+            if (drawMain == mainlineA) {
+                g2.setColor(colorA);
+                g2.draw(new Line2D.Double(pA, oneThirdPointAC));
+                g2.draw(new Line2D.Double(oneThirdPointAC, midPointAD));
+            }
+            if (drawMain == mainlineD) {
+                g2.setColor(colorD);
+                g2.draw(new Line2D.Double(midPointAD, twoThirdsPointBD));
+                g2.draw(new Line2D.Double(twoThirdsPointBD, pD));
+            }
+        } else if (slipState == STATE_AC) {
+            // draw A<===>C
+            if (drawMain == mainlineA) {
+                g2.setColor(colorA);
+                g2.draw(new Line2D.Double(pA, midPointAC));
+            }
+            if (drawMain == mainlineC) {
+                g2.setColor(colorC);
+                g2.draw(new Line2D.Double(midPointAC, pC));
+            }
+        } else if (!isBlock || drawUnselectedLeg) {
+            // draw A<= =>C
+            if (drawMain == mainlineA) {
+                g2.setColor(colorA);
+                g2.draw(new Line2D.Double(pA, oneForthPointAC));
+            }
+            if (drawMain == mainlineC) {
+                g2.setColor(colorC);
+                g2.draw(new Line2D.Double(threeFourthsPointAC, pC));
+            }
         }
 
-        layoutEditor.setTrackStrokeWidth(g2, isMainline());
-
-        boolean isMainA = (connectA != null) && (((TrackSegment) connectA).isMainline());
-        boolean isMainB = (connectB != null) && (((TrackSegment) connectB).isMainline());
-        boolean isMainC = (connectC != null) && (((TrackSegment) connectC).isMainline());
-        boolean isMainD = (connectD != null) && (((TrackSegment) connectD).isMainline());
-
-        if (getSlipState() == STATE_AC) {
-            g2.setColor(mainColourA);
-            layoutEditor.setTrackStrokeWidth(g2, isMainA);
-            g2.draw(new Line2D.Double(pointA, MathUtil.midPoint(pointA, pointC)));
-
-            g2.setColor(mainColourC);
-            layoutEditor.setTrackStrokeWidth(g2, isMainC);
-            g2.draw(new Line2D.Double(pointC, MathUtil.midPoint(pointC, pointA)));
-        } else {
-            g2.setColor(subColourA);
-            layoutEditor.setTrackStrokeWidth(g2, isMainA);
-            g2.draw(new Line2D.Double(pointA, MathUtil.oneThirdPoint(pointA, pointC)));
-
-            g2.setColor(subColourC);
-            layoutEditor.setTrackStrokeWidth(g2, isMainC);
-            g2.draw(new Line2D.Double(pointC, MathUtil.oneThirdPoint(pointC, pointA)));
+        if (slipState == STATE_BD) {
+            // draw B<===>D
+            if (drawMain == mainlineB) {
+                g2.setColor(colorB);
+                g2.draw(new Line2D.Double(pB, midPointBD));
+            }
+            if (drawMain == mainlineD) {
+                g2.setColor(colorD);
+                g2.draw(new Line2D.Double(midPointBD, pD));
+            }
+        } else if (!isBlock || drawUnselectedLeg) {
+            // draw B<= =>D
+            if (drawMain == mainlineB) {
+                g2.setColor(colorB);
+                g2.draw(new Line2D.Double(pB, oneForthPointBD));
+            }
+            if (drawMain == mainlineD) {
+                g2.setColor(colorD);
+                g2.draw(new Line2D.Double(threeFourthsPointBD, pD));
+            }
         }
 
-        if (getSlipState() == STATE_BD) {
-            g2.setColor(mainColourB);
-            layoutEditor.setTrackStrokeWidth(g2, isMainB);
-            g2.draw(new Line2D.Double(pointB, MathUtil.midPoint(pointB, pointD)));
-
-            g2.setColor(mainColourD);
-            layoutEditor.setTrackStrokeWidth(g2, isMainD);
-            g2.draw(new Line2D.Double(pointD, MathUtil.midPoint(pointD, pointB)));
-        } else {
-            g2.setColor(subColourB);
-            layoutEditor.setTrackStrokeWidth(g2, isMainB);
-            g2.draw(new Line2D.Double(pointB, MathUtil.oneThirdPoint(pointB, pointD)));
-
-            g2.setColor(subColourD);
-            layoutEditor.setTrackStrokeWidth(g2, isMainD);
-            g2.draw(new Line2D.Double(pointD, MathUtil.oneThirdPoint(pointD, pointB)));
+        if (slipState == STATE_BC) {
+            if (getTurnoutType() == DOUBLE_SLIP) {
+                // draw B<===>C
+                if (drawMain == mainlineB) {
+                    g2.setColor(colorB);
+                    g2.draw(new Line2D.Double(pB, oneThirdPointBD));
+                    g2.draw(new Line2D.Double(oneThirdPointBD, midPointBC));
+                }
+                if (drawMain == mainlineC) {
+                    g2.setColor(colorC);
+                    g2.draw(new Line2D.Double(midPointBC, twoThirdsPointAC));
+                    g2.draw(new Line2D.Double(twoThirdsPointAC, pC));
+                }
+            }   // DOUBLE_SLIP
+        } else if (!isBlock || drawUnselectedLeg) {
+            // draw B<= =>C
+            if (drawMain == mainlineB) {
+                g2.setColor(colorB);
+                g2.draw(new Line2D.Double(pB, oneForthPointBD));
+            }
+            if (drawMain == mainlineC) {
+                g2.setColor(colorC);
+                g2.draw(new Line2D.Double(threeFourthsPointAC, pC));
+            }
         }
-
-        if (getSlipState() == STATE_AD) {
-            g2.setColor(mainColourA);
-            layoutEditor.setTrackStrokeWidth(g2, isMainA);
-            g2.draw(new Line2D.Double(pointA, MathUtil.midPoint(pointA, pointD)));
-
-            g2.setColor(mainColourD);
-            layoutEditor.setTrackStrokeWidth(g2, isMainD);
-            g2.draw(new Line2D.Double(pointD, MathUtil.midPoint(pointD, pointA)));
-        } else {
-            g2.setColor(subColourA);
-            layoutEditor.setTrackStrokeWidth(g2, isMainA);
-            g2.draw(new Line2D.Double(pointA, MathUtil.oneThirdPoint(pointA, pointD)));
-
-            g2.setColor(subColourD);
-            layoutEditor.setTrackStrokeWidth(g2, isMainD);
-            g2.draw(new Line2D.Double(pointD, MathUtil.oneThirdPoint(pointD, pointA)));
-        }
-
-        if (getSlipState() == STATE_BC) {
-            g2.setColor(mainColourB);
-            layoutEditor.setTrackStrokeWidth(g2, isMainB);
-            g2.draw(new Line2D.Double(pointB, MathUtil.midPoint(pointB, pointC)));
-
-            g2.setColor(mainColourC);
-            layoutEditor.setTrackStrokeWidth(g2, isMainC);
-            g2.draw(new Line2D.Double(pointC, MathUtil.midPoint(pointC, pointB)));
-        } else if (getSlipType() == DOUBLE_SLIP) {
-            g2.setColor(subColourB);
-            layoutEditor.setTrackStrokeWidth(g2, isMainB);
-            g2.draw(new Line2D.Double(pointB, MathUtil.oneThirdPoint(pointB, pointC)));
-
-            g2.setColor(subColourC);
-            layoutEditor.setTrackStrokeWidth(g2, isMainC);
-            g2.draw(new Line2D.Double(pointC, MathUtil.oneThirdPoint(pointC, pointB)));
-        }
-    }   // draw
+    }   // draw1
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void drawUnconnected(Graphics2D g2) {
-        if (getConnectA() == null) {
+    protected void draw2(Graphics2D g2, boolean drawMain, float railDisplacement) {
+        Point2D pA = getCoordsA();
+        Point2D pB = getCoordsB();
+        Point2D pC = getCoordsC();
+        Point2D pD = getCoordsD();
+        Point2D pM = getCoordsCenter();
+
+        Point2D vAC = MathUtil.normalize(MathUtil.subtract(pC, pA), railDisplacement);
+        double dirAC_DEG = MathUtil.computeAngleDEG(pA, pC);
+        Point2D vACo = MathUtil.orthogonal(vAC);
+        Point2D pAL = MathUtil.subtract(pA, vACo);
+        Point2D pAR = MathUtil.add(pA, vACo);
+        Point2D pCL = MathUtil.subtract(pC, vACo);
+        Point2D pCR = MathUtil.add(pC, vACo);
+
+        Point2D vBD = MathUtil.normalize(MathUtil.subtract(pD, pB), railDisplacement);
+        double dirBD_DEG = MathUtil.computeAngleDEG(pB, pD);
+        Point2D vBDo = MathUtil.orthogonal(vBD);
+        Point2D pBL = MathUtil.subtract(pB, vBDo);
+        Point2D pBR = MathUtil.add(pB, vBDo);
+        Point2D pDL = MathUtil.subtract(pD, vBDo);
+        Point2D pDR = MathUtil.add(pD, vBDo);
+
+        double deltaDEG = MathUtil.absDiffAngleDEG(dirAC_DEG, dirBD_DEG);
+        double deltaRAD = Math.toRadians(deltaDEG);
+
+        double hypotV = railDisplacement / Math.cos((PI - deltaRAD) / 2.0);
+        double hypotK = railDisplacement / Math.cos(deltaRAD / 2.0);
+
+        log.debug("dir AC: {}, BD: {}, diff: {}", dirAC_DEG, dirBD_DEG, deltaDEG);
+
+        Point2D vDisK = MathUtil.normalize(MathUtil.subtract(vAC, vBD), hypotK);
+        Point2D vDisV = MathUtil.normalize(MathUtil.orthogonal(vDisK), hypotV);
+        Point2D pKL = MathUtil.subtract(pM, vDisK);
+        Point2D pKR = MathUtil.add(pM, vDisK);
+        Point2D pVL = MathUtil.add(pM, vDisV);
+        Point2D pVR = MathUtil.subtract(pM, vDisV);
+
+        // this is the vector (rail gaps) for the diamond parts
+        double railGap = 2.0 / Math.sin(deltaRAD);
+        Point2D vAC2 = MathUtil.normalize(vAC, railGap);
+        Point2D vBD2 = MathUtil.normalize(vBD, railGap);
+        // KR and VR toward A, KL and VL toward C
+        Point2D pKRtA = MathUtil.subtract(pKR, vAC2);
+        Point2D pVRtA = MathUtil.subtract(pVR, vAC2);
+        Point2D pKLtC = MathUtil.add(pKL, vAC2);
+        Point2D pVLtC = MathUtil.add(pVL, vAC2);
+
+        // VR and KL toward B, KR and VL toward D
+        Point2D pVRtB = MathUtil.subtract(pVR, vBD2);
+        Point2D pKLtB = MathUtil.subtract(pKL, vBD2);
+        Point2D pKRtD = MathUtil.add(pKR, vBD2);
+        Point2D pVLtD = MathUtil.add(pVL, vBD2);
+
+        // outer (closed) switch points
+        Point2D pAPL = MathUtil.add(pAL, MathUtil.subtract(pVL, pAR));
+        Point2D pBPR = MathUtil.add(pBR, MathUtil.subtract(pVL, pBL));
+        Point2D pCPR = MathUtil.add(pCR, MathUtil.subtract(pVR, pCL));
+        Point2D pDPL = MathUtil.add(pDL, MathUtil.subtract(pVR, pDR));
+
+        // this is the vector (rail gaps) for the inner (open) switch points
+        Point2D vACo2 = MathUtil.normalize(vACo, 2.0);
+        Point2D vBDo2 = MathUtil.normalize(vBDo, 2.0);
+        Point2D pASL = MathUtil.add(pAPL, vACo2);
+        Point2D pBSR = MathUtil.subtract(pBPR, vBDo2);
+        Point2D pCSR = MathUtil.subtract(pCPR, vACo2);
+        Point2D pDSL = MathUtil.add(pDPL, vBDo2);
+
+        Point2D pVLP = MathUtil.add(pVLtD, vAC2);
+        Point2D pVRP = MathUtil.subtract(pVRtA, vBD2);
+
+        Point2D pKLH = MathUtil.midPoint(pM, pKL);
+        Point2D pKRH = MathUtil.midPoint(pM, pKR);
+
+        boolean mainlineA = isMainlineA();
+        boolean mainlineB = isMainlineB();
+        boolean mainlineC = isMainlineC();
+        boolean mainlineD = isMainlineD();
+
+        if (drawMain == mainlineA) {
+            g2.draw(new Line2D.Double(pAR, pVL));
+            g2.draw(new Line2D.Double(pVLtD, pKLtB));
+            GeneralPath path = new GeneralPath();
+            path.moveTo(pAL.getX(), pAL.getY());
+            path.lineTo(pAPL.getX(), pAPL.getY());
+            path.quadTo(pKL.getX(), pKL.getY(), pDPL.getX(), pDPL.getY());
+            g2.draw(path);
+        }
+        if (drawMain == mainlineB) {
+            g2.draw(new Line2D.Double(pBL, pVL));
+            g2.draw(new Line2D.Double(pVLtC, pKRtA));
+            if (getTurnoutType() == DOUBLE_SLIP) {
+                GeneralPath path = new GeneralPath();
+                path.moveTo(pBR.getX(), pBR.getY());
+                path.lineTo(pBPR.getX(), pBPR.getY());
+                path.quadTo(pKR.getX(), pKR.getY(), pCPR.getX(), pCPR.getY());
+                g2.draw(path);
+            } else {
+                g2.draw(new Line2D.Double(pBR, pKR));
+            }
+        }
+        if (drawMain == mainlineC) {
+            g2.draw(new Line2D.Double(pCL, pVR));
+            g2.draw(new Line2D.Double(pVRtB, pKRtD));
+            if (getTurnoutType() == DOUBLE_SLIP) {
+                GeneralPath path = new GeneralPath();
+                path.moveTo(pCR.getX(), pCR.getY());
+                path.lineTo(pCPR.getX(), pCPR.getY());
+                path.quadTo(pKR.getX(), pKR.getY(), pBPR.getX(), pBPR.getY());
+                g2.draw(path);
+            } else {
+                g2.draw(new Line2D.Double(pCR, pKR));
+            }
+        }
+        if (drawMain == mainlineD) {
+            g2.draw(new Line2D.Double(pDR, pVR));
+            g2.draw(new Line2D.Double(pVRtA, pKLtC));
+            GeneralPath path = new GeneralPath();
+            path.moveTo(pDL.getX(), pDL.getY());
+            path.lineTo(pDPL.getX(), pDPL.getY());
+            path.quadTo(pKL.getX(), pKL.getY(), pAPL.getX(), pAPL.getY());
+            g2.draw(path);
+        }
+
+        int slipState = getSlipState();
+        if (slipState == STATE_AD) {
+            if (drawMain == mainlineA) {
+                g2.draw(new Line2D.Double(pASL, pKL));
+                g2.draw(new Line2D.Double(pVLP, pKLH));
+            }
+            if (drawMain == mainlineB) {
+                g2.draw(new Line2D.Double(pBPR, pKR));
+                g2.draw(new Line2D.Double(pVLtC, pKRH));
+            }
+            if (drawMain == mainlineC) {
+                g2.draw(new Line2D.Double(pCPR, pKR));
+                g2.draw(new Line2D.Double(pVRtB, pKRH));
+            }
+            if (drawMain == mainlineD) {
+                g2.draw(new Line2D.Double(pDSL, pKL));
+                g2.draw(new Line2D.Double(pVRP, pKLH));
+            }
+        } else if (slipState == STATE_AC) {
+            if (drawMain == mainlineA) {
+                g2.draw(new Line2D.Double(pAPL, pKL));
+                g2.draw(new Line2D.Double(pVLtD, pKLH));
+            }
+            if (drawMain == mainlineB) {
+                g2.draw(new Line2D.Double(pBSR, pKR));
+                g2.draw(new Line2D.Double(pVLP, pKRH));
+            }
+            if (drawMain == mainlineC) {
+                g2.draw(new Line2D.Double(pCPR, pKR));
+                g2.draw(new Line2D.Double(pVRtB, pKRH));
+            }
+            if (drawMain == mainlineD) {
+                g2.draw(new Line2D.Double(pDSL, pKL));
+                g2.draw(new Line2D.Double(pVRP, pKLH));
+            }
+        } else if (slipState == STATE_BD) {
+            if (drawMain == mainlineA) {
+                g2.draw(new Line2D.Double(pASL, pKL));
+                g2.draw(new Line2D.Double(pVLP, pKLH));
+            }
+            if (drawMain == mainlineB) {
+                g2.draw(new Line2D.Double(pBPR, pKR));
+                g2.draw(new Line2D.Double(pVLtC, pKRH));
+            }
+            if (drawMain == mainlineC) {
+                g2.draw(new Line2D.Double(pCSR, pKR));
+                g2.draw(new Line2D.Double(pVRP, pKRH));
+            }
+            if (drawMain == mainlineD) {
+                g2.draw(new Line2D.Double(pDPL, pKL));
+                g2.draw(new Line2D.Double(pVRtA, pKLH));
+            }
+        } else if ((getTurnoutType() == DOUBLE_SLIP)
+                && (slipState == STATE_BC)) {
+            if (drawMain == mainlineA) {
+                g2.draw(new Line2D.Double(pAPL, pKL));
+                g2.draw(new Line2D.Double(pVLtD, pKLH));
+            }
+            if (drawMain == mainlineB) {
+                g2.draw(new Line2D.Double(pBSR, pKR));
+                g2.draw(new Line2D.Double(pVLP, pKRH));
+            }
+            if (drawMain == mainlineC) {
+                g2.draw(new Line2D.Double(pCSR, pKR));
+                g2.draw(new Line2D.Double(pVRP, pKRH));
+            }
+            if (drawMain == mainlineD) {
+                g2.draw(new Line2D.Double(pDPL, pKL));
+                g2.draw(new Line2D.Double(pVRtA, pKLH));
+            }
+        }   // DOUBLE_SLIP
+    }   // draw2
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void highlightUnconnected(Graphics2D g2, int specificType) {
+        if (((specificType == NONE) || (specificType == SLIP_A))
+                && (getConnectA() == null)) {
             g2.fill(layoutEditor.trackControlCircleAt(getCoordsA()));
         }
 
-        if (getConnectB() == null) {
+        if (((specificType == NONE) || (specificType == SLIP_B))
+                && (getConnectB() == null)) {
             g2.fill(layoutEditor.trackControlCircleAt(getCoordsB()));
         }
 
-        if (getConnectC() == null) {
+        if (((specificType == NONE) || (specificType == SLIP_C))
+                && (getConnectC() == null)) {
             g2.fill(layoutEditor.trackControlCircleAt(getCoordsC()));
         }
-        if (getConnectD() == null) {
+
+        if (((specificType == NONE) || (specificType == SLIP_D))
+                && (getConnectD() == null)) {
             g2.fill(layoutEditor.trackControlCircleAt(getCoordsD()));
         }
     }
 
+    @Override
     protected void drawTurnoutControls(Graphics2D g2) {
-        // drawHidden left/right turnout control circles
-        Point2D leftCircleCenter = getCoordsLeft();
-        g2.draw(layoutEditor.trackControlCircleAt(leftCircleCenter));
+        if (!disabled && !(disableWhenOccupied && isOccupied())) {
+            // TODO: query user base if this is "acceptable" (can obstruct state)
+            if (false) {
+                int stateA = UNKNOWN;
+                Turnout toA = getTurnout();
+                if (toA != null) {
+                    stateA = toA.getKnownState();
+                }
 
-        Point2D rightCircleCenter = getCoordsRight();
-        g2.draw(layoutEditor.trackControlCircleAt(rightCircleCenter));
+                Color foregroundColor = g2.getColor();
+                Color backgroundColor = g2.getBackground();
+
+                if (stateA == Turnout.THROWN) {
+                    g2.setColor(backgroundColor);
+                } else if (stateA != Turnout.CLOSED) {
+                    g2.setColor(Color.GRAY);
+                }
+                Point2D rightCircleCenter = getCoordsRight();
+                if (layoutEditor.isTurnoutFillControlCircles()) {
+                    g2.fill(layoutEditor.trackControlCircleAt(rightCircleCenter));
+                } else {
+                    g2.draw(layoutEditor.trackControlCircleAt(rightCircleCenter));
+                }
+                if (stateA != Turnout.CLOSED) {
+                    g2.setColor(foregroundColor);
+                }
+
+                int stateB = UNKNOWN;
+                Turnout toB = getTurnoutB();
+                if (toB != null) {
+                    stateB = toB.getKnownState();
+                }
+
+                if (stateB == Turnout.THROWN) {
+                    g2.setColor(backgroundColor);
+                } else if (stateB != Turnout.CLOSED) {
+                    g2.setColor(Color.GRAY);
+                }
+                // drawHidden left/right turnout control circles
+                Point2D leftCircleCenter = getCoordsLeft();
+                if (layoutEditor.isTurnoutFillControlCircles()) {
+                    g2.fill(layoutEditor.trackControlCircleAt(leftCircleCenter));
+                } else {
+                    g2.draw(layoutEditor.trackControlCircleAt(leftCircleCenter));
+                }
+                if (stateB != Turnout.CLOSED) {
+                    g2.setColor(foregroundColor);
+                }
+            } else {
+                Point2D rightCircleCenter = getCoordsRight();
+                g2.draw(layoutEditor.trackControlCircleAt(rightCircleCenter));
+                Point2D leftCircleCenter = getCoordsLeft();
+                g2.draw(layoutEditor.trackControlCircleAt(leftCircleCenter));
+            }
+        }
     }   // drawTurnoutControls
-
-    protected void drawEditControls(Graphics2D g2) {
-        if (getConnectA() == null) {
-            g2.setColor(Color.magenta);
-        } else {
-            g2.setColor(Color.blue);
-        }
-        g2.draw(layoutEditor.trackControlPointRectAt(getCoordsA()));
-
-        if (getConnectB() == null) {
-            g2.setColor(Color.red);
-        } else {
-            g2.setColor(Color.green);
-        }
-        g2.draw(layoutEditor.trackControlPointRectAt(getCoordsB()));
-
-        if (getConnectC() == null) {
-            g2.setColor(Color.red);
-        } else {
-            g2.setColor(Color.green);
-        }
-        g2.draw(layoutEditor.trackControlPointRectAt(getCoordsC()));
-
-        if (getConnectD() == null) {
-            g2.setColor(Color.red);
-        } else {
-            g2.setColor(Color.green);
-        }
-        g2.draw(layoutEditor.trackControlPointRectAt(getCoordsD()));
-    }   // drawEditControls
 
     static class TurnoutState {
 
@@ -1371,6 +1672,7 @@ public class LayoutSlip extends LayoutTurnout {
     /*
         this is used by ConnectivityUtil to determine the turnout state necessary to get from prevLayoutBlock ==> currLayoutBlock ==> nextLayoutBlock
      */
+    @Override
     protected int getConnectivityStateForLayoutBlocks(
             @Nullable LayoutBlock thisLayoutBlock,
             @Nullable LayoutBlock prevLayoutBlock,
@@ -1608,5 +1910,6 @@ public class LayoutSlip extends LayoutTurnout {
     //NOTE: LayoutSlip uses the checkForNonContiguousBlocks
     //      and collectContiguousTracksNamesInBlockNamed methods
     //      inherited from LayoutTurnout
+    //
     private final static Logger log = LoggerFactory.getLogger(LayoutSlip.class);
 }

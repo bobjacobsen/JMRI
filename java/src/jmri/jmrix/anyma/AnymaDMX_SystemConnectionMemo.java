@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Minimal SystemConnectionMemo for anyma dmx systems.
  *
- * @author George Warner Copyright (C) 2017
+ * @author George Warner Copyright (c) 2017-2018
  * @since 4.9.6
  */
 public class AnymaDMX_SystemConnectionMemo extends SystemConnectionMemo {
@@ -143,7 +143,7 @@ public class AnymaDMX_SystemConnectionMemo extends SystemConnectionMemo {
 
     /**
      * Public static method to normalize a anyma dmx system name.
-     * <P>
+     * <p>
      * This routine is used to ensure that each system name is uniquely linked
      * to one anyma dmx channel, by removing any extra zeros inserted by the
      * user.
@@ -321,6 +321,7 @@ public class AnymaDMX_SystemConnectionMemo extends SystemConnectionMemo {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean provides(Class<?> c) {
         return (get(c) != null);
     }
@@ -361,9 +362,9 @@ public class AnymaDMX_SystemConnectionMemo extends SystemConnectionMemo {
     private UsbLightManager lightManager;
 
     /**
-     * get the light manager
+     * get the LightManager
      *
-     * @return the light manager
+     * @return the LightManager
      */
     public UsbLightManager getLightManager() {
         log.debug("* getLightManager()");

@@ -9,9 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * <P>
- * Tests for RaspberryPiSystemConnectionMemo
- * </P>
+ * Tests for RaspberryPiSystemConnectionMemo.
  *
  * @author Paul Bender Copyright (C) 2016
  */
@@ -138,10 +136,12 @@ public class RaspberryPiSystemConnectionMemoTest extends jmri.jmrix.SystemConnec
     // The minimal setup for log4J
     @Before
     public void setUp() {
-        apps.tests.Log4JFixture.setUp();
+        JUnitUtil.setUp();
+        JUnitUtil.resetInstanceManager();
+        
         GpioProvider myprovider = new PiGpioProviderScaffold();
         GpioFactory.setDefaultProvider(myprovider);
-        JUnitUtil.setUp();
+
         RaspberryPiSystemConnectionMemo memo = new RaspberryPiSystemConnectionMemo();
         memo.configureManagers();
         scm = memo;
@@ -149,6 +149,8 @@ public class RaspberryPiSystemConnectionMemoTest extends jmri.jmrix.SystemConnec
 
     @After
     public void tearDown() {
+        scm = null;
         JUnitUtil.tearDown();
     }
+
 }

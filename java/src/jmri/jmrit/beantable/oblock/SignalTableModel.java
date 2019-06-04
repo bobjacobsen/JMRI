@@ -2,25 +2,25 @@ package jmri.jmrit.beantable.oblock;
 
 /**
  * GUI to define OBlocks
- * <P>
+ * <p>
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under the
  * terms of version 2 of the GNU General Public License as published by the Free
  * Software Foundation. See the "COPYING" file for a copy of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * <P>
  *
  * @author Pete Cressman (C) 2010
  */
 import java.beans.PropertyChangeEvent;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
+
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -133,9 +133,8 @@ public class SignalTableModel extends AbstractTableModel {
     private void makeList() {
         ArrayList<SignalRow> tempList = new ArrayList<SignalRow>();
         // collect signals entered into Portals
-        String[] sysNames = _portalMgr.getSystemNameArray();
-        for (int i = 0; i < sysNames.length; i++) {
-            Portal portal = _portalMgr.getBySystemName(sysNames[i]);
+        SortedSet<Portal> portals = _portalMgr.getNamedBeanSet();
+        for (Portal portal : portals) {
             NamedBean signal = portal.getFromSignal();
             SignalRow sr = null;
             if (signal != null) {
@@ -228,9 +227,8 @@ public class SignalTableModel extends AbstractTableModel {
     }
 
     private Portal getPortalwithBlocks(OBlock fromBlock, OBlock toBlock) {
-        String[] sysNames = _portalMgr.getSystemNameArray();
-        for (int i = 0; i < sysNames.length; i++) {
-            Portal portal = _portalMgr.getBySystemName(sysNames[i]);
+        SortedSet<Portal> portals = _portalMgr.getNamedBeanSet();
+        for (Portal portal : portals) {
             OBlock fromBlk = portal.getFromBlock();
             OBlock toBlk = portal.getToBlock();
             if ((fromBlk.equals(fromBlock) &&  toBlk.equals(toBlock)) ||

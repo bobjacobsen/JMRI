@@ -1,11 +1,7 @@
 package jmri.jmrix.loconet;
 
 import jmri.util.JUnitUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 /**
  *
@@ -39,6 +35,7 @@ public class LocoNetConsistManagerTest extends jmri.implementation.AbstractConsi
     public void tearDown() {
         cm = null;
         ((LnThrottleManager)memo.getThrottleManager()).dispose();
+        memo.dispose();
         JUnitUtil.tearDown();
     }
 

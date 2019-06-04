@@ -1,4 +1,3 @@
-//SprogType.java
 package jmri.jmrix.sprog.update;
 
 import org.slf4j.Logger;
@@ -50,10 +49,7 @@ public class SprogType {
      * @return true if this object holds a SPROG type
      */
     public boolean isSprog() {
-        if (sprogType < SPROGV4) {
-            return false;
-        }
-        return true;
+        return sprogType >= SPROGV4;
     }
 
     /**
@@ -62,10 +58,7 @@ public class SprogType {
      * @return true if this object holds a SPROG II type
      */
     public boolean isSprogII() {
-        if ((sprogType >= SPROGII) && (sprogType <= SPROGIIv4)) {
-            return true;
-        }
-        return false;
+        return (sprogType >= SPROGII) && (sprogType <= SPROGIIv4);
     }
 
     /**
@@ -176,7 +169,7 @@ public class SprogType {
                 break;
                 
             case PISPROGONE:
-                if ((addr >= 0x1000) && (addr < 0x3F00)) {
+                if ((addr >= 0x1000) && (addr < 0x3E00)) {
                     return true;
                 }
                 break;
@@ -225,7 +218,8 @@ public class SprogType {
     }
 
     /**
-     *
+     * @param t Numeric SPROG type
+     * 
      * @return String representation of a SPROG type
      */
     public String toString(int t) {

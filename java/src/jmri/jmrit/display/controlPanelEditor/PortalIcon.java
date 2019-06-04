@@ -1,13 +1,17 @@
 package jmri.jmrit.display.controlPanelEditor;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.annotation.Nonnull;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+
 import jmri.InstanceManager;
 import jmri.NamedBean;
 import jmri.NamedBeanHandle;
@@ -117,6 +121,7 @@ public class PortalIcon extends PositionableIcon implements PropertyChangeListen
         return _portalHdl.getBean();
     }
 
+    @SuppressFBWarnings(value="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification="Portals always have userNames")
     public void setPortal(Portal portal) {
         if (portal == null) {
             return;
@@ -129,6 +134,7 @@ public class PortalIcon extends PositionableIcon implements PropertyChangeListen
                 port.removePropertyChangeListener(this);
             }
         }
+        // Portals always have userNames
         _portalHdl = InstanceManager.getDefault(NamedBeanHandleManager.class)
                 .getNamedBeanHandle(portal.getUserName(), portal);
         portal.addPropertyChangeListener(this);
@@ -217,7 +223,9 @@ public class PortalIcon extends PositionableIcon implements PropertyChangeListen
 
     @Override
     public String getNameString() {
-        return getPortal().getDescription();
+        Portal p = getPortal();
+        if (p == null) return "No Portal Defined";
+        return p.getDescription();
     }
 
     /**

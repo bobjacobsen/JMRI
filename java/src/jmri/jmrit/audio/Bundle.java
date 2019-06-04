@@ -34,7 +34,7 @@ public class Bundle extends jmri.jmrit.Bundle {
      * Provides a translated string for a given 
      * key from the package resource bundle or 
      * parent.
-     *<p>
+     * <p>
      * Note that this is intentionally package-local
      * access.
      * 
@@ -42,16 +42,16 @@ public class Bundle extends jmri.jmrit.Bundle {
      * @return Internationalized text
      */
     static String getMessage(String key) {
-        return b.handleGetMessage(key);
+        return getBundle().handleGetMessage(key);
     }
     /**
      * Merges user data with a translated string for a given 
      * key from the package resource bundle or 
      * parent.
-     *<p>
+     * <p>
      * Uses the transformation conventions of 
      * the Java MessageFormat utility.
-     *<p>
+     * <p>
      * Note that this is intentionally package-local
      * access.
      *
@@ -61,7 +61,7 @@ public class Bundle extends jmri.jmrit.Bundle {
      * @return Internationalized text
      */
     static String getMessage(String key, Object ... subs) {
-        return b.handleGetMessage(key, subs);
+        return getBundle().handleGetMessage(key, subs);
     }
 
     /**
@@ -79,12 +79,12 @@ public class Bundle extends jmri.jmrit.Bundle {
      * @return Internationalized text
      */
     static String getMessage(Locale locale, String key, Object... subs) {
-        return b.handleGetMessage(locale, key, subs);
+        return getBundle().handleGetMessage(locale, key, subs);
     }
    
     private final static Bundle b = new Bundle();
     @Override @Nullable protected String bundleName() {return name; }
-    @Override protected jmri.Bundle getBundle() { return b; }
+    protected static jmri.Bundle getBundle() { return b; }
 
     @Override 
     protected String retry(Locale locale,String key) { 

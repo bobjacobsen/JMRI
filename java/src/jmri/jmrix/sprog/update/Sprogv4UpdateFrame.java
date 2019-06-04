@@ -4,6 +4,8 @@ import javax.swing.JOptionPane;
 import jmri.jmrix.sprog.SprogConstants.SprogState;
 import jmri.jmrix.sprog.SprogMessage;
 import jmri.jmrix.sprog.SprogSystemConnectionMemo;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,7 @@ public class Sprogv4UpdateFrame
     @Override
     synchronized public void notifyVersion(SprogVersion v) {
         sv = v;
-        if (sv.sprogType.isSprog() == false) {
+        if (sv!=null && sv.sprogType.isSprog() == false) {
             // Didn't recognize a SPROG so check if it is in boot mode already
             if (log.isDebugEnabled()) {
                 log.debug("SPROG not found - looking for bootloader");
@@ -56,7 +58,7 @@ public class Sprogv4UpdateFrame
             requestBoot();
         } else {
             // Check that it's a V4
-            if (sv.sprogType.sprogType == SprogType.SPROGV4) {
+            if (sv!=null && sv.sprogType.sprogType == SprogType.SPROGV4) {
                 statusBar.setText(Bundle.getMessage("StatusFoundX", sv.toString()));
                 // Put SPROG in boot mode
                 if (log.isDebugEnabled()) {
@@ -87,7 +89,7 @@ public class Sprogv4UpdateFrame
             // We remain in this state until program button is pushed
         } else {
             JOptionPane.showMessageDialog(null, Bundle.getMessage("StatusBadBootloaderReply"),
-                    Bundle.getMessage("SprogBootloaderXTitle", " v4"), JOptionPane.ERROR_MESSAGE);
+                    Bundle.getMessage("SprogBootloaderv4Title"), JOptionPane.ERROR_MESSAGE);
             log.error("Bad reply to SETBOOT request");
             bootState = BootState.IDLE;
             tc.setSprogState(SprogState.NORMAL);
@@ -95,11 +97,12 @@ public class Sprogv4UpdateFrame
     }
 
     @Override
+    @SuppressFBWarnings(value="RV_CHECK_FOR_POSITIVE_INDEXOF", justification="maybe an error, but class is deprecated")
     synchronized protected void stateBootVerReqSent() {
         stopTimer();
         log.debug("reply in VERREQSENT state {}", replyString);
         // Look for echo of extended address command
-        if (replyString.indexOf(":02000004") > 0) {
+        if (replyString.indexOf(":02000004") > 0) { // RV_CHECK_FOR_POSITIVE_INDEXOF here; match at start missed?
             log.debug("Found SPROG v4 bootloader");
             statusBar.setText(Bundle.getMessage("StatusConnectedToBootloader", "4"));
             // Enable the file chooser button
@@ -139,11 +142,12 @@ public class Sprogv4UpdateFrame
     }
 
     @Override
+    @SuppressFBWarnings(value="RV_CHECK_FOR_POSITIVE_INDEXOF", justification="maybe an error, but class is deprecated")
     synchronized protected void stateEofSent() {
         // v4 end of file sent
         stopTimer();
         // Check for correct response to end of file
-        if (replyString.indexOf("S") > 0) {
+        if (replyString.indexOf("S") > 0) {  // RV_CHECK_FOR_POSITIVE_INDEXOF here; S at start missed?
             log.debug("Good reply in EOFSENT state");
             bootState = BootState.V4RESET;
             statusBar.setText(Bundle.getMessage("StatusResetting"));
@@ -155,11 +159,12 @@ public class Sprogv4UpdateFrame
     }
 
     @Override
+    @SuppressFBWarnings(value="RV_CHECK_FOR_POSITIVE_INDEXOF", justification="maybe an error, but class is deprecated")
     synchronized protected void stateV4Reset() {
         // v4 should have auto reset
         stopTimer();
         // Check for correct response to end of file
-        if (replyString.indexOf("S") > 0) {
+        if (replyString.indexOf("S") > 0) {  // RV_CHECK_FOR_POSITIVE_INDEXOF here; S at start missed?
             log.debug("Good reply in V4RESET state");
             statusBar.setText(Bundle.getMessage("StatusSuccess"));
             bootState = BootState.IDLE;

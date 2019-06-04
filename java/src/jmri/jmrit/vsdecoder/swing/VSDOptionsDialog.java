@@ -7,6 +7,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import jmri.InstanceManager;
 import jmri.jmrit.operations.trains.Train;
 import jmri.jmrit.operations.trains.TrainManager;
 
@@ -16,20 +17,18 @@ import jmri.jmrit.operations.trains.TrainManager;
  * Configuration dialog for setting up a new VSDecoder
  * <hr>
  * This file is part of JMRI.
- * <P>
+ * <p>
  * JMRI is free software; you can redistribute it and/or modify it under 
  * the terms of version 2 of the GNU General Public License as published 
  * by the Free Software Foundation. See the "COPYING" file for a copy
  * of this license.
- * <P>
+ * <p>
  * JMRI is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License 
  * for more details.
- * <P>
  *
  * @author   Mark Underwood Copyright (C) 2011
- * 
  */
 public class VSDOptionsDialog extends JDialog {
 
@@ -48,7 +47,7 @@ public class VSDOptionsDialog extends JDialog {
         JLabel x = new JLabel();
         x.setText(Bundle.getMessage("FieldSelectTrain"));
         this.add(x);
-        opsTrainComboBox = TrainManager.instance().getTrainComboBox();
+        opsTrainComboBox = InstanceManager.getDefault(TrainManager.class).getTrainComboBox();
         this.add(opsTrainComboBox);
 
         JButton closeButton = new JButton(Bundle.getMessage("ButtonOK"));
