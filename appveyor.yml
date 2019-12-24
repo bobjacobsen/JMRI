@@ -15,6 +15,7 @@ install:
   - SET GECKODRIVER=C:\Tools\WebDriver
   - SET CHROMEDRIVER=C:\Tools\WebDriver\chromedriver.exe
   - SET PATH=%JAVA_HOME%\bin;%GECKODRIVER%;%CHROMEDRIVER%;%PATH%
+  - cinst ant
 #  - echo PATH %PATH%
 # following need to be done after PATH is set
   - java -version
@@ -32,7 +33,7 @@ before_test:
 
 test_script:
 - ps: |
-    mvn --quiet test -P appveyor --batch-mode
+    ant alltest
 
 after_test:
 # upload results to Appveyor
