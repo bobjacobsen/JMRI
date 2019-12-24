@@ -33,7 +33,7 @@ before_test:
 
 test_script:
 - ps: |
-    ant alltest
+    ant appveyor
 
 after_test:
 # upload results to Appveyor
