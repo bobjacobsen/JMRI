@@ -145,6 +145,13 @@ public class JUnitUtil {
     static boolean checkRemnantThreads =    Boolean.getBoolean("jmri.util.JUnitUtil.checkRemnantThreads"); // false unless set true
 
     /**
+     * Local cache of headless test
+     * <p>
+     * Set from the jmri.util.JUnitUtil.checkRemnantThreads environment variable.
+     */
+    static boolean headless =    Boolean.getBoolean("java.awt.headless"); // false unless set true
+
+    /**
      * Check for tests that take an excessive time
      * <p>
      * Set from the jmri.util.JUnitUtil.checkTestDuration environment variable.
@@ -212,12 +219,12 @@ public class JUnitUtil {
         System.setProperty("jmri.prefsdir",initPrefsDir);
         
         // silence the Jemmy GUI unit testing framework
-        JUnitUtil.silenceGUITestOutput();
+        if (!headless) JUnitUtil.silenceGUITestOutput();
 
         // ideally this would be resetWindows(false, true) to force an error if an earlier
         // test left a window open, but different platforms seem to have just
         // enough differences that this is, for now, turned off
-        resetWindows(false, false);
+        if (!headless) resetWindows(false, false);
 
         // Do a minimal amount of de-novo setup
         resetInstanceManager();
@@ -306,10 +313,11 @@ public class JUnitUtil {
         // ideally this would be resetWindows(false, true) to force an error if an earlier
         // test left a window open, but different platforms seem to have just
         // enough differences that this is, for now, turned off
-        resetWindows(false, false);
+        if (!headless) resetWindows(false, false);
 
         // Check final status of logging in the test just completed
         JUnitAppender.end();
+        
         Level severity = Level.ERROR; // level at or above which we'll complain
         boolean unexpectedMessageSeen = JUnitAppender.unexpectedMessageSeen(severity);
         String unexpectedMessageContent = JUnitAppender.unexpectedMessageContent(severity);
@@ -1320,7 +1328,7 @@ public class JUnitUtil {
                 if (! (threadNames.contains(name)
                      || name.startsWith("Timer-")  // we separately scan for JMRI-resident timers
                      || name.startsWith("RMI TCP Accept")
-                     || name.startsWith("AWT-EventQueue")
+                     || (!headless && name.startsWith("AWT-EventQueue")) // AWT is an error if headless
                      || name.startsWith("Aqua L&F")
                      || name.startsWith("Image Fetcher ")
                      || name.startsWith("Image Animator ")
