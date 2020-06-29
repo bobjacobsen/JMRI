@@ -108,7 +108,21 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
      *                  selection
      */
     public NamedBeanComboBox(Manager<B> manager, B selection) {
-        this(manager, selection, DisplayOptions.DISPLAYNAME);
+        super();
+        this.manager = manager;
+        super.setToolTipText(
+                Bundle.getMessage("NamedBeanComboBoxDefaultToolTipText", this.manager.getBeanTypeHandled(true)));
+        setDisplayOrder(DisplayOptions.DISPLAYNAME);  // invokes deprecated method
+        NamedBeanComboBox.this.setEditable(false);
+        NamedBeanRenderer namedBeanRenderer = new NamedBeanRenderer(getRenderer());
+        setRenderer(namedBeanRenderer);
+        setKeySelectionManager(namedBeanRenderer);
+        NamedBeanEditor namedBeanEditor = new NamedBeanEditor(getEditor());
+        setEditor(namedBeanEditor);
+        this.manager.addPropertyChangeListener("beans", managerListener);
+        this.manager.addPropertyChangeListener("DisplayListName", managerListener);
+        sort();
+        NamedBeanComboBox.this.setSelectedItem(selection);
     }
 
     /**
@@ -119,15 +133,19 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
      * @param selection    the NamedBean that is selected or null to specify no
      *                     selection
      * @param displayOrder the sorting scheme for NamedBeans
+     *
+     * @deprecated 4.21.1 in favor of a consistent appearance across JMRI
      */
+    @Deprecated // 4.21.1
     public NamedBeanComboBox(Manager<B> manager, B selection, DisplayOptions displayOrder) {
         // uses NamedBeanComboBox.this... to prevent overridden methods from being
         // called in constructor
         super();
+        jmri.util.Log4JUtil.deprecationWarning(log, "NamedBeanComboBox");
         this.manager = manager;
         super.setToolTipText(
                 Bundle.getMessage("NamedBeanComboBoxDefaultToolTipText", this.manager.getBeanTypeHandled(true)));
-        setDisplayOrder(displayOrder);
+        setDisplayOrder(displayOrder); // invokes deprecated method
         NamedBeanComboBox.this.setEditable(false);
         NamedBeanRenderer namedBeanRenderer = new NamedBeanRenderer(getRenderer());
         setRenderer(namedBeanRenderer);
@@ -144,11 +162,21 @@ public class NamedBeanComboBox<B extends NamedBean> extends JComboBox<B> {
         return manager;
     }
 
+    /**
+     * @deprecated 4.21.1 in favor of a consistent appearance across JMRI
+     */
+    @Deprecated // 4.21.1
     public DisplayOptions getDisplayOrder() {
+        jmri.util.Log4JUtil.deprecationWarning(log, "getDisplayOrder");
         return displayOptions;
     }
 
+    /**
+     * @deprecated 4.21.1 in favor of a consistent appearance across JMRI
+     */
+    @Deprecated // 4.21.1
     public final void setDisplayOrder(DisplayOptions displayOrder) {
+        jmri.util.Log4JUtil.deprecationWarning(log, "setDisplayOrder");
         if (displayOptions != displayOrder) {
             displayOptions = displayOrder;
             sort();
