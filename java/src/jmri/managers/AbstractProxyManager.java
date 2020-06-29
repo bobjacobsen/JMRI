@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * @param <E> the supported type of NamedBean
  * @author Bob Jacobsen Copyright (C) 2003, 2010, 2018
  */
-@SuppressWarnings("deprecation")
 abstract public class AbstractProxyManager<E extends NamedBean> extends VetoableChangeSupport implements ProxyManager<E>, ProvidingManager<E>, PropertyChangeListener, Manager.ManagerDataListener<E> {
 
     /**
@@ -629,19 +628,16 @@ abstract public class AbstractProxyManager<E extends NamedBean> extends Vetoable
 
     /** {@inheritDoc} */
     @Override
-    @Deprecated
     public void addDataListener(ManagerDataListener<E> e) {
         if (e != null) listeners.add(e);
     }
 
     /** {@inheritDoc} */
     @Override
-    @Deprecated
     public void removeDataListener(ManagerDataListener<E> e) {
         if (e != null) listeners.remove(e);
     }
 
-    @SuppressWarnings("deprecation")
     final List<ManagerDataListener<E>> listeners = new ArrayList<>();
 
     /**
@@ -650,7 +646,6 @@ abstract public class AbstractProxyManager<E extends NamedBean> extends Vetoable
      * managers.
      */
     @Override
-    @Deprecated
     public void contentsChanged(Manager.ManagerDataEvent<E> e) {
     }
 
@@ -660,8 +655,6 @@ abstract public class AbstractProxyManager<E extends NamedBean> extends Vetoable
      * managers.
      */
     @Override
-    @Deprecated
-    @SuppressWarnings("deprecation")
     public void intervalAdded(AbstractProxyManager.ManagerDataEvent<E> e) {
         if (namedBeanSet != null && e.getIndex0() == e.getIndex1()) {
             // just one element added, and we have the object reference
@@ -689,8 +682,6 @@ abstract public class AbstractProxyManager<E extends NamedBean> extends Vetoable
      * managers.
      */
     @Override
-    @Deprecated
-    @SuppressWarnings("deprecation")
     public void intervalRemoved(AbstractProxyManager.ManagerDataEvent<E> e) {
         recomputeNamedBeanSet();
 
@@ -710,8 +701,6 @@ abstract public class AbstractProxyManager<E extends NamedBean> extends Vetoable
     private boolean muted = false;
     /** {@inheritDoc} */
     @Override
-    @Deprecated
-    @SuppressWarnings("deprecation")
     public void setDataListenerMute(boolean m) {
         if (muted && !m) {
             // send a total update, as we haven't kept track of specifics
