@@ -43,7 +43,7 @@ public class LayoutTurntableEditor extends LayoutTrackEditor {
     private final JTextField editLayoutTurntableRadiusTextField = new JTextField(8);
     private final JTextField editLayoutTurntableAngleTextField = new JTextField(8);
     private final NamedBeanComboBox<Block> editLayoutTurntableBlockNameComboBox = new NamedBeanComboBox<>(
-             InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+             InstanceManager.getDefault(BlockManager.class), null);
     private JButton editLayoutTurntableSegmentEditBlockButton;
      
     private JPanel editLayoutTurntableRayPanel;

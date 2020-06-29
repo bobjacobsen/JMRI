@@ -60,7 +60,7 @@ public class BeanSelectCreatePanel<E extends NamedBean> extends JPanel {
 
         selectcreate.add(existingItem);
         selectcreate.add(newItem);
-        existingCombo = new NamedBeanComboBox<>(manager, defaultSelect, DisplayOptions.USERNAME_SYSTEMNAME);
+        existingCombo = new NamedBeanComboBox<>(manager, defaultSelect);
         // If the combo list is empty we go straight to creation.
         if (existingCombo.getItemCount() == 0) {
             newItem.setSelected(true);

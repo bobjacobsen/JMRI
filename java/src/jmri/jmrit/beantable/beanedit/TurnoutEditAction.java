@@ -112,8 +112,7 @@ public class TurnoutEditAction extends BeanEditAction<Turnout> {
 
         sensorFeedBack1ComboBox = new NamedBeanComboBox<>(
                 InstanceManager.sensorManagerInstance(),
-                bean.getFirstSensor(),
-                DisplayOptions.DISPLAYNAME);
+                bean.getFirstSensor() );
         sensorFeedBack1ComboBox.setAllowNull(true);
         feedback.addItem(new BeanEditItem(sensorFeedBack1ComboBox,
                 Bundle.getMessage("FeedbackSensor1"),
@@ -121,8 +120,7 @@ public class TurnoutEditAction extends BeanEditAction<Turnout> {
 
         sensorFeedBack2ComboBox = new NamedBeanComboBox<>(
                 InstanceManager.sensorManagerInstance(),
-                bean.getSecondSensor(),
-                DisplayOptions.DISPLAYNAME);
+                bean.getSecondSensor() );
         sensorFeedBack2ComboBox.setAllowNull(true);
         feedback.addItem(new BeanEditItem(sensorFeedBack2ComboBox,
                 Bundle.getMessage("FeedbackSensor2"),

@@ -1365,9 +1365,9 @@ public class LightTableAction extends AbstractTableAction<Light> {
     private boolean inEditControlMode = false;
     private LightControl lc = null;
     private final NamedBeanComboBox<Sensor> sensor1Box = new NamedBeanComboBox<>( // Sensor (1 or only)
-            InstanceManager.sensorManagerInstance(), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.sensorManagerInstance(), null);
     private final NamedBeanComboBox<Sensor> sensor2Box = new NamedBeanComboBox<>( // Sensor 2
-            InstanceManager.sensorManagerInstance(), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.sensorManagerInstance(), null);
 
     private SpinnerNumberModel fastHourSpinnerModel1 = new SpinnerNumberModel(0, 0, 23, 1); // 0 - 23 h
     private final JSpinner fastHourSpinner1 = new JSpinner(fastHourSpinnerModel1); // Fast Clock1 hours
@@ -1376,9 +1376,9 @@ public class LightTableAction extends AbstractTableAction<Light> {
     private final JLabel clockSep1 = new JLabel(" : ");
 
     private final NamedBeanComboBox<Turnout> turnoutBox = new NamedBeanComboBox<>( // Turnout
-            InstanceManager.turnoutManagerInstance(), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.turnoutManagerInstance(), null);
     private final NamedBeanComboBox<Sensor> sensorOnBox = new NamedBeanComboBox<>( // Timed ON
-            InstanceManager.sensorManagerInstance(), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.sensorManagerInstance(), null);
     private final JLabel f1Label = new JLabel(Bundle.getMessage("LightSensor", Bundle.getMessage("MakeLabel", ""))); // for 1 sensor
     private final JLabel f1aLabel = new JLabel(Bundle.getMessage("LightSensor", Bundle.getMessage("MakeLabel", " 2"))); // for 2nd sensor
 

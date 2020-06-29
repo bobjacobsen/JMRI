@@ -156,7 +156,7 @@ public class MultiSensorIconFrame extends JmriJFrame {
 
     class Entry extends JPanel {
         jmri.swing.NamedBeanComboBox<jmri.Sensor> sensor = new jmri.swing.NamedBeanComboBox<>(
-                jmri.InstanceManager.getDefault(jmri.SensorManager.class), null, jmri.NamedBean.DisplayOptions.DISPLAYNAME);
+                jmri.InstanceManager.getDefault(jmri.SensorManager.class), null);
         JPanel self;
         MultiIconEditor ed = new MultiIconEditor(1);
         JmriJFrame edf = new JmriJFrame("", false, true);

@@ -53,13 +53,13 @@ public class LayoutTurnoutEditor extends LayoutTrackEditor {
     protected NamedBeanComboBox<Turnout> editLayoutTurnout2ndTurnoutComboBox = null;
     protected JLabel editLayoutTurnout2ndTurnoutLabel = null;
     protected final NamedBeanComboBox<Block> editLayoutTurnoutBlockNameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     protected final NamedBeanComboBox<Block> editLayoutTurnoutBlockBNameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     protected final NamedBeanComboBox<Block> editLayoutTurnoutBlockCNameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     protected final NamedBeanComboBox<Block> editLayoutTurnoutBlockDNameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     protected final JComboBox<String> editLayoutTurnoutStateComboBox = new JComboBox<>();
     protected JCheckBox editLayoutTurnoutHiddenCheckBox = null;
     protected JButton editLayoutTurnoutBlockButton;

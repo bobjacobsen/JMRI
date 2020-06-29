@@ -56,19 +56,19 @@ public class BlockBossFrame extends jmri.util.JmriJFrame {
     private final JPanel modeSingle = new JPanel();
     private final JRadioButton buttonSingle;
     private final transient NamedBeanComboBox<Sensor> sSensorComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> sSensorComboBox2 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> sSensorComboBox3 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> sSensorComboBox4 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> sSensorComboBox5 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> sNextSignalComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> sNextSignalComboBox1Alt = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final JCheckBox sLimitBox;
     private final JCheckBox sRestrictingBox;
     private final JCheckBox sFlashBox;
@@ -77,22 +77,22 @@ public class BlockBossFrame extends jmri.util.JmriJFrame {
     private final JPanel modeTrailMain = new JPanel();
     private final JRadioButton buttonTrailMain;
     private final transient NamedBeanComboBox<Sensor> tmSensorComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tmSensorComboBox2 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tmSensorComboBox3 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tmSensorComboBox4 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tmSensorComboBox5 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final NamedBeanComboBox<Turnout> tmProtectTurnoutComboBox = new NamedBeanComboBox<>(
             InstanceManager.turnoutManagerInstance(),
-            null, DisplayOptions.DISPLAYNAME);
+            null);
     private final transient NamedBeanComboBox<SignalHead> tmNextSignalComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> tmNextSignalComboBox1Alt = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final JCheckBox tmLimitBox;
     private final JCheckBox tmRestrictingBox;
     private final JCheckBox tmFlashBox;
@@ -101,22 +101,22 @@ public class BlockBossFrame extends jmri.util.JmriJFrame {
     private final JPanel modeTrailDiv = new JPanel();
     private final JRadioButton buttonTrailDiv;
     private final transient NamedBeanComboBox<Sensor> tdSensorComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tdSensorComboBox2 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tdSensorComboBox3 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tdSensorComboBox4 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> tdSensorComboBox5 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final NamedBeanComboBox<Turnout> tdProtectTurnoutComboBox = new NamedBeanComboBox<>(
             InstanceManager.turnoutManagerInstance(),
-            null, DisplayOptions.DISPLAYNAME);
+            null);
     private final transient NamedBeanComboBox<SignalHead> tdNextSignalComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> tdNextSignalComboBox1Alt = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final JCheckBox tdLimitBox;
     private final JCheckBox tdRestrictingBox;
     private final JCheckBox tdFlashBox;
@@ -126,34 +126,34 @@ public class BlockBossFrame extends jmri.util.JmriJFrame {
     private final JRadioButton buttonFacing;
 
     private final transient NamedBeanComboBox<Sensor> fSensorComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fSensorComboBox2 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fSensorComboBox3 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fSensorComboBox4 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fSensorComboBox5 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final NamedBeanComboBox<Turnout> fProtectTurnoutComboBox = new NamedBeanComboBox<>(
             InstanceManager.turnoutManagerInstance(),
-            null, DisplayOptions.DISPLAYNAME);
+            null);
     private final transient NamedBeanComboBox<SignalHead> fNextSignalComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> fNextSignalComboBox1Alt = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> fNextSignalComboBox2 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> fNextSignalComboBox2Alt = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fNextSensorComboBox1 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fNextSensorComboBox1Alt = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fNextSensorComboBox2 = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<Sensor> fNextSensorComboBox2Alt = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final JCheckBox fmLimitBox;
     private final JCheckBox fmRestrictingBox;
     private final JCheckBox fdLimitBox;
@@ -162,9 +162,9 @@ public class BlockBossFrame extends jmri.util.JmriJFrame {
     private final JCheckBox fDistantBox;
 
     private final transient NamedBeanComboBox<Sensor> approachSensor1ComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
     private final transient NamedBeanComboBox<SignalHead> outSignalHeadComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
     private final JLabel statusBar;
     private final JTextField commentField;
     private final JButton cancel;

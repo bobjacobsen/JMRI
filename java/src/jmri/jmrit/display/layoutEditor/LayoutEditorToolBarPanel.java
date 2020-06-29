@@ -49,13 +49,13 @@ public class LayoutEditorToolBarPanel extends JPanel {
 
     // top row of check boxes
     protected NamedBeanComboBox<Turnout> turnoutNameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.turnoutManagerInstance(), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.turnoutManagerInstance(), null);
 
     protected JLabel turnoutNameLabel = new JLabel(Bundle.getMessage("MakeLabel", Bundle.getMessage("Name")));
     protected JPanel turnoutNamePanel = new JPanel(leftRowLayout);
     protected JPanel extraTurnoutPanel = new JPanel(leftRowLayout);
     protected NamedBeanComboBox<Turnout> extraTurnoutNameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.turnoutManagerInstance(), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.turnoutManagerInstance(), null);
     protected JComboBox<String> rotationComboBox = null;
     protected JPanel rotationPanel = new JPanel(leftRowLayout);
 
@@ -71,12 +71,12 @@ public class LayoutEditorToolBarPanel extends JPanel {
 
     protected JLabel blockLabel = new JLabel(Bundle.getMessage("MakeLabel", Bundle.getMessage("BlockID")));
     protected NamedBeanComboBox<Block> blockIDComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     protected JCheckBox highlightBlockCheckBox = new JCheckBox(Bundle.getMessage("HighlightSelectedBlockTitle"));
 
     protected JLabel blockSensorLabel = new JLabel(Bundle.getMessage("MakeLabel", Bundle.getMessage("BlockSensorName")));
     protected NamedBeanComboBox<Sensor> blockSensorComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
 
     // 3rd row of radio buttons (and any associated text fields)
     protected JRadioButton endBumperButton = new JRadioButton(Bundle.getMessage("EndBumper"));
@@ -89,26 +89,26 @@ public class LayoutEditorToolBarPanel extends JPanel {
 
     protected JRadioButton memoryButton = new JRadioButton(Bundle.getMessage("BeanNameMemory"));
     protected NamedBeanComboBox<Memory> textMemoryComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(MemoryManager.class), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(MemoryManager.class), null);
 
     protected JRadioButton blockContentsButton = new JRadioButton(Bundle.getMessage("BlockContentsLabel"));
     protected NamedBeanComboBox<Block> blockContentsComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
 
     // 4th row of radio buttons (and any associated text fields)
     protected JRadioButton multiSensorButton = new JRadioButton(Bundle.getMessage("MultiSensor") + "...");
 
     protected JRadioButton signalMastButton = new JRadioButton(Bundle.getMessage("SignalMastIcon"));
     protected NamedBeanComboBox<SignalMast> signalMastComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalMastManager.class), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalMastManager.class), null);
 
     protected JRadioButton sensorButton = new JRadioButton(Bundle.getMessage("SensorIcon"));
     protected NamedBeanComboBox<Sensor> sensorComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SensorManager.class), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SensorManager.class), null);
 
     protected JRadioButton signalButton = new JRadioButton(Bundle.getMessage("SignalIcon"));
     protected NamedBeanComboBox<SignalHead> signalHeadComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(SignalHeadManager.class), null, NamedBean.DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(SignalHeadManager.class), null);
 
     protected JRadioButton iconLabelButton = new JRadioButton(Bundle.getMessage("IconLabel"));
     protected JRadioButton shapeButton = new JRadioButton(Bundle.getMessage("LayoutShape"));

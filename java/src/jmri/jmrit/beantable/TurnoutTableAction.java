@@ -825,7 +825,7 @@ public class TurnoutTableAction extends AbstractTableAction<Turnout> {
 
                     protected void loadRenderEditMaps(Hashtable<Turnout, TableCellRenderer> r, Hashtable<Turnout, TableCellEditor> e,
                             Turnout t, Sensor s) {
-                        NamedBeanComboBox<Sensor> c = new NamedBeanComboBox<>(InstanceManager.getDefault(SensorManager.class), s, DisplayOptions.DISPLAYNAME);
+                        NamedBeanComboBox<Sensor> c = new NamedBeanComboBox<>(InstanceManager.getDefault(SensorManager.class), s);
                         c.setAllowNull(true);
 
                         BeanBoxRenderer renderer = new BeanBoxRenderer();

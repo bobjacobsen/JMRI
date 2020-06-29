@@ -150,9 +150,9 @@ public class SignallingPanel extends JmriPanel {
         }
 
         SignalMastManager smm = InstanceManager.getDefault(jmri.SignalMastManager.class);
-        sourceMastBox = new NamedBeanComboBox<>(smm, sourceMast, DisplayOptions.DISPLAYNAME);
+        sourceMastBox = new NamedBeanComboBox<>(smm, sourceMast);
         sourceMastBox.setMaximumSize(sourceMastBox.getPreferredSize());
-        destMastBox = new NamedBeanComboBox<>(smm, destMast, DisplayOptions.DISPLAYNAME);
+        destMastBox = new NamedBeanComboBox<>(smm, destMast);
         destMastBox.setMaximumSize(destMastBox.getPreferredSize());
 
         JComboBoxUtil.setupComboBoxMaxRows(sourceMastBox);

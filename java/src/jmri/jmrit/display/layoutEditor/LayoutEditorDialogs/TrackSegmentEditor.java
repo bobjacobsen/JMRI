@@ -44,7 +44,7 @@ public class TrackSegmentEditor extends LayoutTrackEditor {
     private final JComboBox<String> editTrackSegmentDashedComboBox = new JComboBox<>();
     private final JCheckBox editTrackSegmentHiddenCheckBox = new JCheckBox(Bundle.getMessage("HideTrack"));  // NOI18N
     private final NamedBeanComboBox<Block> editTrackSegmentBlockNameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     private final JTextField editTrackSegmentArcTextField = new JTextField(5);
     private JButton editTrackSegmentSegmentEditBlockButton;
 

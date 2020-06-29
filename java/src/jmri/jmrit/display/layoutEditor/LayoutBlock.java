@@ -903,7 +903,7 @@ public class LayoutBlock extends AbstractNamedBean implements PropertyChangeList
     private final JCheckBox sensorDebounceGlobalCheck = new JCheckBox(Bundle.getMessage("SensorUseGlobalDebounce"));
 
     private final NamedBeanComboBox<Memory> memoryComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(MemoryManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(MemoryManager.class), null);
 
     private final JTextField metricField = new JTextField(10);
 

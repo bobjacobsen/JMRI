@@ -54,7 +54,7 @@ abstract public class DrawFrame extends jmri.util.JmriJFrame {
     JSlider _lineSlider;
     JSlider _alphaSlider;
     private final transient NamedBeanComboBox<Sensor> _sensorBox = new NamedBeanComboBox<>(
-        InstanceManager.getDefault(SensorManager.class), null, DisplayOptions.DISPLAYNAME);
+        InstanceManager.getDefault(SensorManager.class), null);
     JRadioButton _hideShape;
     JRadioButton _changeLevel;
     JComboBox<String> _levelComboBox;

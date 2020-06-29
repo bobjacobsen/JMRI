@@ -57,9 +57,9 @@ public class LevelXingEditor extends LayoutTurntableEditor {
     private final JCheckBox editLevelXingHiddenCheckBox = new JCheckBox(Bundle.getMessage("HideCrossing"));  // NOI18N
 
     private final NamedBeanComboBox<Block> editLevelXingBlock1NameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     private final NamedBeanComboBox<Block> editLevelXingBlock2NameComboBox = new NamedBeanComboBox<>(
-            InstanceManager.getDefault(BlockManager.class), null, DisplayOptions.DISPLAYNAME);
+            InstanceManager.getDefault(BlockManager.class), null);
     private JButton editLevelXingBlock1Button;
     private JButton editLevelXingBlock2Button;
 
