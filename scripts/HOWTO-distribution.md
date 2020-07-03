@@ -1,7 +1,7 @@
 # How we build and release JMRI distributions
 [Online version](https://github.com/JMRI/JMRI/blob/master/scripts/HOWTO-distribution.md)
 
-Our release procedure is, in outline, creates a branch at some instant labeled with the release, building distribution files and checking them, and then applying a tag via GitHub to create the distribution. For more details, see below.
+Our release procedure is currently being discussed.  The the proposal in the help/en/html/doc/Technical/Release.md file.
 
 #### Note on release numbers and file names
 
