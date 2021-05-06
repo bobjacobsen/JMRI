@@ -50,7 +50,7 @@ function trapExitHandler {
 #  $ retry 5 echo Hello
 #  Hello
 #
-#  
+#
 function retry {
   local retries=$1
   shift
@@ -72,7 +72,7 @@ function retry {
 }
 # -----------------------------------------
 # Sign a file (2nd arg) with a jar file (1st arg) in place
-#  
+#
 function signJarMember {
   local jar=$1
   local file=$2
@@ -86,7 +86,7 @@ function signJarMember {
 }
 # -----------------------------------------
 # Sign a single file (1st arg)
-#  
+#
 function signFile {
   local file=$1
   echo sign $file
@@ -152,7 +152,7 @@ jmrisize=`du -ms "$tmpindir" | awk '{print $1}'`
 imagesize=`expr $jmrisize + 80`
 
 if [ "$SYSTEM" = "MACOSX" ]
-then 
+then
     hdiutil create -size ${imagesize}MB -fs HFS+ -layout SPUD -volname "JMRI ${REL_VER}" "$tmpimage2"
     hdiutil attach ${tmpimage2}.dmg -mountpoint "$tmpoutdir" -nobrowse
 else
@@ -198,7 +198,8 @@ signFile $tmpoutdir/JMRI/lib/macosx/libopenal.dylib
 # sign libraries inside jar files
 signJarMember $tmpoutdir/JMRI/lib/libusb4java-1.2.0-osx-x86_64.jar org/usb4java/osx-x86_64/libusb4java.dylib
 signJarMember $tmpoutdir/JMRI/lib/bluecove-2.1.1-SNAPSHOT.jar libbluecove.jnilib
-signJarMember $tmpoutdir/JMRI/lib/jna-4.4.0.jar com/sun/jna/darwin/libjnidispatch.jnilib
+signJarMember $tmpoutdir/JMRI/lib/jna-5.8.0.jar com/sun/jna/darwin-x86-64/libjnidispatch.jnilib
+signJarMember $tmpoutdir/JMRI/lib/jna-5.8.0.jar com/sun/jna/darwin-aarch64/libjnidispatch.jnilib
 signJarMember $tmpoutdir/JMRI/lib/hid4java-0.5.0.jar darwin/libhidapi.dylib
 # signJarMember $tmpoutdir/JMRI/lib/selenium-server-standalone-3.6.0.jar com/sun/jna/darwin/libjnidispatch.jnilib # OMITTED DUE TO TOC ISSUE
 signJarMember $tmpoutdir/JMRI/lib/jython-standalone-2.7.2.jar META-INF/native/osx/libjansi.jnilib
@@ -238,6 +239,6 @@ sleep 30
 retry 20 xcrun stapler staple "$OUTPUT"
 
 # clean up
-hdiutil detach $tmpindir 
+hdiutil detach $tmpindir
 # this should also be handled by the trap, but it doesn't hurt...
-rm -rf $tmpimage1 $tmpimage2 $tmpoutdir 
+rm -rf $tmpimage1 $tmpimage2 $tmpoutdir

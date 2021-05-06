@@ -213,13 +213,15 @@ NOTE: joal.jar is currently replaced by an own-built version with modifications 
 - Version 3.5.5 (2018-12-04)
 - from https://github.com/jmdns/jmdns/releases
 
-##### jna-4.4.0.jar
+##### jna-5.8.0.jar
 - Java Native Access library
-- from http://search.maven.org/#artifactdetails%7Cnet.java.dev.jna%7Cjna%7C4.4.0%7Cjar
+  - previous version was 4.4.0
+- from http://search.maven.org/#artifactdetails%7Cnet.java.dev.jna%7Cjna%7C5.8.0%7Cjar
 
-##### jna-platform-4.4.0.jar
+##### jna-platform-45.8.0.jar
 - Java Native Access platform-specific utilities library
-- from http://search.maven.org/#artifactdetails%7Cnet.java.dev.jna%7Cjna-platform%7C4.4.0%7Cjar
+  - previous version was 5.8.0
+- from http://search.maven.org/#artifactdetails%7Cnet.java.dev.jna%7Cjna-platform%7C5.8.0%7Cjar
 
 
 ##### pi4j-core-1.2.jar, pi4j-device-1.2.jar, pi4j-gpio-extension-1.2.jar
@@ -285,7 +287,7 @@ NOTE: joal.jar is currently replaced by an own-built version with modifications 
 - from http://search.maven.org/#artifactdetails%7Corg.hamcrest%7Chamcrest-core%7C1.3%7Cjar
 
 ##### i18nchecker.jar
-- Internationalization checker: used in source code development, for checking proper implementation of text internationalization.  
+- Internationalization checker: used in source code development, for checking proper implementation of text internationalization.
 - From https://github.com/JMRI/i18nchecker
 - Note: We use a custom version of the original in https://github.com/phamernik/i18nchecker
 - See license https://github.com/phamernik/i18nchecker/blob/master/i18nchecker/LICENSE-2.0.txt
@@ -299,7 +301,7 @@ NOTE: joal.jar is currently replaced by an own-built version with modifications 
     downloaded as umldoclet-2.0.10-javadoc.jar
     from https://github.com/talsma-ict/umldoclet/releases
     see https://github.com/talsma-ict/umldoclet
-    
+
 ##### rscbundlecheck.jar
 - check for duplicated properties
 
@@ -344,7 +346,7 @@ NOTE: joal.jar is currently replaced by an own-built version with modifications 
 - from http://javacsv.sourceforge.net
 - No longer used as of JMRI 4.19.3
 
-##### crimson.jar    
+##### crimson.jar
 - version 1.1.3
 - from http://xml.apache.org/crimson/
 - No longer used as of JMRI 2.7.6
