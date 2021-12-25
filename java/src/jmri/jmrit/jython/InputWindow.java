@@ -104,9 +104,13 @@ public class InputWindow extends JPanel {
         add(js, BorderLayout.CENTER);
 
         ArrayList<String> names = new ArrayList<>();
+        // old-style engine names
         JmriScriptEngineManager.getDefault().getManager().getEngineFactories().stream().forEach((ScriptEngineFactory factory) -> {
             names.add(factory.getLanguageName());
         });
+        // new Graal names
+        names.addAll(JmriScriptEngineManager.graalSupportedLanguages());
+
         languages = new JComboBox<>(names.toArray(new String[names.size()]));
         if (pref.getComboBoxLastSelection(languageSelection) != null) {
             languages.setSelectedItem(pref.getComboBoxLastSelection(languageSelection));
@@ -281,10 +285,20 @@ public class InputWindow extends JPanel {
 
     void buttonPressed() {
         ScriptOutput.writeScript(area.getText());
-        try {
-            JmriScriptEngineManager.getDefault().eval(area.getText(), JmriScriptEngineManager.getDefault().getEngineByName((String) languages.getSelectedItem()));
-        } catch (ScriptException ex) {
-            log.error("Error executing script", ex);
+        String language = (String) languages.getSelectedItem();
+
+        if (JmriScriptEngineManager.graalSupportedLanguages().contains(language)) {
+            // Graal language script
+            log.debug("running Graal script in {}", language);
+            JmriScriptEngineManager.getDefault().evalGraalString(area.getText(), language);
+        } else {
+            // old style engine script
+            log.debug("running old-style script in {}", language);
+            try {
+                JmriScriptEngineManager.getDefault().eval(area.getText(), JmriScriptEngineManager.getDefault().getEngineByName(language) );
+            } catch (ScriptException ex) {
+                log.error("Error executing script", ex);
+            }
         }
     }
     // initialize logging
