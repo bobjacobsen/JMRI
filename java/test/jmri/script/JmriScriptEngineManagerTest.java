@@ -10,6 +10,8 @@ import jmri.util.FileUtil;
 import jmri.util.JUnitAppender;
 import jmri.util.JUnitUtil;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,6 +40,25 @@ import org.python.util.PythonInterpreter;
  */
 public class JmriScriptEngineManagerTest {
 
+    @Test
+    public void testGraalSupportsExtension() {
+        assertTrue(JmriScriptEngineManager.graalSupportsExtension("py3"));
+        assertFalse(JmriScriptEngineManager.graalSupportsExtension("foo"));
+    }
+
+    @Test
+    public void testGraalIdFromExtension() {
+        assertEquals("python", JmriScriptEngineManager.graalIdFromExtension("py3") );
+        assertEquals("python", JmriScriptEngineManager.graalIdFromExtension("filename.py3") );
+        assertEquals("js", JmriScriptEngineManager.graalIdFromExtension("js") );
+        assertEquals("js", JmriScriptEngineManager.graalIdFromExtension("filename.js") );
+        assertNull(JmriScriptEngineManager.graalIdFromExtension("foo"));
+    }
+
+
+    // legacy testing below here
+
+
     private JmriScriptEngineManager jsem;
 
     @Test
@@ -65,6 +86,8 @@ public class JmriScriptEngineManagerTest {
         assertEquals(InstanceManager.getDefault(TurnoutManager.class).getBySystemName("IT1"), result);
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testEval_File_Bindings() throws IOException, ScriptException {
         // first test that test binding is not in default bindings
@@ -100,12 +123,16 @@ public class JmriScriptEngineManagerTest {
         assertNotNull(jsem.getDefaultContext());
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testInitializePython() {
         jsem.initializePython();
         assertNull("no non-engine python", jsem.getPythonInterpreter());
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testInitializePythonWithJython() throws IOException {
         // use profile that sets jython.exec=true
@@ -123,12 +150,16 @@ public class JmriScriptEngineManagerTest {
         assertNotNull(jsem.getEngine(JmriScriptEngineManager.PYTHON));
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetEngineByExtensionPython() throws ScriptException {
         // see https://github.com/jythontools/jython/blob/master/src/org/python/jsr223/PyScriptEngineFactory.java#L22
         assertNotNull(jsem.getEngineByExtension("py"));
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetEngineByMimeTypePython() throws ScriptException {
         // see https://github.com/jythontools/jython/blob/master/src/org/python/jsr223/PyScriptEngineFactory.java#L88
@@ -152,6 +183,8 @@ public class JmriScriptEngineManagerTest {
         assertNull(jsem.getEngine("invalid"));
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetEngineByExtensionInvalidExtension() {
         try {
@@ -164,6 +197,8 @@ public class JmriScriptEngineManagerTest {
         }
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetEngineByMimeTypeInvalidMimeType() {
         try {
@@ -199,6 +234,8 @@ public class JmriScriptEngineManagerTest {
         assertNotNull(jsem.getFactoryByExtension("py"));
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetFactoryByMimeTypePython() throws ScriptException {
         // see https://github.com/jythontools/jython/blob/master/src/org/python/jsr223/PyScriptEngineFactory.java#L88
@@ -209,6 +246,8 @@ public class JmriScriptEngineManagerTest {
         assertEquals(factory, jsem.getFactoryByMimeType("application/x-python"));
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetFactoryByNamePython() throws ScriptException {
         // see https://github.com/jythontools/jython/blob/master/src/org/python/jsr223/PyScriptEngineFactory.java#L93
@@ -234,6 +273,8 @@ public class JmriScriptEngineManagerTest {
         }
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetFactoryByMimeTypeInvalidMimeType() {
         try {
@@ -246,6 +287,8 @@ public class JmriScriptEngineManagerTest {
         }
     }
 
+    @SuppressWarnings("removal")  // deprecated for removal
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @Test
     public void testGetFactoryByNameInvalidName() {
         try {
