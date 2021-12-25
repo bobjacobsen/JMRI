@@ -1,38 +1,36 @@
-print ("Python 3 rules!")
+print ("Python 3 tests!")
 
 import jmri as jmri
 import java
 
 # access constants
 
-print ( jmri.Version.NON_OFFICIAL )
+if (jmri.Turnout.THROWN != 4) : raise AssertionError('Constant THROWN not right')
 
 # access InstanceManager to get manager
 smc = java.type('jmri.SensorManager')
 sm = jmri.InstanceManager.getNullableDefault(smc)
 
+if (sm == None) : raise AssertionError('No instance manager access')
+
+# check against simpler syntax
+if (sm != sensors) : raise AssertionError('Not same SensorManager')
+
 # use that manager to affect JMRI
 IS1 = sm.provideSensor("IS1")
 
-# but really, should use the simpler syntax
-IS2 = sensors.provideSensor("IS2")
-
-# check constants
-print(jmri.Turnout.THROWN)
-print(THROWN)
+if (sensors.getSensor("IS1") == None) : raise AssertionError('Sensor not created')
 
 # extending a class
 from jmri.jmrit.automat import AbstractAutomaton
 
 class Automat(AbstractAutomaton) :
     def init(self) :
-        print ("init")
+        print ("init in Python 3")
     def handle(self) :
-        print ("handle")
+        print ("handle in Python 3")
         return False
-
 Automat().start()
 
-# prep to do this again
-print (IS1)
+# prep to check for persistent context
 persistanceCheck = 27
