@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -89,6 +90,8 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * instances.
      */
     public JmriScriptEngineManager() {
+
+        // manage old-style engines
         this.manager.getEngineFactories().stream().forEach(factory -> {
             log.info("{} {} is provided by {} {}",
                     factory.getLanguageName(),
@@ -113,6 +116,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
             this.factories.put(engineName, factory);
         });
 
+        // Create built-in symbols
         // this should agree with help/en/html/tools/scripting/Start.shtml
         bindings = new SimpleBindings();
         bindings.put("sensors", InstanceManager.getNullableDefault(SensorManager.class));
@@ -154,6 +158,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
         bindings.put("FLASHGREEN", SignalHead.FLASHGREEN);
         bindings.put("FLASHLUNAR", SignalHead.FLASHLUNAR);
         bindings.put("FileUtil", FileUtilSupport.getDefault());
+
         this.context = new SimpleScriptContext();
         this.context.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
     }
@@ -183,35 +188,6 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     }
 
     /**
-     * Given a file extension, get the ScriptEngine registered to handle that
-     * extension.
-     *
-     * @param extension a file extension
-     * @return a ScriptEngine or null
-     * @throws ScriptException if unable to get a matching ScriptEngine
-     */
-    @Deprecated(forRemoval=true, since="GraalVM migration")
-    @Nonnull
-    public ScriptEngine getEngineByExtension(String extension) throws ScriptException {
-        return getEngine(extension, EXTENSION);
-    }
-
-    /**
-     * Given a mime type, get the ScriptEngine registered to handle that mime
-     * type.
-     *
-     * @param mimeType a mimeType for a script
-     * @return a ScriptEngine or null
-     * @throws ScriptException if unable to get a matching ScriptEngine
-     * @deprecated Not migrating to GraalVM form
-     */
-    @Deprecated(forRemoval=true, since="GraalVM migration")
-    @Nonnull
-    public ScriptEngine getEngineByMimeType(String mimeType) throws ScriptException {
-        return getEngine(mimeType, "mime type");
-    }
-
-    /**
      * Given a short name, get the ScriptEngine registered by that name.
      *
      * @param shortName the short name for the ScriptEngine
@@ -221,17 +197,6 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     @Nonnull
     public ScriptEngine getEngineByName(String shortName) throws ScriptException {
         return getEngine(shortName, "name");
-    }
-
-    @Deprecated(forRemoval=true, since="GraalVM migration")
-    @Nonnull
-    private ScriptEngine getEngine(@CheckForNull String engineName, @Nonnull String type) throws ScriptException {
-        String name = names.get(engineName);
-        ScriptEngine engine = getEngine(name);
-        if (name == null || engine == null) {
-            throw scriptEngineNotFound(engineName, type, false);
-        }
-        return engine;
     }
 
     /**
@@ -297,42 +262,6 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * extension of the file to determine which ScriptEngine to use.
      *
      * @param file     the script file to evaluate.
-     * @param bindings script bindings to evaluate against.
-     * @return the results of the evaluation.
-     * @throws javax.script.ScriptException  if there is an error evaluating the
-     *                                       script.
-     * @throws java.io.FileNotFoundException if the script file cannot be found.
-     * @throws java.io.IOException           if the script file cannot be read.
-     */
-    @Deprecated(forRemoval=true, since="GraalVM migration")
-    public Object eval(File file, Bindings bindings) throws ScriptException, IOException {
-        return eval(file, null, bindings);
-    }
-
-    /**
-     * Evaluate a script contained in a file given a special context for the
-     * script. Uses the extension of the file to determine which ScriptEngine to
-     * use.
-     *
-     * @param file    the script file to evaluate.
-     * @param context script context to evaluate within.
-     * @return the results of the evaluation.
-     * @throws javax.script.ScriptException  if there is an error evaluating the
-     *                                       script.
-     * @throws java.io.FileNotFoundException if the script file cannot be found.
-     * @throws java.io.IOException           if the script file cannot be read.
-     */
-    @Deprecated(forRemoval=true, since="GraalVM migration")
-    public Object eval(File file, ScriptContext context) throws ScriptException, IOException {
-        return eval(file, context, null);
-    }
-
-    /**
-     * Evaluate a script contained in a file given a set of
-     * {@link javax.script.Bindings} to add to the script's context. Uses the
-     * extension of the file to determine which ScriptEngine to use.
-     *
-     * @param file     the script file to evaluate.
      * @param context  script context to evaluate within.
      * @param bindings script bindings to evaluate against.
      * @return the results of the evaluation.
@@ -341,6 +270,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * @throws java.io.FileNotFoundException if the script file cannot be found.
      * @throws java.io.IOException           if the script file cannot be read.
      */
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @CheckForNull
     private Object eval(File file, @CheckForNull ScriptContext context, @CheckForNull Bindings bindings)
             throws ScriptException, IOException {
@@ -368,96 +298,6 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
         return result;
     }
 
-    private void ensureGraalContext() {
-        if (polyglot == null) {
-            log.debug("create polygot context");
-            polyglot = org.graalvm.polyglot.Context.newBuilder()
-                            .allowExperimentalOptions(true)
-                            .allowAllAccess(true)
-                            .option("python.EmulateJython", "true")
-                            .build();
-
-            // add all the bindings created in the ctor
-            var pyBindings = polyglot.getBindings("python");
-            for (var key : bindings.keySet()) {
-                pyBindings.putMember(key, bindings.get(key));
-            }
-        }
-
-    }
-
-    static private org.graalvm.polyglot.Source createGraalSource(String language, File file) throws IOException {
-        return org.graalvm.polyglot.Source.newBuilder(language, file).build();
-    }
-
-    /**
-     * Process a file through GraalVM.
-     * Call with a File that has already been confirmed to be supported, i.e.
-     * by checking it's suffix with {@link graalSupportsExtension}.
-     * @param file Script file to be executed
-     * @return the result of the script, if any
-     * @throws IOException from accessing the file
-     */
-     Object evalGraalFile(@Nonnull File file) throws IOException { // package access for testing
-
-        ensureGraalContext();
-
-        String id = graalIdFromExtension(file.getName());
-        if (id == null ) {
-            log.error("called with an unrecognized file extension {}", file.getName());
-            throw new java.io.FileNotFoundException("called with an unrecognized file extension");
-        }
-
-        var source = createGraalSource(id, file);
-
-        var result = polyglot.eval(source);
-        return result;
-     }
-
-    static boolean graalSupportsExtension(@Nonnull String filename) { // package access for testing
-        return (null != graalIdFromExtension(filename) );
-    }
-
-    static @CheckForNull String graalIdFromExtension(@Nonnull String filename) { // package access for testing
-        // get part after last .
-        String[] ext = filename.split("\\.");
-        String suffix = ext[ext.length -1];
-
-        if ("py3".equals(suffix)) return "python";  // someday make this a table lookup
-        if ("js".equals(suffix)) return "js";  // someday make this a table lookup
-        return null;
-    }
-
-    static org.graalvm.polyglot.Context polyglot = null;
-
-
-
-    /**
-     * Get the ScriptEngine to evaluate the file with; if not using a
-     * ScriptEngine to evaluate Python files, evaluate the file with a
-     * {@link org.python.util.PythonInterpreter} and do not return a
-     * ScriptEngine.
-     *
-     * @param file the script file to evaluate.
-     * @return the ScriptEngine or null if evaluated with a PythonInterpreter.
-     * @throws javax.script.ScriptException  if there is an error evaluating the
-     *                                       script.
-     * @throws java.io.FileNotFoundException if the script file cannot be found.
-     * @throws java.io.IOException           if the script file cannot be read.
-     */
-    @Deprecated(forRemoval=true, since="GraalVM migration")
-    @CheckForNull
-    private ScriptEngine getEngineOrEval(File file) throws ScriptException, IOException {
-        ScriptEngine engine = this.getEngine(FilenameUtils.getExtension(file.getName()), EXTENSION);
-        if (PYTHON.equals(engine.getFactory().getEngineName()) && this.jython != null) {
-            try (FileInputStream fi = new FileInputStream(file)) {
-                this.jython.execfile(fi);
-            }
-            return null;
-        }
-        return engine;
-    }
-
     /**
      * Run a script, suppressing common errors. Note that the file needs to have
      * a registered extension, or a NullPointerException will be thrown.
@@ -473,7 +313,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
         } catch (FileNotFoundException ex) {
             log.error("File {} not found.", file);
         } catch (IOException ex) {
-            log.error("Exception working with file {}", file);
+            log.error("Exception working with file {}", file, ex);
         } catch (ScriptException ex) {
             log.error("Error in script {}.", file, ex);
         }
@@ -514,12 +354,243 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     }
 
     /**
+     * Get a ScriptEngineFactory by its name(s), mime types, or supported
+     * extensions.
+     *
+     * @param name the complete name, mime type, or extension for a factory
+     * @return a ScriptEngineFactory or null
+     */
+    @CheckForNull
+    public ScriptEngineFactory getFactory(@CheckForNull String name) {
+        if (!factories.containsKey(name)) {
+            name = names.get(name);
+        }
+        return this.factories.get(name);
+    }
+
+
+    // Graal support methods ======================================
+
+    private void ensureGraalContext() {
+        if (polyglot == null) {
+            log.debug("create polygot context");
+            polyglot = org.graalvm.polyglot.Context.newBuilder()
+                            .allowExperimentalOptions(true)
+                            .allowAllAccess(true)
+                            .option("python.EmulateJython", "true")
+                            .build();
+
+            // add all the bindings created in the ctor
+            var pyBindings = polyglot.getBindings("python");
+            for (var key : bindings.keySet()) {
+                pyBindings.putMember(key, bindings.get(key));
+            }
+        }
+
+    }
+
+    static private org.graalvm.polyglot.Source createGraalSource(String language, File file) throws IOException {
+        return org.graalvm.polyglot.Source.newBuilder(language, file).build();
+    }
+
+    static private org.graalvm.polyglot.Source createGraalSource(String language, String string) throws IOException {
+        return org.graalvm.polyglot.Source.newBuilder(language, string, null).build();
+    }
+
+    /**
+     * Process a file through GraalVM.
+     * Call with a File that has already been confirmed to be supported, i.e.
+     * by checking it's suffix with {@link graalSupportsExtension}.
+     * @param file Script file to be executed
+     * @return the result of the script, if any
+     * @throws IOException from accessing the file
+     */
+     Object evalGraalFile(@Nonnull File file) throws IOException { // package access for testing
+
+        ensureGraalContext();
+
+        String id = graalIdFromExtension(file.getName());
+        if (id == null ) {
+            log.error("called with an unrecognized file extension {}", file.getName());
+            throw new java.io.FileNotFoundException("called with an unrecognized file extension");
+        }
+
+        var source = createGraalSource(id, file);
+
+        var result = polyglot.eval(source);
+        return result;
+     }
+
+    /**
+     * Process a String through GraalVM.
+     *
+     * Exceptions are caught and logged.
+     *
+     * @param string String to be executed
+     * @return the result of the script, if any
+     */
+     public Object evalGraalString(@Nonnull String string, String language) {
+
+        ensureGraalContext();
+
+        String id = graalIdFromLanguage(language);
+        if (id == null ) {
+            log.error("called with an unrecognized language {}", language);
+            return null;
+        }
+
+        try {
+            var source = createGraalSource(id, string);
+            var result = polyglot.eval(source);
+            return result;
+        } catch (IOException e) {
+            log.error("IOException while processing string script", e);
+            return null;
+        }
+     }
+
+    static public Set<String> graalSupportedLanguages() {
+        return Set.of("Python 3");
+    }
+
+    static boolean graalSupportsExtension(@Nonnull String filename) { // package access for testing
+        return (null != graalIdFromExtension(filename) );
+    }
+
+    static @CheckForNull String graalIdFromExtension(@Nonnull String filename) { // package access for testing
+        // get part after last .
+        String[] ext = filename.split("\\.");
+        String suffix = ext[ext.length -1];
+
+        if ("py3".equals(suffix)) return "python";  // someday make this a table lookup
+        if ("js".equals(suffix)) return "js";  // someday make this a table lookup
+        return null;
+    }
+
+     static @CheckForNull String graalIdFromLanguage(@Nonnull String language) { // package access for testing
+        // get part after last .
+
+        if ("Python 3".equals(language)) return "python";  // someday make this a table lookup
+        return null;
+    }
+
+    static org.graalvm.polyglot.Context polyglot = null;
+
+
+    // fully deprecated methods below here ======================================
+
+    @Deprecated(forRemoval=true, since="GraalVM migration")
+    @Nonnull
+    private ScriptEngine getEngine(@CheckForNull String engineName, @Nonnull String type) throws ScriptException {
+        String name = names.get(engineName);
+        ScriptEngine engine = getEngine(name);
+        if (name == null || engine == null) {
+            throw scriptEngineNotFound(engineName, type, false);
+        }
+        return engine;
+    }
+
+
+    /**
+     * Given a file extension, get the ScriptEngine registered to handle that
+     * extension.
+     *
+     * @param extension a file extension
+     * @return a ScriptEngine or null
+     * @throws ScriptException if unable to get a matching ScriptEngine
+     */
+    @Deprecated(forRemoval=true, since="GraalVM migration")
+    @Nonnull
+    public ScriptEngine getEngineByExtension(String extension) throws ScriptException {
+        return getEngine(extension, EXTENSION);
+    }
+
+    /**
+     * Given a mime type, get the ScriptEngine registered to handle that mime
+     * type.
+     *
+     * @param mimeType a mimeType for a script
+     * @return a ScriptEngine or null
+     * @throws ScriptException if unable to get a matching ScriptEngine
+     * @deprecated Not migrating to GraalVM form
+     */
+    @Deprecated(forRemoval=true, since="GraalVM migration")
+    @Nonnull
+    public ScriptEngine getEngineByMimeType(String mimeType) throws ScriptException {
+        return getEngine(mimeType, "mime type");
+    }
+
+    /**
+     * Evaluate a script contained in a file given a set of
+     * {@link javax.script.Bindings} to add to the script's context. Uses the
+     * extension of the file to determine which ScriptEngine to use.
+     *
+     * @param file     the script file to evaluate.
+     * @param bindings script bindings to evaluate against.
+     * @return the results of the evaluation.
+     * @throws javax.script.ScriptException  if there is an error evaluating the
+     *                                       script.
+     * @throws java.io.FileNotFoundException if the script file cannot be found.
+     * @throws java.io.IOException           if the script file cannot be read.
+     */
+    @Deprecated(forRemoval=true, since="GraalVM migration")
+    public Object eval(File file, Bindings bindings) throws ScriptException, IOException {
+        return eval(file, null, bindings);
+    }
+
+    /**
+     * Evaluate a script contained in a file given a special context for the
+     * script. Uses the extension of the file to determine which ScriptEngine to
+     * use.
+     *
+     * @param file    the script file to evaluate.
+     * @param context script context to evaluate within.
+     * @return the results of the evaluation.
+     * @throws javax.script.ScriptException  if there is an error evaluating the
+     *                                       script.
+     * @throws java.io.FileNotFoundException if the script file cannot be found.
+     * @throws java.io.IOException           if the script file cannot be read.
+     */
+    @Deprecated(forRemoval=true, since="GraalVM migration")
+    public Object eval(File file, ScriptContext context) throws ScriptException, IOException {
+        return eval(file, context, null);
+    }
+
+    /**
+     * Get the ScriptEngine to evaluate the file with; if not using a
+     * ScriptEngine to evaluate Python files, evaluate the file with a
+     * {@link org.python.util.PythonInterpreter} and do not return a
+     * ScriptEngine.
+     *
+     * @param file the script file to evaluate.
+     * @return the ScriptEngine or null if evaluated with a PythonInterpreter.
+     * @throws javax.script.ScriptException  if there is an error evaluating the
+     *                                       script.
+     * @throws java.io.FileNotFoundException if the script file cannot be found.
+     * @throws java.io.IOException           if the script file cannot be read.
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
+     */
+    @Deprecated(forRemoval=true, since="GraalVM migration")
+    @CheckForNull
+    private ScriptEngine getEngineOrEval(File file) throws ScriptException, IOException {
+        ScriptEngine engine = this.getEngine(FilenameUtils.getExtension(file.getName()), EXTENSION);
+        if (PYTHON.equals(engine.getFactory().getEngineName()) && this.jython != null) {
+            try (FileInputStream fi = new FileInputStream(file)) {
+                this.jython.execfile(fi);
+            }
+            return null;
+        }
+        return engine;
+    }
+
+    /**
      * Given a mime type, get the ScriptEngineFactory registered to handle that
      * mime type.
      *
      * @param mimeType the script mimeType
      * @return a ScriptEngineFactory or null
      * @throws ScriptException if unable to get a matching ScriptEngineFactory
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
      */
     @Deprecated(forRemoval=true, since="GraalVM migration")
     @Nonnull
@@ -533,6 +604,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * @param shortName the short name for the factory
      * @return a ScriptEngineFactory or null
      * @throws ScriptException if unable to get a matching ScriptEngineFactory
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
      */
     @Deprecated(forRemoval=true, since="GraalVM migration")
     @Nonnull
@@ -553,26 +625,12 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     }
 
     /**
-     * Get a ScriptEngineFactory by its name(s), mime types, or supported
-     * extensions.
-     *
-     * @param name the complete name, mime type, or extension for a factory
-     * @return a ScriptEngineFactory or null
-     */
-    @CheckForNull
-    public ScriptEngineFactory getFactory(@CheckForNull String name) {
-        if (!factories.containsKey(name)) {
-            name = names.get(name);
-        }
-        return this.factories.get(name);
-    }
-
-    /**
      * The Python ScriptEngine can be configured using a custom
      * python.properties file and will run jmri_defaults.py if found in the
      * user's configuration profile or settings directory. See python.properties
      * in the JMRI installation directory for details of how to configure the
      * Python ScriptEngine.
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
      */
     @Deprecated(forRemoval=true, since="GraalVM migration")
     public void initializePython() {
@@ -585,6 +643,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * Create a new PythonInterpreter with the default bindings.
      *
      * @return a new interpreter
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
      */
     @Deprecated(forRemoval=true, since="GraalVM migration")
     public PythonInterpreter newPythonInterpreter() {
@@ -599,6 +658,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      *
      * @return true if the Python interpreter will be used outside a
      *         ScriptEngine; false otherwise
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
      */
     @Deprecated(forRemoval=true, since="GraalVM migration")
     private boolean initializePythonState() {
@@ -642,6 +702,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      *
      * @param execJython true if also initializing an independent interpreter;
      *                   false otherwise
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
      */
     @Deprecated(forRemoval=true, since="GraalVM migration")
     private void initializePythonInterpreter(boolean execJython) {
@@ -670,6 +731,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     }
 
     // package private for unit testing
+    @Deprecated(forRemoval=true, since="GraalVM migration")
     @CheckForNull
     PythonInterpreter getPythonInterpreter() {
         return jython;
@@ -683,6 +745,7 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
      * @param type      the type of key (name, mime type, extension)
      * @param isFactory true for a not found ScriptEngineFactory, false for a
      *                  not found ScriptEngine
+     * @deprecated Do not use; not part of Graal migration, so going away soon.
      */
     @Deprecated(forRemoval=true, since="GraalVM migration")
     private ScriptException scriptEngineNotFound(@CheckForNull String key, @Nonnull String type, boolean isFactory) {

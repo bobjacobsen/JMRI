@@ -50,11 +50,17 @@ public class JmriScriptEngineManagerTest {
     public void testGraalIdFromExtension() {
         assertEquals("python", JmriScriptEngineManager.graalIdFromExtension("py3") );
         assertEquals("python", JmriScriptEngineManager.graalIdFromExtension("filename.py3") );
+
         assertEquals("js", JmriScriptEngineManager.graalIdFromExtension("js") );
         assertEquals("js", JmriScriptEngineManager.graalIdFromExtension("filename.js") );
+
         assertNull(JmriScriptEngineManager.graalIdFromExtension("foo"));
     }
 
+    @Test
+    public void testEvalGraalFile() throws IOException {
+        jsem.evalGraalFile(new java.io.File("java/test/jmri/script/GraalLaunchTest.py3"));
+    }
 
     // legacy testing below here
 
