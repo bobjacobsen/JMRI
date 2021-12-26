@@ -23,6 +23,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
+
 import jmri.AddressedProgrammerManager;
 import jmri.AudioManager;
 import jmri.BlockManager;
@@ -49,7 +50,10 @@ import jmri.jmrit.display.layoutEditor.LayoutBlockManager;
 import jmri.jmrit.logix.WarrantManager;
 import jmri.util.FileUtil;
 import jmri.util.FileUtilSupport;
+
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.output.WriterOutputStream;
+
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
@@ -372,13 +376,13 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
 
     // Graal support methods ======================================
 
-    private void ensureGraalContext() {
+    synchronized private void ensureGraalContext() {
         if (polyglot == null) {
             log.debug("create polygot context");
 
             // get the output streams
             ScriptOutput.getDefault().getOutputArea();  // create the readers
-            OutputStream os = new org.apache.commons.io.output.WriterOutputStream(
+            OutputStream os = new WriterOutputStream(
                                     ScriptOutput.getDefault().getPipedWriter(),
                                     "UTF-8",    // default for Python
                                     1000,
@@ -396,8 +400,8 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
 
             // add all the bindings created in the ctor
             var pyBindings = polyglot.getBindings("python");
-            for (var key : bindings.keySet()) {
-                pyBindings.putMember(key, bindings.get(key));
+            for (var entry : bindings.entrySet()) {
+                pyBindings.putMember(entry.getKey(), entry.getValue());
             }
         }
 
