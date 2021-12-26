@@ -119,8 +119,7 @@ public class ActionScriptSwing extends AbstractDigitalActionSwing {
         _actionSelectFileButton.setMaximumSize(_actionSelectFileButton.getPreferredSize());
         _actionSelectFileButton.setToolTipText(Bundle.getMessage("FileButtonHint"));  // NOI18N
         _actionSelectFileButton.addActionListener((ActionEvent e) -> {
-            scriptFileChooser = new JFileChooser(FileUtil.getScriptsPath());
-            scriptFileChooser.setFileFilter(new FileNameExtensionFilter("Python script files", "py")); // NOI18N
+            scriptFileChooser = new jmri.script.ScriptFileChooser(FileUtil.getScriptsPath());
             scriptFileChooser.rescanCurrentDirectory();
             int retVal = scriptFileChooser.showOpenDialog(null);
             // handle selection or cancel

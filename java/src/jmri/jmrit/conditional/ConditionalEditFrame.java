@@ -2736,8 +2736,7 @@ public class ConditionalEditFrame extends ConditionalFrame {
             currentChooser = sndFileChooser;
         } else if (actionType == Conditional.Action.RUN_SCRIPT) {
             if (scriptFileChooser == null) {
-                scriptFileChooser = new JFileChooser(FileUtil.getScriptsPath());
-                scriptFileChooser.setFileFilter(new FileNameExtensionFilter("Python script files", "py")); // NOI18N
+                scriptFileChooser = new jmri.script.ScriptFileChooser(FileUtil.getScriptsPath());
             }
             currentChooser = scriptFileChooser;
         } else {
