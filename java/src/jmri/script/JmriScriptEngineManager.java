@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -374,10 +375,23 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     private void ensureGraalContext() {
         if (polyglot == null) {
             log.debug("create polygot context");
+
+            // get the output streams
+            ScriptOutput.getDefault().getOutputArea();  // create the readers
+            OutputStream os = new org.apache.commons.io.output.WriterOutputStream(
+                                    ScriptOutput.getDefault().getPipedWriter(),
+                                    "UTF-8",    // default for Python
+                                    1000,
+                                    true        // needed to get immediate write
+                                );
+
+            // create the Builder
             polyglot = org.graalvm.polyglot.Context.newBuilder()
                             .allowExperimentalOptions(true)
-                            .allowAllAccess(true)
-                            .option("python.EmulateJython", "true")
+                            .allowAllAccess(true)                   // allow access to Java
+                            .option("python.EmulateJython", "true") // Jython-compatible class structure
+                            .out(os)                                // send System.out to ScriptOutput
+                            .err(os)                                // send System.err to ScriptOutput
                             .build();
 
             // add all the bindings created in the ctor
