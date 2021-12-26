@@ -3,12 +3,12 @@ package jmri.script;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
+
+import javax.annotation.Nonnull;
 import javax.script.ScriptContext;
 import javax.swing.JTextArea;
 import jmri.InstanceManager;
 import jmri.util.PipeListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,7 +20,6 @@ public class ScriptOutput {
      * JTextArea containing the output
      */
     private JTextArea output = null;
-    private final static Logger log = LoggerFactory.getLogger(ScriptOutput.class);
 
     /**
      * Provide access to the JTextArea containing all ScriptEngine output.
@@ -40,7 +39,7 @@ public class ScriptOutput {
                 output = new JTextArea();
 
                 // Add the I/O pipes
-                PipedWriter pw = new PipedWriter();
+                var pw = getPipedWriter();
 
                 ScriptContext context = JmriScriptEngineManager.getDefault().getDefaultContext();
                 context.setErrorWriter(pw);
@@ -60,6 +59,15 @@ public class ScriptOutput {
         }
         return output;
     }
+
+    @Nonnull PipedWriter getPipedWriter() {
+        if (commonWriter == null) {
+            commonWriter = new PipedWriter();
+        }
+        return commonWriter;
+    }
+
+    private PipedWriter commonWriter = null;
 
     static public ScriptOutput getDefault() {
         if (InstanceManager.getNullableDefault(ScriptOutput.class) == null) {
@@ -85,4 +93,6 @@ public class ScriptOutput {
         output += "\n"; // NOI18N
         ScriptOutput.getDefault().getOutputArea().append(output);
     }
+
+    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ScriptOutput.class);
 }
