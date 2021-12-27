@@ -3,6 +3,8 @@
 
 
 Future Tasks
+
+ - [ ] Conditionals and LogixNG allow you to enter and execute a single Jython (and only Jython) command. We need to generalize that some day.
  - [ ] JmriScriptEngineManager requires GraalVM to compile; figure out how to bypass that
 
  - [ ] Can you check for GraalVM installed languages so they can be automatically added i.e.
@@ -22,14 +24,23 @@ Links of interest:
     - [GraalVM Python](https://www.graalvm.org/reference-manual/python/)
         - [Jython Compatibility](https://www.graalvm.org/reference-manual/python/Jython/)
  - Javadocs
-    - Graal
-        - [polyglot.Context.Builder class](https://www.graalvm.org/sdk/javadoc/org/graalvm/polyglot/Context.Builder.html)
-        - [polyglot.Source class](https://www.graalvm.org/sdk/javadoc/org/graalvm/polyglot/Source.html)
+    - Graal: [org.graalvm.polyglot](https://www.graalvm.org/sdk/javadoc/org/graalvm/polyglot/package-summary.html)
+        - [Context.Builder class](https://www.graalvm.org/sdk/javadoc/org/graalvm/polyglot/Context.Builder.html)
+        - [Source class](https://www.graalvm.org/sdk/javadoc/org/graalvm/polyglot/Source.html)
     - [org.apache.commons.io.output.WriterOutputStream](https://commons.apache.org/proper/commons-io/javadocs/api-2.5/org/apache/commons/io/output/WriterOutputStream.html#WriterOutputStream(java.io.Writer))
+    - [JmriScriptEngineManager](https://www.jmri.org/JavaDoc/doc/jmri/script/JmriScriptEngineManager.html)
+    - [javax.script](https://docs.oracle.com/javase/8/docs/api/javax/script/package-summary.html)
+        - [AbstractScriptEngine](https://docs.oracle.com/javase/8/docs/api/javax/script/AbstractScriptEngine.html)
+        - []()
     - []()
     - []()
+ - Source
+    - [GraalJSEngineFactory](https://github.com/oracle/graaljs/blob/master/graal-js/src/com.oracle.truffle.js.scriptengine/src/com/oracle/truffle/js/scriptengine/GraalJSEngineFactory.java)
     - []()
-
+ - Javax.script docs
+    - [white paper](https://web.archive.org/web/20110604035534/http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/)
+    - []()
+    - []()
 
 ------
 
