@@ -98,11 +98,12 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
 
         // manage old-style engines
         this.manager.getEngineFactories().stream().forEach(factory -> {
-            log.info("{} {} is provided by {} {}",
+            log.info("{} {} is provided by {} {} factory class {}",
                     factory.getLanguageName(),
                     factory.getLanguageVersion(),
                     factory.getEngineName(),
-                    factory.getEngineVersion());
+                    factory.getEngineVersion(),
+                    factory.getClass());
             String engineName = factory.getEngineName();
             factory.getExtensions().stream().forEach(extension -> {
                 names.put(extension, engineName);
@@ -228,22 +229,6 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
             }
         }
         return engines.get(name);
-    }
-
-    /**
-     * Evaluate a script using the given ScriptEngine.
-     *
-     * @param script The script.
-     * @param engine The script engine.
-     * @return The results of evaluating the script.
-     * @throws javax.script.ScriptException if there is an error in the script.
-     */
-    public Object eval(String script, ScriptEngine engine) throws ScriptException {
-        if (PYTHON.equals(engine.getFactory().getEngineName()) && this.jython != null) {
-            this.jython.exec(script);
-            return null;
-        }
-        return engine.eval(script);
     }
 
     /**
@@ -536,6 +521,23 @@ public final class JmriScriptEngineManager implements InstanceManagerAutoDefault
     @Nonnull
     public ScriptEngine getEngineByMimeType(String mimeType) throws ScriptException {
         return getEngine(mimeType, "mime type");
+    }
+
+    /**
+     * Evaluate a script using the given ScriptEngine.
+     *
+     * @param script The script.
+     * @param engine The script engine.
+     * @return The results of evaluating the script.
+     * @throws javax.script.ScriptException if there is an error in the script.
+     */
+    @Deprecated(forRemoval=true, since="GraalVM migration")
+    public Object eval(String script, ScriptEngine engine) throws ScriptException {
+        if (PYTHON.equals(engine.getFactory().getEngineName()) && this.jython != null) {
+            this.jython.exec(script);
+            return null;
+        }
+        return engine.eval(script);
     }
 
     /**
