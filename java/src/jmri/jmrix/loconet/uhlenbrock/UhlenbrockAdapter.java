@@ -46,7 +46,7 @@ public class UhlenbrockAdapter extends LocoBufferAdapter {
         setCommandStationType(getOptionState(option2Name));
         setTurnoutHandling(getOptionState(option3Name));
         // connect to a packetizing traffic controller
-        UhlenbrockPacketizer packets = new UhlenbrockPacketizer();
+        UhlenbrockPacketizer packets = new UhlenbrockPacketizer(this.getSystemConnectionMemo());
         packets.connectPort(this);
 
         // create memo
