@@ -314,7 +314,7 @@ public class AcelaTrafficController extends AbstractMRNodeTrafficController impl
                 }
                 curAcelaNodeIndex = SPECIALNODE;
                 AcelaMessage m = AcelaMessage.getAcelaResetMsg();
-                log.debug("send Acela reset (init step 1) message: {}", m);
+                log.info("send Acela reset (init step 1) message: {}", m);
                 m.setTimeout(1000);  // wait for init to finish (milliseconds)
                 mCurrentMode = NORMALMODE;
                 needToCreateNodesState++;
@@ -322,7 +322,7 @@ public class AcelaTrafficController extends AbstractMRNodeTrafficController impl
             }
             if (needToCreateNodesState == 1) {
                 AcelaMessage m = AcelaMessage.getAcelaOnlineMsg();
-                log.debug("send Acela Online (init step 2) message: {}", m);
+                log.info("send Acela Online (init step 2) message: {}", m);
                 m.setTimeout(1000);  // wait for init to finish (milliseconds)
                 mCurrentMode = NORMALMODE;
                 needToCreateNodesState++;
@@ -331,7 +331,7 @@ public class AcelaTrafficController extends AbstractMRNodeTrafficController impl
             if (needToPollNodes) {
                 if (needToCreateNodesState == 2) {
                     AcelaMessage m = AcelaMessage.getAcelaPollNodesMsg();
-                    log.debug("send Acela poll nodes message: {}", m);
+                    log.info("send Acela poll nodes message: {}", m);
                     m.setTimeout(100);  // wait for init to finish (milliseconds)
                     mCurrentMode = NORMALMODE;
                     needToInitAcelaNetwork = false;
@@ -339,6 +339,7 @@ public class AcelaTrafficController extends AbstractMRNodeTrafficController impl
                     return m;
                 }
             } else {
+                log.info("set needToInitAcelaNetwork false");
                 needToInitAcelaNetwork = false;
                 setAcelaTrafficControllerState(true);
             }
