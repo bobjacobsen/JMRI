@@ -92,7 +92,7 @@ public class AcelaSensorManager extends jmri.managers.AbstractSensorManager
         // ensure that a corresponding Acela Node exists
         AcelaNode node = AcelaAddress.getNodeFromSystemName(sName, getMemo());
         if (node == null) {
-            log.warn("Sensor: {} refers to an undefined Acela Node.", sName);
+            log.warn("Sensor: {} refers to an undefined Acela Node.", sName, new Exception("traceback"));
             return s;
         }
         if (!node.hasActiveSensors) {
@@ -150,12 +150,15 @@ public class AcelaSensorManager extends jmri.managers.AbstractSensorManager
         //  true == Polling Sensors
         if (!currentstate) {
             int replysize = r.getNumDataElements();
+            log.info("reply while in initialize mode with length {}", replysize);
+            log.info("    reply: {}", r);
             if (replysize == 0) {
                 // The Acela Online command seems to return an empty message
                 log.warn("We got an empty reply of size: {}", replysize);
             } else {
                 if (replysize == 1) {
                     byte replyvalue = (byte) (r.getElement(0));
+                    log.info("    replyvalue {}", replyvalue);
                     if (replyvalue == 0x00) {
                         //  Everything is OK.
                     } else {  //  Assume this is the response to the pollnodes
@@ -164,7 +167,8 @@ public class AcelaSensorManager extends jmri.managers.AbstractSensorManager
                 } else {
                     for (int i = 0; i < replysize; i++) {
                         byte replynodetype = (byte) (r.getElement(i));
-
+                        log.info("    #{} is replynodetype {}", i, replynodetype);
+                        
                         int nodetype;
                         switch (replynodetype) {
                             case 0x00: {
