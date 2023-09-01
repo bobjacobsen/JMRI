@@ -21,26 +21,6 @@
       "../../../../../html/hardware/acela/index.shtml">Acela</a> hardware support and the <a href=
       "../../../../../html/hardware/acela/Names.shtml">CTI Acela System Names</a>.</p>
 
-      <h2>Configuration Files</h2>
-      Just to be perfectly clear, DecoderPro and PanelPro are different skins or user interfaces to
-      the same JMRI program.
-      <p>You can do anything from any of these three programs, the user interface has just been
-      tailored in an attempt to make it easier for you to do what you want to do:</p>
-
-      <ul>
-        <li>Program Decoders using DecoderPro</li>
-
-        <li>Control your Layout using PanelPro</li>
-      </ul>
-
-      <p>The one difference is that each skin stores its own version of your configuration.</p>
-
-      <p>The advantage is that you can set up each skin to have a unique configuration.</p>
-
-      <p>The disadvantage is that you may need to set up your configuration more than once (or copy
-      and paste from one configuration to the next) if you want to use a different skin with at
-      least some of the same configuration.</p>
-
       <h2>Back up your Configuration Files</h2>
       That all said, each skin has only one configuration file (i.e. for DecoderPro it is
       DecoderProConfig2.xml).

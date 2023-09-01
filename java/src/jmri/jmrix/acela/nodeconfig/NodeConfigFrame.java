@@ -1146,7 +1146,11 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
                 addButtonActionPerformed();
             }
         });
+        // the add button doesn't so anything, so we disabled it
+        addButton.setEnabled(false);
+        
         panel4.add(addButton);
+        
         editButton.setText(Bundle.getMessage("ButtonEdit"));
         editButton.setVisible(true);
         editButton.setToolTipText(Bundle.getMessage("TipEditButton"));
@@ -1157,6 +1161,7 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
                 editButtonActionPerformed();
             }
         });
+        
         panel4.add(deleteButton);
         deleteButton.setText(Bundle.getMessage("ButtonDelete"));
         deleteButton.setVisible(true);
@@ -1168,6 +1173,10 @@ public class NodeConfigFrame extends jmri.util.JmriJFrame {
                 deleteButtonActionPerformed();
             }
         });
+        // the delete button doesn't so anything, so we disabled it
+        deleteButton.setEnabled(false);
+        
+        
         panel4.add(doneButton);
         doneButton.setText(Bundle.getMessage("ButtonDone"));
         doneButton.setVisible(true);
