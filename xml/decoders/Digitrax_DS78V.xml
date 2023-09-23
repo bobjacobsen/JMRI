@@ -31,7 +31,7 @@
            <!-- CV7 is the product ID. Should be 0x7c (124 decimal) -->
            
            <variable CV="11" item="Output Type" default="0"
-                tooltip="OpSw1-4" mask="XXXXVVVV">
+                tooltip="OpSw1-4 CV 11 bits 0-3" mask="XXXXVVVV">
             <enumVal>
               <enumChoice>
                 <choice value="13">Two Position Servo (Thrown/Closed)</choice>
@@ -44,7 +44,7 @@
           </variable>
 
           <variable CV="11" item="Internal Routes" default="0"
-                tooltip="OpSw06" mask="XXVXXXXX">
+                tooltip="OpSw06 CV11 bit 5" mask="XXVXXXXX">
             <enumVal>
               <enumChoice>
                 <choice>enabled</choice>
@@ -57,7 +57,7 @@
           </variable>
 
           <variable CV="12" item="Bushby" default="0"
-                tooltip="OpSw10" mask="XXXXXXVX">
+                tooltip="OpSw10 CV12 bit 1" mask="XXXXXXVX">
             <enumVal>
               <enumChoice>
                 <choice>disabled</choice>
@@ -70,7 +70,7 @@
           </variable>
 
           <variable CV="12" item="Input Lines" default="0"
-                tooltip="OpSw11" mask="XXXXXVXX">
+                tooltip="OpSw11 CV12 bit 2" mask="XXXXXVXX">
             <enumVal>
               <enumChoice>
                 <choice>do turnout, sensor commands</choice>
@@ -83,7 +83,7 @@
           </variable>
 
           <variable CV="12" item="Command Source" default="0"
-                tooltip="OpSw14" mask="XXVXXXXX">
+                tooltip="OpSw14 CV12 bit 5" mask="XXVXXXXX">
             <enumVal>
               <enumChoice>
                 <choice>Loconet switch commands</choice>
@@ -96,7 +96,7 @@
           </variable>
 
           <variable CV="12" item="Route Echo" default="0"
-                tooltip="OpSw15" mask="XVXXXXXX">
+                tooltip="OpSw15 CV12 bit 6" mask="XVXXXXXX">
             <enumVal>
               <enumChoice>
                 <choice>echo to Loconet</choice>
@@ -108,107 +108,139 @@
             <label>Route Switch Commands</label>
           </variable>
 
-          <variable CV="0.25" item="Servo 1 Thrown Angle" default="10">
+          <variable CV="0.25" item="Servo 1 Thrown Angle" default="10"
+            tooltip="Accessory address CV 25">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="0.26" item="Servo 1 Closed Angle" default="240">
+          <variable CV="0.26" item="Servo 1 Closed Angle" default="240"
+            tooltip="Accessory address CV 26">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="0.27" item="Servo 1 Approach Angle" default="125">
+          <variable CV="0.27" item="Servo 1 Approach Angle" default="125"
+            tooltip="Accessory address CV 27">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="0.28" item="Servo 1 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
-          </variable>
-
-          <variable CV="1.25" item="Servo 2 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="1.26" item="Servo 2 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="1.27" item="Servo 2 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="1.28" item="Servo 2 Approach Medium Angle" default="125">
+          <variable CV="0.28" item="Servo 1 Approach Medium Angle" default="125"
+            tooltip="Accessory address CV 28">
             <decVal min="1" max="2045" />
           </variable>
 
-          <variable CV="2.25" item="Servo 3 Thrown Angle" default="10">
+          <variable CV="1.25" item="Servo 2 Thrown Angle" default="10"
+            tooltip="Accessory address+1 CV 25">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="2.26" item="Servo 3 Closed Angle" default="240">
+          <variable CV="1.26" item="Servo 2 Closed Angle" default="240"
+            tooltip="Accessory address+1 CV 26">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="2.27" item="Servo 3 Approach Angle" default="125">
+          <variable CV="1.27" item="Servo 2 Approach Angle" default="125"
+            tooltip="Accessory address+1 CV 27">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="2.28" item="Servo 3 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
-          </variable>
-
-          <variable CV="3.25" item="Servo 4 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="3.26" item="Servo 4 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="3.27" item="Servo 4 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="3.28" item="Servo 4 Approach Medium Angle" default="125">
+          <variable CV="1.28" item="Servo 2 Approach Medium Angle" default="125"
+            tooltip="Accessory address+1 CV 28">
             <decVal min="1" max="2045" />
           </variable>
 
-          <variable CV="4.25" item="Servo 5 Thrown Angle" default="10">
+          <variable CV="2.25" item="Servo 3 Thrown Angle" default="10"
+            tooltip="Accessory address+2 CV 25">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="4.26" item="Servo 5 Closed Angle" default="240">
+          <variable CV="2.26" item="Servo 3 Closed Angle" default="240"
+            tooltip="Accessory address+2 CV 26">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="4.27" item="Servo 5 Approach Angle" default="125">
+          <variable CV="2.27" item="Servo 3 Approach Angle" default="125"
+            tooltip="Accessory address+2 CV 27">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="4.28" item="Servo 5 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
-          </variable>
-
-          <variable CV="5.25" item="Servo 6 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="5.26" item="Servo 6 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="5.27" item="Servo 6 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
-          </variable>
-          <variable CV="5.28" item="Servo 6 Approach Medium Angle" default="125">
+          <variable CV="2.28" item="Servo 3 Approach Medium Angle" default="125"
+            tooltip="Accessory address+2 CV 28">
             <decVal min="1" max="2045" />
           </variable>
 
-          <variable CV="6.25" item="Servo 7 Thrown Angle" default="10">
+          <variable CV="3.25" item="Servo 4 Thrown Angle" default="10"
+            tooltip="Accessory address+3 CV 25">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="6.26" item="Servo 7 Closed Angle" default="240">
+          <variable CV="3.26" item="Servo 4 Closed Angle" default="240"
+            tooltip="Accessory address+3 CV 26">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="6.27" item="Servo 7 Approach Angle" default="125">
+          <variable CV="3.27" item="Servo 4 Approach Angle" default="125"
+            tooltip="Accessory address+3 CV 27">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="6.28" item="Servo 7 Approach Medium Angle" default="125">
+          <variable CV="3.28" item="Servo 4 Approach Medium Angle" default="125"
+            tooltip="Accessory address+3 CV 28">
             <decVal min="1" max="2045" />
           </variable>
 
-          <variable CV="7.25" item="Servo 8 Thrown Angle" default="10">
+          <variable CV="4.25" item="Servo 5 Thrown Angle" default="10"
+            tooltip="Accessory address+4 CV 25">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="7.26" item="Servo 8 Closed Angle" default="240">
+          <variable CV="4.26" item="Servo 5 Closed Angle" default="240"
+            tooltip="Accessory address+4 CV 26">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="7.27" item="Servo 8 Approach Angle" default="125">
+          <variable CV="4.27" item="Servo 5 Approach Angle" default="125"
+            tooltip="Accessory address+4 CV 27">
             <decVal min="1" max="2045" />
           </variable>
-          <variable CV="7.28" item="Servo 8 Approach Medium Angle" default="125">
+          <variable CV="4.28" item="Servo 5 Approach Medium Angle" default="125"
+            tooltip="Accessory address+4 CV 28">
+            <decVal min="1" max="2045" />
+          </variable>
+
+          <variable CV="5.25" item="Servo 6 Thrown Angle" default="10"
+            tooltip="Accessory address+5 CV 25">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="5.26" item="Servo 6 Closed Angle" default="240"
+            tooltip="Accessory address+5 CV 26">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="5.27" item="Servo 6 Approach Angle" default="125"
+            tooltip="Accessory address+5 CV 27">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="5.28" item="Servo 6 Approach Medium Angle" default="125"
+            tooltip="Accessory address+5 CV 28">
+            <decVal min="1" max="2045" />
+          </variable>
+
+          <variable CV="6.25" item="Servo 7 Thrown Angle" default="10"
+            tooltip="Accessory address+6 CV 25">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="6.26" item="Servo 7 Closed Angle" default="240"
+            tooltip="Accessory address+6 CV 26">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="6.27" item="Servo 7 Approach Angle" default="125"
+            tooltip="Accessory address+6 CV 27">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="6.28" item="Servo 7 Approach Medium Angle" default="125"
+            tooltip="Accessory address+6 CV 28">
+            <decVal min="1" max="2045" />
+          </variable>
+
+          <variable CV="7.25" item="Servo 8 Thrown Angle" default="10"
+            tooltip="Accessory address+7 CV 25">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="7.26" item="Servo 8 Closed Angle" default="240"
+            tooltip="Accessory address+7 CV 26">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="7.27" item="Servo 8 Approach Angle" default="125"
+            tooltip="Accessory address+7 CV 27">
+            <decVal min="1" max="2045" />
+          </variable>
+          <variable CV="7.28" item="Servo 8 Approach Medium Angle" default="125"
+            tooltip="Accessory address+7 CV 28">
             <decVal min="1" max="2045" />
           </variable>
 
@@ -266,7 +298,7 @@
   </pane>
 
     <pane>
-        <name>OpSw Settings</name>
+        <name>Basic Settings</name>
         <column>
             <display item="Output Type"/>
             <display item="Internal Routes"/>
