@@ -52,9 +52,14 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
     boolean boardOpSwWriteVal;
     private int artNum;
     private javax.swing.Timer bdOpSwAccessTimer = null;
-    private javax.swing.Timer sv2AccessTimer = null;
-    private javax.swing.Timer lncvAccessTimer = null;
+    private javax.swing.Timer sv2AccessTimer    = null;
+    private javax.swing.Timer lncvAccessTimer   = null;
+    private javax.swing.Timer bd7ReadReplyTimer = null;
 
+    // used to accumulate the results from the latest LACK reply
+    // when programming Series 7 boards
+    int bd7ReturnValue  = 0;
+    int bd7ReturnStatus = 0;
 
     public LnOpsModeProgrammer(LocoNetSystemConnectionMemo memo,
             int pAddress, boolean pLongAddr) {
@@ -341,6 +346,12 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
             log.debug("  Message {}", m);
             memo.getLnTrafficController().sendLocoNetMessage(m);
             bdOpSwAccessTimer.start();
+            
+            // start accumulation of results from received LACKs
+            initializeBd7ReadReplyTimer();
+            bd7ReturnValue  = 0;
+            bd7ReturnStatus = ProgListener.FailedTimeout;
+
 
         } else if (getMode().equals(LnProgrammerManager.LOCONETSV1MODE)) {
             p = pL;
@@ -509,17 +520,14 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
                 return;
             }
 
-            if (m.getElement(1) != 0x6E) return;
-            // does this properly handle high bit of return value?
-            // Check the reply sequence for a 2nd 6D LACK?
-            int val = m.getElement(2);
+            if (! (m.getElement(1) == 0x6D || m.getElement(1) == 0x6E ) ) return;
 
-            // successful read always
-            int code = ProgListener.OK;
-
-            ProgListener temp = p;
-            p = null;
-            notifyProgListenerEnd(temp, val, code);
+            // here is a read.  Accumulate the results of the
+            // LACK so that the most-recent LACK values will be
+            // used when the timer expires.
+            bd7ReturnValue = m.getElement(2);
+            if (m.getElement(1) == 0x6E) bd7ReturnValue |= 0x80; // handling upper bit
+            bd7ReturnStatus = ProgListener.OK;
 
         } else if (getMode().equals(LnProgrammerManager.LOCONETSV1MODE)) {
             // see if reply to LNSV 1 or LNSV2 request
@@ -836,6 +844,21 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
             });
         bdOpSwAccessTimer.setInitialDelay(1000);
         bdOpSwAccessTimer.setRepeats(false);
+        }
+    }
+
+    void initializeBd7ReadReplyTimer() {
+        if (bd7ReadReplyTimer == null) {
+            bd7ReadReplyTimer = new javax.swing.Timer(100, (ActionEvent e) -> {
+                // when this times out, we send the BD7 programming reply
+                // These values default to failure, and are updated
+                // if a reply happens to a read operation.
+                ProgListener temp = p;
+                p = null;
+                notifyProgListenerEnd(temp, bd7ReturnValue, bd7ReturnStatus);
+            });
+        bd7ReadReplyTimer.setInitialDelay(100);
+        bd7ReadReplyTimer.setRepeats(false);
         }
     }
 
