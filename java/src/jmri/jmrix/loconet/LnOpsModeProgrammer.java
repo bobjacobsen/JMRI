@@ -527,7 +527,7 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
             // LACK so that the most-recent LACK values will be
             // used when the timer expires.
             bd7ReturnValue = m.getElement(2);
-            if (m.getElement(1) == 0x6d) bd7ReturnValue |= 0x80; // handling upper bit
+            if (m.getElement(1) == 0x6D) bd7ReturnValue |= 0x80; // handling upper bit
             bd7ReturnStatus = ProgListener.OK;
 
         } else if (getMode().equals(LnProgrammerManager.LOCONETSV1MODE)) {
