@@ -56,8 +56,7 @@
             <label>Internal Routes are</label>
           </variable>
 
-          <variable CV="11" item="Reserved(11)" default="0" readOnly="yes" mask="VVxVVXVV"
-            default="2"/>
+          <variable CV="11" item="Reserved(11)" default="2" readOnly="yes" mask="VVxVVXVV"/>
 
           <variable CV="12" item="Bushby" default="0"
                 tooltip="OpSw10" mask="XXXXXXVX">
