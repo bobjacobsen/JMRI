@@ -503,16 +503,15 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
             // check for right type, unit
             if (m.getOpCode() != LnConstants.OPC_LONG_ACK) return;
             if (! (m.getElement(1) == 0x6E
-                   || ( m.getElement(1) == 0x6D)
-                        && (m.getElement(1) != 0x55 && m.getElement(1) != 0x5A) )) {
+                   || m.getElement(1) == 0x6D) ) {
                 return;
             }
             // got a message that is LONG_ACK reply to an BdOpsSw access
-            bdOpSwAccessTimer.stop();    // kill the timeout timer
-            // LACK with 0x6E in byte 1; assume it's to us
+            
             if (doingWrite
                     && m.getElement(1) == 0x6D
                     && (m.getElement(2) == 0x55 || m.getElement(2) == 0x5A)) {
+                bdOpSwAccessTimer.stop();    // kill the timeout timer
                 int code = ProgListener.OK;
                 int val = (boardOpSwWriteVal ? 1 : 0);
                 ProgListener temp = p;
@@ -523,13 +522,16 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
 
             if (! (m.getElement(1) == 0x6D || m.getElement(1) == 0x6E ) ) return;
 
-            // here is a read.  Accumulate the results of the
-            // LACK so that the most-recent LACK values will be
-            // used when the timer expires.
-            bd7ReturnValue = m.getElement(2);
-            if (m.getElement(1) == 0x6D) bd7ReturnValue |= 0x80; // handling upper bit
-            bd7ReturnStatus = ProgListener.OK;
-
+            if (!doingWrite) {
+                // here is a read.  Accumulate the results of the
+                // LACK so that the most-recent LACK values will be
+                // used when the timer expires.
+                bdOpSwAccessTimer.stop();    // kill the timeout timer
+                bd7ReturnValue = m.getElement(2);
+                if (m.getElement(1) == 0x6D) bd7ReturnValue |= 0x80; // handling upper bit
+                bd7ReturnStatus = ProgListener.OK;
+            }
+            
         } else if (getMode().equals(LnProgrammerManager.LOCONETSV1MODE)) {
             // see if reply to LNSV 1 or LNSV2 request
             if ((m.getOpCode() != LnConstants.OPC_PEER_XFER) ||
