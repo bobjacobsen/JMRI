@@ -245,6 +245,9 @@
 
         </variables>
         <resets>
+            <factReset label="Restart Board" CV="8" default="0">
+                <label>Restart Board</label>
+            </factReset>
             <factReset label="Reset All CVs" CV="15" default="128">
                 <label>Reset All CVs</label>
             </factReset>

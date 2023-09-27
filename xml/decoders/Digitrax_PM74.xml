@@ -178,6 +178,9 @@
         </variables>
         <resets>
             <mode>LOCONETBD7OPSWMODE</mode>
+            <factReset label="Restart Board" CV="8" default="0">
+                <label>Restart Board</label>
+            </factReset>
             <factReset label="Factory Reset" CV="15" default="128">
                 <label>Reset All CVs</label>
             </factReset>
