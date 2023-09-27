@@ -28,9 +28,22 @@
             <label>Board Address</label>
           </variable>
 
-           <!-- CV7 is the product ID. Should be 0x4a, 74 decimal -->
+          <variable CV="7" item="Decoder Version" readOnly="yes" default="74">
+            <decVal/>
+            <label>Version ID</label>
+            <label xml:lang="it">Versione Decoder: </label>
+            <label xml:lang="fr">Version décodeur: </label>
+            <label xml:lang="de">Decoder Version: </label>
+          </variable>
+          <variable CV="8" readOnly="yes" item="Manufacturer" default="129">
+            <decVal/>
+            <label>Manufacturer ID</label>
+            <label xml:lang="it">ID Costruttore: </label>
+            <label xml:lang="fr">ID constructeur: </label>
+            <label xml:lang="de">Hersteller ID: </label>
+          </variable>
            
-           <variable CV="11" item="DS1 mode" default="0"
+          <variable CV="11" item="DS1 mode" default="0"
                 tooltip="OpSw1" mask="XXXXXXXV"><!-- opsw 1 -->
             <enumVal>
               <enumChoice>
@@ -46,7 +59,7 @@
             <label>DS1 mode: </label>
           </variable>
 
-           <variable CV="11" item="DS2 mode" default="0"
+          <variable CV="11" item="DS2 mode" default="0"
                 tooltip="OpSw2" mask="XXXXXXVX"><!-- opsw 2 -->
             <enumVal>
               <enumChoice>
@@ -62,7 +75,7 @@
             <label>DS2 mode: </label>
           </variable>
 
-           <variable CV="11" item="DS3 mode" default="0"
+          <variable CV="11" item="DS3 mode" default="0"
                 tooltip="OpSw3" mask="XXXXXVXX"><!-- opsw 3 -->
             <enumVal>
               <enumChoice>
@@ -78,7 +91,7 @@
             <label>DS3 mode: </label>
           </variable>
 
-           <variable CV="11" item="DS4 mode" default="0"
+          <variable CV="11" item="DS4 mode" default="0"
                 tooltip="OpSw4" mask="XXXXVXXX"><!-- opsw 4 -->
             <enumVal>
               <enumChoice>
@@ -94,7 +107,7 @@
             <label>DS4 mode: </label>
           </variable>
 
-           <variable CV="11" item="Trip current" default="0"
+          <variable CV="11" item="Trip current" default="0"
                 tooltip="OpSw7-8" mask="VVXXXXXX"><!-- opsw 7-8 -->
             <enumVal>
               <enumChoice><!-- 00 -->
