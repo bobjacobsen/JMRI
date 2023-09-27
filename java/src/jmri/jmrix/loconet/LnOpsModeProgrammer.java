@@ -497,7 +497,6 @@ public class LnOpsModeProgrammer extends PropertyChangeSupport implements Addres
         } else if (getMode().equals(LnProgrammerManager.LOCONETBD7OPSWMODE)) {
             // are we programming? If not, ignore
             if (p == null) {
-                log.warn("received board-program reply message with no reply object: {}", m);
                 return;
             }
             // check for right type, unit
