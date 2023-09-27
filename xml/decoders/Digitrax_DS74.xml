@@ -43,8 +43,8 @@
             <label xml:lang="de">Hersteller ID: </label>
           </variable>
 
-          <variable item="Product Number" CV="10,9" readOnly="yes">
-            <splitVal highCV="10"/>
+          <variable item="Product Number" CV="9,10" readOnly="yes">
+            <splitVal highCV="9"/>
             <label>Serial Number</label>
           </variable>
 
