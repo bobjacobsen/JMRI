@@ -41,7 +41,12 @@
             <label xml:lang="fr">ID constructeur: </label>
             <label xml:lang="de">Hersteller ID: </label>
           </variable>
-           
+         
+          <variable item="Product Number" CV="9,10" readOnly="yes">
+            <splitVal highCV="9"/>
+            <label>Serial Number</label>
+          </variable>
+  
           <variable CV="11" item="Turnout Type" default="0"
                 tooltip="OpSw01" mask="XXXXXXXV">
             <enumVal>
@@ -295,6 +300,13 @@
                 &lt;p&gt;Board ID.  These are equivalent concepts.
             &lt;/html&gt;</text>
           </label>
+
+          <label>
+              <text> </text>
+          </label>
+
+          <display item="Product Number"/>
+
       </column>
   </pane>
 
