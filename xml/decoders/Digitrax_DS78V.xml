@@ -22,10 +22,10 @@
         </programming>
 
         <variables>
-
-          <variable CV="1" comment="Board address" item="Long Address" default="40" infoOnly="yes">
-            <!-- needed to set the board address value -->
-            <decVal min="1" max="2045" />
+        
+          <!-- needed to set the board address value -->
+          <variable CV="1,2" comment="Board address" item="Long Address" default="40" infoOnly="yes">
+            <splitVal highCV="2" min="1" max="2045"/>
             <label>Board Address</label>
           </variable>
 
@@ -44,8 +44,8 @@
             <label xml:lang="de">Hersteller ID: </label>
           </variable>
 
-          <variable item="Product Number" CV="10,9" readOnly="yes">
-            <splitVal highCV="10"/>
+          <variable item="Product Number" CV="9,10" readOnly="yes">
+            <splitVal highCV="9"/>
             <label>Serial Number</label>
           </variable>
 
@@ -75,8 +75,10 @@
             <label>Internal Routes are</label>
           </variable>
 
-          <variable CV="11" item="Reserved(11)" default="2" readOnly="yes" mask="VVXVVXVV"/>
-
+          <variable CV="11" item="Reserved(11)" default="2" readOnly="yes" mask="VVXVVXVV">
+            <decVal/>
+          </variable>
+          
           <variable CV="12" item="Bushby" default="0"
                 tooltip="OpSw10" mask="XXXXXXVX">
             <enumVal>
