@@ -390,7 +390,7 @@
    <h3>Dispatcher</h3>
         <a id="Dispatcher" name="Dispatcher"></a>
         <ul>
-             <li></li>
+             <li>In auto trains, after stopping, or going to manual, resume correctly even if in a section with no signal.</li>
         </ul>
 
     <h3>Dispatcher System</h3>
@@ -425,7 +425,9 @@
     <h3>LogixNG</h3>
         <a id="LogixNG" name="LogixNG"></a>
         <ul>
-          <li></li>
+          <li>A new tool <strong>Where Used</strong> has been added to LogixNG.
+          It shows where in the LogixNG tree an item is used. The tool is found
+          on menu item <strong>Tools &rArr; LogixNG &rArr; Where Used</strong>.</li>
         </ul>
 
     <h3>Meters and MeterFrames</h3>
@@ -443,6 +445,7 @@
             shows which car types and loads are shipped from staging.</li>
           <li>New feature for spurs, the ability to prevent a car's load change. Useful when the
             spur/schedule is used for a RIP track.</li>
+          <li>New feature for staging, planned pickups.</li>
         </ul>
 
 <h3>Panel Editor</h3>
