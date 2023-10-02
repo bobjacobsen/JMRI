@@ -21,9 +21,9 @@
         </programming>
 
         <variables>
-          <variable CV="1" comment="Board address" item="Long Address" default="253" infoOnly="yes">
-            <!-- needed to set the board address value -->
-            <decVal min="1" max="2045" />
+          <!-- needed to set the board address value -->
+          <variable CV="1,2" comment="Board address" item="Long Address" default="40" infoOnly="yes">
+            <splitVal highCV="2" min="1" max="2045"/>
             <label>Board Address</label>
           </variable>
 
