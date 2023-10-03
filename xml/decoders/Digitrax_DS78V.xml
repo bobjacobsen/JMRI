@@ -24,7 +24,7 @@
         <variables>
         
           <!-- needed to set the board address value -->
-          <variable CV="1,2" comment="Board address" item="Long Address" default="40" infoOnly="yes">
+          <variable CV="1,2" comment="Board address" item="Long Address" default="40" readOnly="yes">
             <splitVal highCV="2" min="1" max="2045"/>
             <label>Board Address</label>
           </variable>
@@ -75,7 +75,7 @@
             <label>Internal Routes are</label>
           </variable>
 
-          <variable CV="11" item="Reserved(11)" default="2" readOnly="yes" mask="VVXVVXVV">
+          <variable CV="11" item="Reserved(11) opsw 2" default="1" mask="XXXXXXVX">
             <decVal/>
           </variable>
           
