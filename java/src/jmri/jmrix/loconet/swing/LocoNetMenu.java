@@ -27,6 +27,7 @@ import jmri.jmrix.loconet.loconetovertcp.LnTcpServerAction;
 import jmri.jmrix.loconet.LocoNetSystemConnectionMemo;
 import jmri.jmrix.loconet.LnCommandStationType;
 import jmri.jmrix.loconet.swing.menuitemspi.MenuItemsService;
+import jmri.jmrix.loconet.accy7thgen.AccySeventhGenDiscovery;
 
 import jmri.util.swing.WindowInterface;
 import jmri.util.swing.sdi.JmriJFrameInterface;
@@ -86,6 +87,7 @@ public class LocoNetMenu extends JMenu {
         panelItems.add(new LocoNetMenuItem("MenuItemSetID", LocoIdPanel.class, true, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemDuplex", DuplexGroupTabbedPanel.class, true, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemLncvProg", LncvProgPane.class, true, true)); // NOI18N
+        panelItems.add(new LocoNetMenuItem("MenuItem7thGenAccy", AccySeventhGenDiscovery.class, true, true)); // NOI18N
         panelItems.add(null);
         panelItems.add(new LocoNetMenuItem("MenuItemThrottleMessages", MessagePanel.class, true, true)); // NOI18N
         panelItems.add(new LocoNetMenuItem("MenuItemSendPacket", LocoGenPanel.class, false, true)); // NOI18N
