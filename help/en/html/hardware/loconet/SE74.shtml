@@ -17,39 +17,35 @@
       <h1>Support: Digitrax SE74</h1>
 
       <table>
-                  <tr><td>
+        <tr><td>
       <ul class="snav">
         <li>
           <a href="#general">Using the SE74 with JMRI</a>
           <ul>
-            <li>
-              <a href="#configuring">Configuring the SE74</a>
-            </li>
-            <li>
-              <a href="#signaling">SE74 and JMRI Signaling</a>
+            <li><a href="#configuring">Configuring the SE74 with JMRI</a>
             <ul>
-              <li>
-                <a href="#se8csig">Signaling when the SE74 is in "SE8C-compatible" mode</a>
+                <li><a href="#WrongProgrammingMode">Do Not Use Programming "On the Programming Track"!</a></li>
+                <li><a href="#WrongBaseAddress">Changing a Roster Entry's "Base Address"</a></li>
+            </ul>
+            </li>
+            <li><a href="#loconetaddresses">SE74 LocoNet Addressing</a>
+              <ul>
+                  <li><a href="#loconetturnoutaddressess">SE74 Switch Usage</a>
+                      <ul><li><a href="#se8cturnoutaddresses">SE74's "SE8C-style" Signaling, via LocoNet Switches</a></li></ul> 
+                  <li><a href="#loconetsensoraddresses">SE74 Sensor Usage</a></li>
+                  <li><a href="#aspectaddressing">SE74 "Aspect-style" Signaling</a></li>
+              </ul>
               </li>
-              <li>
-                <a href="#aspectsig">Signaling when the SE74 is in "aspect" mode</a>
-              </li>
-              <li>
-                <a href="#whichsigmode">Which SE74 signaling mode should I choose?</a>
-              </li>
-              <li>
-                <a href="#configAspectSignaljmri">Configuring SE74 "Aspect"-mode
-                    "Signal Head" objects in JMRI</a>
-
-              </li>
-              <li>
-                <a href="#configSe8cSignaljmri">Configuring SE74 "SE8C"-mode "Signal
-                    Head" objects in JMRI</a>
-              </li>
-              <li>
-                  <a href="#configSigMastjmri">Configuring SE74 Signal Heads on
-                      Signal Masts in JMRI</a>
-              </li>
+            <li><a href="#signaling">SE74 and JMRI Signaling</a><ul>
+              <li><a href="#se8csig">Signaling when the SE74 is in "SE8C-compatible" mode</a></li>
+              <li><a href="#aspectsig">Signaling when the SE74 is in "aspect" mode</a></li>
+              <li><a href="#whichsigmode">Which SE74 signaling mode should I choose?</a></li>
+              <li><a href="#configAspectSignaljmri">Configuring SE74 "Aspect"-mode
+                    "Signal Head" objects in JMRI</a></li>
+              <li><a href="#configSe8cSignaljmri">Configuring SE74 "SE8C"-mode "Signal
+                    Head" objects in JMRI</a></li>
+              <li><a href="#configSigMastjmri">Configuring SE74 Signal Heads on
+                      Signal Masts in JMRI</a></li>
             </ul>
             </li>
             <li><a href="#turnouts">Controlling SE74 "turnout" outputs</a></li>
@@ -60,30 +56,207 @@
 
       <!-- h2 TOC -->
       </ul>
-
               </td><td>
-      <img src="images/Se74.png" alt="An image of the SE74 with one signal cable attached
-           and one signal connected to that signal cable" >
-
+                  <img src="images/Se74.png" width="100%" alt="An image of the SE74 
+                       with one signal cable attached and one signal connected to 
+                        that signal cable">
               </td>    </table>
 
-
       <h1 id="general">Using the SE74 with JMRI</h1>
-    <p>The Digitrax SE74 provides a variety of features which may be used with JMRI.
+      <p>The Digitrax SE74 provides a variety of features which may be used with JMRI.
       JMRI-supported features include signal control, switch control, and inputs.
 
       <h2 id="configuring">Configuring the SE74 with JMRI</h2>
       <span class="since">Since <a href="jmri5.3.4.shtml">JMRI 5.3.4</a></span>
-      DecoderPro can configure the Op Switches of the SE74 so long as it has 
-      a LocoNet connection to the SE74.
+      DecoderPro and/or PanelPro, via the "Roster", can configure the Op Switches 
+      of the SE74 so long as it has a LocoNet connection to the SE74.
+      
       <p>To do this, you open DecoderPro (as an individual application or via
-      selecting "Roster" in PanelPro) and create a new roster entry. Select the
-      Digitrax SE74 decoder type for it and enter the SE74's address.
-      You can then use the usual DecoderPro panes to read and write the configuration
-      variables (Op Switches) in the SE74.
-      <p>Configuring the SE74's routes be done using the methods described
-      in the Digitrax documentation for the SE74.
+      selecting "Roster" in PanelPro) and create a new "Roster" entry. Select the
+      "Digitrax SE74" <strong>define the "Active Address" for the SE74</strong>.
+      Define the Roster entry's unique "Roster ID".  
+      
+      <p>Then "Save" the "New Loco" decoder, and <strong>close the "Create New Loco"
+          tool</strong>.  This <em> ensures</em> that JMRI does not open the 
+          "decoder definition" using an incorrect programming method!
+      <p>Once the Roster entry has been defined and saves with the correct "Base Address", you 
+          may then open the decoder entry <strong>in the "Programming on Main" mode
+          </strong>.  
+      <p>The JMRI Roster tool shows the "programming mode" as "Programming on Main
+          "when correctly configured to work with the SE74 programmer.  This is 
+          shown in the image below:
+          <br>
+      <img src="images/RosterSE74Example.png" alt="Image showing the bottom, right 
+           corner and the 'Programming On Main' button actinated.">
+      <p>This SE74 "decoder definition" <strong> requires</strong> this!
+          You can then use the usual DecoderPro panes to read and write the configuration
+          variables ('OpSw'itches) in the SE74.
+      <p>The Roster "entry" programmer will show the following at the bottom of 
+          the Roster Entry page when the programmer is in the correct programming
+          mode!
+          <br>
+      <img src="images/SE74CorrectProgrammingMode.png" width="30%" alt="When the bottom 
+           of the Roster entry looks like this image, JMRI will be able read and write
+           to the SE74.">
+          
+      <p>Note that configuring the SE74's "Routes" may be done using the methods 
+          described in the Digitrax SE74 documentation.
+      <br>
+      <H3 id="WrongProgrammingMode">Do Not Use Programming "On the Programming Track"!</H3>          
+      <p>When you select "On Programming Track" (i.e. on the "service-mode" programmer),
+          the JMRI programmer <strong>will not</strong> configure the SE74! If you open 
+          a SE74 Roster, and see the following at the bottom of the tool, you
+          <strong>will not be able to write or read the SE74 configuration</strong>!  
+          Please remember to <em>use the "Programming on Main" mode</em> when programming the 
+          SE74 and other 7th-generation Accessory devices! 
+      <br>
+      <img src="images/SE74WrongProgrammingMode.png" width="50%" alt="When the bottom 
+           of the Roster entry looks anything like this image, JMRI will not read or write
+           to the SE74!">
+      <br>
+      <H3 id="WrongBaseAddress">Changing a Roster Entry's "Base Address"</H3>
+      Well... you cannot, at least within JMRI, for now.  We are working on it, though.  
+      <p>But you can write the current Roster Entry's values to a SE74, then use 
+      Digitrax instructions to change its "Base Address" to a new value, then create 
+      a new JMRI Roster Entry using the new "Base Address".  Then save and then open 
+      that new Roster Entry...
 
+      <h2 id="loconetaddresses">SE74 LocoNet Addressing</h2>
+      <p>The SE74 uses several types of LocoNet addressing.  It uses LocoNet Switch addresses:
+      <ul>
+          <li>for controlling the "slow-motion" switch machines;</li>
+          <li>for controlling signals when using "SE8C-mode";</li>
+          <li>and for controlling "broadcast" operations for signaling, in both 
+              "SE8C-mode" and "Aspect-mode".</li>
+      </ul>
+      <p>It uses LocoNet Sensor addresses:
+      <ul>
+          <li>for requesting switch positions of the switches it controls, primarily 
+              for use with Digitrax' accessory push-buttons;</li>
+          <li>and for general-purpose input reporting.</li>
+      </ul>
+      <p>The SE74 may use "Aspect" addresses to control signal displays when in "Aspect-mode".
+      <p>These addressing requirements are discussed in the sections below.
+
+      <h3 id="loconetturnoutaddressess">SE74 Switch Usage</h3>
+      <p>The SE74 uses "Switches" in several different ways.  It can mean "those 
+          SE74 outputs which may be connected to a switch motor", and it can mean 
+          "those Switches that can control Signal heads when in 'SE8C-mode" and
+          it can mean any of several "broadcast" switch addresses which cause specific 
+          SE74 functionality.  Understanding these SE74 functionalities can be `
+          <em> critical</em> for understanding SE74 and JMRI functionality!.
+      <p>It is normally important to ensure that the Switch usage for a SE74 
+          does not "overlap" the usage usage by any other device - either on 
+          LocoNet or on the DCC track signal.  Be sure to check every Switch address!
+      <p>SE74 switch address usage begins at the same number as the "base address".  
+          The four switch addresses beginning with that number correspond to the 
+          SE74's four "switch" outputs, called "1G/1R", "2G/2R", "3G/3R", "4G/4R", 
+          respectively.
+      <p>When the SE74 is configured for "SE8C-mode" signaling (the SE74's default 
+          signaling mode), the SE74 uses 32 additional switches to control its 16 
+          signal heads.  These switches use the next 32 switches, i.e. "base 
+          address + 5" to "base_address + 36".  
+      <p>Note that when the SE74 uses "Aspect-mode" signaling, Switch addresses 
+          "base address + 5" to "base address + 36" are <em> not</em> used by the 
+          SE74.
+      <p>The SE74 also uses several "broadcast" Switch addresses for various 
+          purposes.  These are at "fixed" addresses, and, mostly, cannot be disabled. 
+          <strong>Users <em> should</em> avoid all of these "broadcast" addresses 
+          when assigning any of their LocoNet and track-connected switches!</strong>
+          The SE74's "broadcast" Switches are described below:
+      <br>          
+      <UL>
+          <li>Switch 1021 and Switch 1022 - a "broadcast" control, to ALL SE74s,
+              whether configured for "SE8C-mode" <em> or</em> "Aspect-mode",  
+              to set ALL heads based on the "SE8C-mode" encoding ("Red", "Yellow",
+              "Green", or "Fourth-aspect setting".  Note that this pair of broadcast 
+              addresses can be disabled by setting OpSw 38 to "C"losed.</li> 
+          <li>Switch 1023 - a "broadcast" control which sets the LED Brightness.  
+              When "T"hrown, (JMRI Turnout "Thrown"), the LEDs show brightly.  
+              When "C"losed,  (JMRI Turnout "Closed"), the LEDs show less-brightly.
+              This switch defaults to "T"hrown.</li>
+          <li>Switch 1024 - a "broadcast" control which causes an Auto-exercise of 
+              the SE74 when set to "C"losed (JMRI Turnout "Closed").  This is 
+              similar to the SE74's "ID" pushbutton functionality, except that 
+              button exercises the single SE74, where the Switch 1024 "C"losed 
+              triggers <em> all</em> of the SE74s to exercise their functionality.
+              This Switch should be set to "T"hrown (JMRI Turnout "Thrown") to 
+              allow normal signaling functionality.</li>
+          <li>Switch 2041 - a "broadcast" control which causes each SE74 to force 
+              its "SW1" to either "T"hrown or "C"losed (JMRI Turnout "Thrown" 
+              or "Closed, respectively).</li>
+          <li>Switch 2042 - a "broadcast" control which causes each SE74 to force 
+              its "SW2" to either "T"hrown or "C"losed (JMRI Turnout "Thrown" 
+              or "Closed, respectively).</li>
+          <li>Switch 2043 - a "broadcast" control which causes each SE74 to force 
+              its "SW3" to either "T"hrown or "C"losed (JMRI Turnout "Thrown" 
+              or "Closed, respectively).</li>
+          <li>Switch 2044 - a "broadcast" control which causes each SE74 to force 
+              its "SW4" to either "T"hrown or "C"losed (JMRI Turnout "Thrown" 
+              or "Closed, respectively).</li>
+      </UL>
+      <h4 id="se8cturnoutaddresses">SE74's "SE8C-style" Signaling, via LocoNet Switches</h4>
+      <p>When the SE74 is configured for "SE8C-mode" signaling (the SE74's default 
+          signaling mode), the SE74 uses 32 additional switches to control its 16 
+          signal heads.  These switches use the next 32 switches, i.e. "base 
+          address + 5" to "base_address + 36".
+      <p>Users are encouraged to use "Aspect-mode" signaling, rather than "SE8C-mode" 
+          signaling.  Aspect-mode signaling does not use Switch-mode addressing for 
+          signal control.  This can "free-up" the amount of Switch "address space".  
+          This can make the process of allocating space less-difficult, at the 
+          additional effort of configuring "Aspect-mode" signaling.  This is 
+          discussed below in <a href="#configAspectSignaljmri">Configuring SE74 "Aspect"-mode
+                    "Signal Head" objects in JMRI</a>.
+      <h3 id="loconetsensoraddresses">SE74 Sensor Usage</h3>
+      <p>The SE74 implements two different types of input "Sensor".  
+      <p>It implements four "Switch" control sensors, called "SW1", "SW2", "SW3", 
+          and "SW4", which control the positions of the appropriate SE74 switch 
+          output, using a "toggle" control for each switch.  It is intended for 
+          Digitrax accessory controls and is not very useful for other purposes.
+      <p>The SE74 implements four other "general-purpose" sensors, called "SENS1",
+          "SENS2", "SENS3", "SENS4".  These are not assigned any specific purpose 
+          by the SE74.
+      <p>These two types of sensor are alternately arranged, with the following 
+          addressing:
+          <br> 
+      <table border="2">
+          <tr><th> Sensor</th>
+              <th>Sensor Address</th></tr>
+          <tr><td> SW1</td><td>Base Address</td></tr>
+          <tr><td> SENS1</td><td>Base Address + 1</td></tr>
+          <tr><td> SW2</td><td>Base Address + 2</td></tr>
+          <tr><td> SENS2</td><td>Base Address + 3</td></tr>
+          <tr><td> SW3</td><td>Base Address + 4</td></tr>
+          <tr><td> SENS3</td><td>Base Address + 5</td></tr>
+          <tr><td> SW4</td><td>Base Address + 6</td></tr>
+          <tr><td> SENS4</td><td>Base Address + 7</td></tr>
+      </table>
+      
+      <h3 id="aspectaddressing">SE74 "Aspect-style" Signaling</h3>
+      <p>The SE74 allows signaling to be controlled via "Aspect-mode".  In this SE74 
+          mode, a signal head's "aspect" is controlled by a number, and each signal 
+          head has a predefined relationship between the "Aspect" number and the 
+          head's LEDs.  
+      <p>JMRI can be used with its "Signal Head" objects configured
+          in a way which is compatible with the SE74's aspects.  And JMRI's Signal 
+          Masts can be configured to use one or more JMRI Signal Heads using the 
+          SE74 aspect-mode heads.  
+          
+      <p>Note that this different than the way in which the RR-CirKits SignalMan
+          and some other signaling hardware defines an aspect number for a multi-head
+          mast.  The SE74 "Aspect-mode" <em> must</em> work at the "Signal head"
+          level.  The SE74 must work with each signal head of the mast, not a 
+          single aspect for a multi-headed mast.
+      <p>SE74 "aspect" address usage begins at the same number as the "base address",
+          and runs, continuously to "base address + 31".  The first 8 LEDs are 
+          associated with "base address" thru "base Address + 7", and are provided 
+          on connector S1.  Similarly, connector S2 provides control of the next 
+          8 LEDs via aspect addresses "base address + 8" thru "Base address + 15".
+          Connector S3 provides control of the next 8 LEDs via aspect addresses 
+          "base address + 16" thru "Base address + 23".  The last 8 LEDs, 
+          controlled by S4, are associated with "base address +24" thru "base 
+          address + 31".
+                    
       <h2 id="signaling">Signaling using the SE74 with JMRI</h2>
 
       <p>The SE74 has two mutually-exclusive operating modes which determine how JMRI
@@ -157,7 +330,7 @@
         There are a few considerations when choosing an SE74 signal head control mode:
         <ul>
             <li>Does your DCC system support DCC Extended Accessory Decoder
-                control messages <em>or</em> LocoNet?
+                control messages <em> or</em> LocoNet?
             <br>
             If your DCC system supports neither, then SE8C mode is the only option.
             <br>If your DCC system supports either or both, then either mode may be used.
@@ -200,7 +373,7 @@
             aspect (Red/Yellow/Green/Flashing Red/Flashing Yellow/Flashing Green),
             or instead of that other aspect.</li>
         </ul>
-        <p>In the author's <em>opinion</em>, "Aspect" mode is preferred over "SE8C
+        <p>In the author's <em> opinion</em>, "Aspect" mode is preferred over "SE8C
             Compatible mode" for any system which can support "Aspect" mode.
 
         <h3 id="configAspectSignaljmri">Configuring SE74 "Aspect"-mode "Signal Head" objects in JMRI</h3>
@@ -229,7 +402,8 @@
         where the specific information required to define a signal head may be
         entered.  An example image is shown below.
         <br>
-        <img src="images/Se74AspectModeSignalAHead.png" alt="Example of the add signal head window when adding a DCC controlled Signal Head">
+        <img src="images/Se74AspectModeSignalAHead.png" alt="Example of the add 
+             signal head window when adding a DCC controlled Signal Head">
 
         <ul>
             <li>For use with SE74-controlled signal heads when the SE74 is configured
@@ -292,8 +466,8 @@
         base address, you may not need such hints.
 
         <p>Note also that the SE74's "aspect-mode" signaling provides a SE74 setting
-        where the "Lunar" aspect may be made "persistant".  JMRI is not able to
-        understand the concept of a "persistant" aspect capability, so that feature
+        where the "Lunar" aspect may be made "persistent".  JMRI is not able to
+        understand the concept of a "persistent" aspect capability, so that feature
         needs to be disabled in the SE74's OpSw settings.
 
         <h3 id="configSe8cSignaljmri">Configuring SE74 "SE8C"-mode "Signal Head" objects in JMRI</h3>
@@ -313,7 +487,8 @@
             This will open an "Add Signal Head" window, where the specific
             information required to define a signal head may be entered.
         <br>
-        <img src="images/Se74CompatabilityModeSignalAHead.png" alt="Example of configuring a JMRI Signal Head for a SE74 configured for SE8C-compatible signaling mode">
+        <img src="images/Se74CompatabilityModeSignalAHead.png" alt="Example of 
+             configuring a JMRI Signal Head for a SE74 configured for SE8C-compatible signaling mode">
 
         <ul>
             <li>Select "SE8C 4 Aspect" at the top of the "Add New Signal Head" window.</li>
@@ -354,6 +529,7 @@
             means the "User Name" and "Hardware Address" fields will need to be changed.
             Activate the "Create" button to add a new signal head using the modified
             information.
+                </ul>
             <p>Extending the example above, a three-head mast would require two
             additional head definitions.  If the additional heads are to be configured
             to be the next two heads on a SE8C-mode SE74, they would be defined as
@@ -396,7 +572,7 @@
 
         <p>Creating a JMRI Signal Mast object using one or more JMRI Signal Head objects
         allows JMRI to hide any differences in Signal Head implementations at the Signal
-        Head level.  That means that defining the Signal Mast is <em>independent</em>
+        Head level.  That means that defining the Signal Mast is <em> independent</em>
         of the SE74's signaling mode setting - if you have configured the JMRI
         Signal Heads in a way which matches the SE74 signaling mode, then the JMRI
         Signal Mast simply uses the Signal Heads, and "gets it right" automatically.
@@ -449,7 +625,7 @@
                 the 3-head signal mast is typically used as a "home" signal at an
                 "interlocking", and since most US-prototype railroads keep their
                 "home" signals lit constantly, the example leaves the checkbox
-                un-checked.
+                unchecked.
             <li>Specify the applicable "Signal Heads".  Note that the top-most entry
                 corresponds to the head at the top of the mast.  The next-lower entry
                 corresponds to the next-lower head on the mast, etc., as appropriate
@@ -540,8 +716,12 @@
           SE74-related turnout objects, and will do so when the SE74 is powered and is
           connected to LocoNet when JMRI starts up with a live connection to that
           LocoNet.
+      <p>Several "broadcast" addresses are implemented by the SE74 device,  These 
+          may be used for testing and configuring the signal outputs and switch 
+          outputs.  For further information, see <a href="#loconetturnoutaddressess">
+          SE74 Switch Usage</a>.
 
-      <h2 id="inputs">SE74 inputs</h2>
+      <h2 id="inputs">Using SE74 Inputs</h2>
       <p>While the SE74's inputs may be used with JMRI, the behaviors of the SE74s
           inputs, at least for SE74 firmware versions available to the date of
           this writing, are "odd".  In general, the SE74 input pin behaviors do not
@@ -560,16 +740,16 @@
               <td>&nbsp;&nbsp;Hardware Address&nbsp;&nbsp;</td>
           </tr>
           <tr>
-              <td><strong>SENS1</strong></td>
+              <td><strong> SENS1</strong></td>
               <td><strong>hardware address = (2*(SE74 base address)) - 1</strong></td>
           </tr>
-          <tr><td><strong>SENS2</strong></td>
+          <tr><td><strong> SENS2</strong></td>
               <td><strong>hardware address = (2*(SE74 base address)) + 1</strong></td>
           </tr>
-          <tr><td><strong>SENS3</strong></td>
+          <tr><td><strong> SENS3</strong></td>
               <td><strong>hardware address = (2*(SE74 base address)) + 3</strong></td>
           </tr>
-          <tr><td><strong>SENS4</strong></td>
+          <tr><td><strong> SENS4</strong></td>
               <td><strong>hardware address = (2*(SE74 base address)) + 5</strong></td>
           </tr>
       </table>
@@ -582,32 +762,32 @@
             <th>&nbsp;Hardware Address&nbsp;</th>
           </tr>
 
-            <tr><td rowspan="4">253 (factory default)</td ><td>&nbsp;SENS1&nbsp;</td><td>505</td></tr>
-            <tr><td>SENS2&nbsp;</td><td>507</td></tr>
-            <tr><td>SENS3&nbsp;</td><td>509</td></tr>
-            <tr><td>SENS4&nbsp;</td><td>511</td></tr>
+            <tr><td rowspan="4">253 (factory default)</td ><td>&nbsp;SENS1&nbsp;</td><td> 505</td></tr>
+            <tr><td>SENS2&nbsp;</td><td> 507</td></tr>
+            <tr><td>SENS3&nbsp;</td><td> 509</td></tr>
+            <tr><td>SENS4&nbsp;</td><td> 511</td></tr>
             
-            <tr><td rowspan="4">254</td ><td>&nbsp;SENS1&nbsp;</td><td>507</td></tr>
-            <tr><td>&nbsp;SENS2&nbsp;</td><td>508</td></tr>
-            <tr><td>&nbsp;SENS3&nbsp;</td><td>511</td></tr>
-            <tr><td>&nbsp;SENS4&nbsp;</td><td>513</td></tr>
+            <tr><td rowspan="4"> 254</td ><td>&nbsp;SENS1&nbsp;</td><td> 507</td></tr>
+            <tr><td>&nbsp;SENS2&nbsp;</td><td> 508</td></tr>
+            <tr><td>&nbsp;SENS3&nbsp;</td><td> 511</td></tr>
+            <tr><td>&nbsp;SENS4&nbsp;</td><td> 513</td></tr>
             
-            <tr><td rowspan="4">255</td ><td>&nbsp;SENS1&nbsp;</td><td>509</td></tr>
-            <tr><td>&nbsp;SENS2&nbsp;</td><td>511</td></tr>
-            <tr><td>&nbsp;SENS3&nbsp;</td><td>513</td></tr>
-            <tr><td>&nbsp;SENS4&nbsp;</td><td>515</td></tr>
+            <tr><td rowspan="4"> 255</td ><td>&nbsp;SENS1&nbsp;</td><td> 509</td></tr>
+            <tr><td>&nbsp;SENS2&nbsp;</td><td> 511</td></tr>
+            <tr><td>&nbsp;SENS3&nbsp;</td><td> 513</td></tr>
+            <tr><td>&nbsp;SENS4&nbsp;</td><td> 515</td></tr>
         </table>
 
-      <h2 id="routes">SE74 Routes</h2>
+      <h2 id="routes">Using SE74 Routes</h2>
       <p>The SE74 provides "route" functionality, where each of 8 routes may be
           configured with a "trigger" switch control, and up to 7 additional switch
           control messages to send when that trigger switch control is seen as a
           message on LocoNet.  JMRI does not have a tool for configuring the SE74's
           "routes" functionality at this time.  Instead, use the mechanisms described
           in the SE74 manual.
-          <p>JMRI may <em>trigger</em> an SE74 route by sending a LocoNet switch
-              control message which matches the "trigger" entry for any one of
-              the routes configured in the SE74.
+        <p>JMRI may <em> trigger</em> an SE74 route by sending a LocoNet switch
+            control message which matches the "trigger" entry for any one of
+            the routes configured in the SE74.
 
       <p>LocoNet&reg; is a registered trademark of <a href="https://www.digitrax.com/">Digitrax,
       Inc.</a></p>
