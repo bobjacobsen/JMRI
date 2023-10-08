@@ -21,10 +21,10 @@
         </programming>
 
         <variables>
-          <!-- needed to set the board address value -->
-          <variable CV="1,2" comment="Board address" item="Long Address" default="1" readOnly="yes">
+          <!-- needed to set the base address value -->
+          <variable CV="1,2" comment="Base address" item="Long Address" default="1" readOnly="yes">
             <splitVal highCV="2" min="1" max="2045"/>
-            <label>Board Address</label>
+            <label>Base Address</label>
           </variable>
 
 
@@ -104,7 +104,7 @@
                 tooltip="OpSw11" mask="XXXXXVXX">
             <enumVal>
               <enumChoice>
-                <choice>do turnout, sensor commands</choice>
+                <choice>control turnouts and provide sensor inputs</choice>
               </enumChoice>
               <enumChoice>
                 <choice>trigger routes</choice>
@@ -169,7 +169,7 @@
                 tooltip="OpSw33" mask="XXXXXXXV">
             <enumVal>
               <enumChoice>
-                <choice>normal signals</choice>
+                <choice>normal signals (one color per SE7c output)</choice>
               </enumChoice>
               <enumChoice>
                 <choice>2-wire searchlight signals</choice>
@@ -195,7 +195,7 @@
                 tooltip="OpSw35" mask="XXXXXVXX">
             <enumVal>
               <enumChoice>
-                <choice>command anode</choice>
+                <choice>common anode</choice>
               </enumChoice>
               <enumChoice>
                 <choice>common cathode</choice>
@@ -204,7 +204,7 @@
             <label>Signals wired as</label>
           </variable>
 
-          <variable CV="15" item="Broadcast" default="0"
+          <variable CV="15" item="Fourth Aspect" default="0"
                 tooltip="OpSw37,36" mask="XXXVVXXX">
             <enumVal>
               <enumChoice>
@@ -269,10 +269,10 @@
             <column>
                 <label>
                     <text>&lt;html&gt;The "CV" column in the table above shows CV
-                        numbers, not the Op Switch number.  To see those, hover
+                        numbers, not the Op Switch number.  &lt;p&gt;To see those, hover
                         your mouse over a variable on the OpSw Settings pane.
-                        &lt;p&gt;&lt;p&gt;The top-most row above reflects the Board
-                        Address configured on the "Basic" sheet.
+                        &lt;p&gt;&lt;p&gt;The top-most row above reflects the 'Base
+                        Address' configured on the "Basic" sheet.
                     </text>
                 </label>
                 <label>
@@ -293,12 +293,12 @@
           <label>
             <text>&lt;html&gt;&lt;p&gt;
                 &lt;p&gt;This roster entry will only access the specified
-                board if the Board Address (i.e. Board ID), specified above,
+                board if the Base Address (i.e. Board ID, board address, etc.), specified above,
                 &lt;br&gt;was correctly entered when the roster entry was first created.
                 You cannot change it here.
                 &lt;p&gt;Note that some Digitrax documentation refers
-                to Board Address, while other documentation refers to
-                &lt;p&gt;Board ID.  These are equivalent concepts.
+                to Base Address, while other documentation refers to
+                &lt;p&gt;Board Address or Board ID.  These are equivalent concepts.
             &lt;/html&gt;</text>
           </label>
 
@@ -314,22 +314,30 @@
     <pane>
         <name>OpSw Settings</name>
         <column>
-            <display item="Turnout Type"/>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Operating Mode&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Control Mode"/>
-            <display item="Internal Routes"/>
-            <display item="Bushby"/>
-            <display item="Input Lines"/>
-            <display item="Command Source"/>
-            <display item="Route Echo"/>
-            <display item="Solenoid Pulse"/>
-            <display item="SW Messages"/>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Signal Head Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Searchlight 2-wire"/>
             <display item="Searchlight Type"/>
             <display item="Wiring"/>
-            <display item=""/>
-            <display item="Broadcast"/>
+            <display item="Fourth Apect"/>
+            <label>
+                <text>&lt;html&gt;Only for "SE8C-mode" signaling.  Typically, JMRI &lt;p&gt;
+                    uses the "dark" appearance when using SE8C mode.</text>
+            </label>
             <display item="Lunar"/>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;LocoNet Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            <display item="Bushby"/>
+            <display item="Command Source"/>
+            <display item="SW Messages"/>
             <display item="1021 Broadcast"/>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Inputs Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            <display item="Input Lines"/>
+            <display item="Internal Routes"/>
+            <display item="Route Echo"/>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Outputs Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            <display item="Turnout Type"/>
+            <display item="Solenoid Pulse"/>
 
         </column>
     </pane>
