@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import jmri.jmrix.loconet.*;
 
@@ -25,19 +26,18 @@ public class AccyDeviceDataModel extends javax.swing.table.AbstractTableModel {
     
     private int columns;
     
-    private ArrayList<Accy7thGenDevice> devices;
+    private LinkedList<Accy7thGenDevice> devices;
 
     AccyDeviceDataModel(int row, int column) {
+        super();
         // number of columns, rows
-        devices = new ArrayList<Accy7thGenDevice>();
-        for (int i = 0; i < row; ++i) {
-            devices.add(i,new Accy7thGenDevice((-1) - i, -1,-1, 0));
-        }
-        this.columns = column;
+        devices = new LinkedList<Accy7thGenDevice>();
+        this.columns = column;        
     }
 
     public void removeDevices() {
         devices.clear();
+        this.fireTableDataChanged();
     }
     
     /**
@@ -48,14 +48,17 @@ public class AccyDeviceDataModel extends javax.swing.table.AbstractTableModel {
      *
      * @return the number of rows
      */
+    @Override
     public int getRowCount() {
         return devices.size();
     }
 
+    @Override
     public int getColumnCount() {
         return columns;
     }
 
+    @Override
     public String getColumnName(int col) {
         switch (col) {
             case DEVICECOLUMN:
@@ -90,45 +93,41 @@ public class AccyDeviceDataModel extends javax.swing.table.AbstractTableModel {
         return -1;
     }
     
-    public void add(Accy7thGenDevice dev) {
+    public Accy7thGenDevice add(Accy7thGenDevice dev) {
+        Accy7thGenDevice ds;
         int d;
         if ((d = haveDevice(dev)) > -1) {
-            Accy7thGenDevice ds = devices.get(d);
+            ds = devices.get(d);
             // existing Device & Ser. Num.
             ds.firstOnes = dev.firstOnes;
             ds.baseAddr = dev.baseAddr;
-            log.warn("New vales for an existing device/serialNum.");
             this.fireTableRowsUpdated(d, d);
         }  else {
-            devices.add(dev);
-
-            log.warn("devices count {}, Device {}, Ser Num {}, baseAddr {}, firstOnes {}", 
-                    devices.size(),
-                    devices.get(0).device,
-                    devices.get(0).serNum,
-                    devices.get(0).baseAddr,
-                    devices.get(0).firstOnes);
+            ds = dev;
+            devices.add(ds);
             this.fireTableRowsInserted( devices.size()-1,  devices.size()-1);
         }
+        return ds;
     }
 
+    @Override
     public Class<?> getColumnClass(int col) {
         switch (col) {
             case DEVICECOLUMN:
-            case SERNUMCOLUMN:
             case TURNOUTSCOLUMN:
             case SENSORSCOLUMN:
             case REPORTERSCOLUMN:
             case ASPECTSCOLUMN:
             case POWERSCOLUMN:
-                return Integer.class;
+            case SERNUMCOLUMN:
             case BASEADDRCOLUMN:
-                return Integer.class;
+                return String.class;
             default:
                 return null;
         }
     }
-    
+
+    @Override
     public boolean isCellEditable(int row, int col) {
         switch (col) {
             case DEVICECOLUMN:
@@ -164,26 +163,26 @@ public class AccyDeviceDataModel extends javax.swing.table.AbstractTableModel {
         }
     }                
     
+    @Override
     public Object getValueAt(int row, int col) {
-        log.warn("getValueAt row {} col {}", row, col);
-        for (Accy7thGenDevice j : devices) {
-            log.warn("Row {} Device {} SerNum {} Base Addr {} routes {}",
-                    row, j.device, j.serNum, j.baseAddr, j.firstOnes);
-        }
         Accy7thGenDevice ds = devices.get(row);
         switch (col) {
             case DEVICECOLUMN:
-                return ds.device;
+                return LnConstants.IPL_NAME(ds.device);
             case SERNUMCOLUMN:   
                 return ds.serNum;
             case BASEADDRCOLUMN:
                 return ds.baseAddr;
             case TURNOUTSCOLUMN:
-                return ds.getTurnouts();
+                String res = ds.getTurnouts();
+                if (ds.getTurnoutsBroadcast()) {
+                    res += " *";
+                }
+                return res;
             case SENSORSCOLUMN:
                 return ds.getSensors();
             case REPORTERSCOLUMN:
-                return ds.getPowers();
+                return ds.getReporters();
             case ASPECTSCOLUMN:
                 return ds.getApects();
             case POWERSCOLUMN:
@@ -193,8 +192,8 @@ public class AccyDeviceDataModel extends javax.swing.table.AbstractTableModel {
         }
     }
     
+    @Override
     public void setValueAt(Object value, int row, int col) {
-        log.warn("Setting row {} col {} to {}", row, col, value);
         Accy7thGenDevice ds;
         boolean newDev = false;
         if (row <  devices.size()) {
@@ -220,25 +219,13 @@ public class AccyDeviceDataModel extends javax.swing.table.AbstractTableModel {
         if (newDev) {
             devices.add(ds);
             this.fireTableRowsInserted(row-1, row-1);
-            log.warn("added a row");
 
         } else {
             this.fireTableCellUpdated(row - 1, col);
-            log.warn("updated a row");
         }
     }     
     
-    /**
-     * Configure a table to have our standard rows and columns. This is
-     * optional, in that other table formats can use this table model. But we
-     * put it here to help keep it consistent.
-     *
-     * @param devicesTable the table to configure
-     */
-    public void configureTable(JTable devicesTable) {
-    }
-
-    static private class Notify implements Runnable {
+    private static class Notify implements Runnable {
 
         private final int _row;
         javax.swing.table.AbstractTableModel _model;
