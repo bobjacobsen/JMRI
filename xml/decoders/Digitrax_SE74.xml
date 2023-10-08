@@ -341,5 +341,52 @@
 
         </column>
     </pane>
-
+  <pane>
+      <name>Notes</name>
+      <column>
+        <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;
+            &lt;h2&gt;&lt;strong&gt;Notes on SE74 Roster Entries and Programming
+            &lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+        </label>
+        <label>
+            <text>&lt;html&gt;&lt;/strong&gt;&lt;ul&gt;
+                &lt;li&gt;
+                The SE74 Roster entry has no ability to change the entry's "Base Address".
+                &lt;p&gt;Use the mechanisms shown in the SE74's Manual for Digitrax' suggestions
+                &lt;p&gt;for changing the Base Address.
+                &lt;/li&gt;
+                &lt;li&gt;
+                Because the SE74 in "SE8C signalling mode" uses a large number of Turnout
+                &lt;p&gt;addresses, and because that mode requires the use of repetitive Turnout
+                &lt;p&gt;messages to "flash" its outputs, JMRI recommends use of the SE74 "Aspect
+                &lt;p&gt;signaling mode". The Aspect mode uses a different "addressing space"
+                &lt;p&gt;than "Turnouts", and does not stress the LocoNet with flashing aspects.
+                &lt;/li&gt;
+                &lt;li&gt;
+                The SE74 uses four Turnout addresses for its switch machines, and when
+                &lt;p&gt;in the "SE8C signaling mode", it uses 32 turnouts.  It also uses several
+                &lt;p&gt;other Turnouts for "broadcast" purposes.  These are always at fixed 
+                &lt;p&gt;addresses, and should be avoided.  The "broadcast" addresses include 
+                &lt;p&gt;1021, 1022, 1023, 1024, 2041, 2024, 2043, 2044, and 2048. 
+                &lt;/li&gt;
+                &lt;li&gt;
+                The SE74 controls signals at the "Signal Head" level, whether used in 
+                &lt;p&gt;"SE8C Signaling mode" or "Aspect Signaling mode".  JMRI supports 
+                &lt;p&gt;the "SE8C 4 Aspect" Signal Head, which can be used when the SE74 is in 
+                &lt;p&gt;"SE8C Signaling mode", and "DCC Signal Decoder" Signal Head when the 
+                &lt;p&gt;SE74 is in "Aspect Signaling mode".
+                &lt;/li&gt;
+                &lt;li&gt;
+                This Roster does not support configuratin of the SE74 "Routes" feature.
+                &lt;p&gt;Use the Digitrax-supported Routes programming features.
+                &lt;/li&gt;
+<!--
+                &lt;li&gt;
+                &lt;p&gt;
+                &lt;/li&gt;
+-->                
+            &lt;/ul&gt;&lt;/html&gt;</text>
+        </label>
+      </column>
+  </pane>
 </decoder-config>
