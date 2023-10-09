@@ -22,7 +22,7 @@
 
         <variables>
           <!-- needed to set the base address value -->
-          <variable CV="1,2" comment="Base address" item="Long Address" default="1" readOnly="yes">
+          <variable CV="1,2" comment="Base address" item="Long Address" default="1" infoOnly="yes">
             <splitVal highCV="2" min="1" max="2045"/>
             <label>Base Address</label>
           </variable>
@@ -165,7 +165,7 @@
             <label>For switch messages, send</label>
           </variable>
 
-          <variable CV="15" item="Searchlight 2-wire" default="0"
+<!--          <variable CV="15" item="Searchlight 2-wire" default="0"
                 tooltip="OpSw33" mask="XXXXXXXV">
             <enumVal>
               <enumChoice>
@@ -202,6 +202,38 @@
               </enumChoice>
             </enumVal>
             <label>Signals wired as</label>
+          </variable>
+-->
+
+          <variable CV="15" item="LED Type" default="0"
+          tooltip="OpSws 33-35: LED Type and wiring"
+                    mask="XXXXXVVV">
+            <enumVal>
+              <enumChoice>
+                <choice>Bi-color, 3-wire LEDs, common anode</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>Bi-color, 2-wire LEDs, common anode</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>Three separate LEDs, common anode</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>Reserved (3)</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>Bi-color, 3-wire LEDs, common cathode</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>Bi-color, 2-wire LEDs, common cathode</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>Three separate LEDs, common cathode</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>Reserved (7)</choice>
+              </enumChoice>
+            </enumVal>
           </variable>
 
           <variable CV="15" item="Fourth Aspect" default="0"
@@ -281,7 +313,6 @@
             </column>
         </row>
     </column>
-
   </pane>
   <pane>
       <name>Basic</name>
@@ -290,7 +321,14 @@
           <label>
               <text> </text>
           </label>
+
           <label>
+            <text>&lt;html&gt;&lt;p&gt;
+                &lt;p&gt;When programming with this roster entry, it is important to
+                ensure that &lt;strong&gt;only ONE&lt;/strong&gt; 7th-generation LocoNet
+                device uses this &lt;p&gt;base address!
+            &lt;/html&gt;</text>
+          </label>          <label>
             <text>&lt;html&gt;&lt;p&gt;
                 &lt;p&gt;This roster entry will only access the specified
                 board if the Base Address (i.e. Board ID, board address, etc.), specified above,
@@ -301,32 +339,33 @@
                 &lt;p&gt;Board Address or Board ID.  These are equivalent concepts.
             &lt;/html&gt;</text>
           </label>
-
           <label>
               <text> </text>
           </label>
-
           <display item="Product Number"/>
-
       </column>
   </pane>
 
     <pane>
-        <name>OpSw Settings</name>
+        <name>Signaling Configuration</name>
         <column>
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Operating Mode&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Control Mode"/>
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Signal Head Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
-            <display item="Searchlight 2-wire"/>
-            <display item="Searchlight Type"/>
-            <display item="Wiring"/>
-            <display item="Fourth Apect"/>
+            <display item="LED Type"/>
+            <display item="Fourth Aspect"/>
             <label>
-                <text>&lt;html&gt;Only for "SE8C-mode" signaling.  Typically, JMRI &lt;p&gt;
-                    uses the "dark" appearance when using SE8C mode.</text>
+                <text>&lt;html&gt;Fourth aspect is only for "SE8C-mode" signaling.  Typically,&lt;p&gt;
+                    JMRI uses the "dark" appearance when using SE8C&lt;p&gt;mode.</text>
             </label>
             <display item="Lunar"/>
-            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;LocoNet Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+        </column>
+    </pane>
+    
+    <pane>
+        <name>Other Settings</name>
+        <column>            
+        <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;LocoNet Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Bushby"/>
             <display item="Command Source"/>
             <display item="SW Messages"/>
@@ -338,7 +377,6 @@
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Outputs Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Turnout Type"/>
             <display item="Solenoid Pulse"/>
-
         </column>
     </pane>
   <pane>
