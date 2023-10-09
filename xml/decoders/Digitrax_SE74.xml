@@ -9,10 +9,11 @@
                 >
 
     <version author="Bob Jacobsen" version="1" lastUpdated="20230205" />
+    <version author="Bob Jacobsen and Bob Milhaupt" version="2" lastUpdated="20230925" />
 
     <decoder>
 
-        <family name="Series 7 Boards" mfg="Digitrax">
+        <family name="Series 7 Accessory Devices" mfg="Digitrax">
             <model model="SE74"/>
         </family>
 
@@ -388,6 +389,12 @@
         </label>
         <label>
             <text>&lt;html&gt;&lt;/strong&gt;&lt;ul&gt;
+                &lt;li&gt;
+                This roster entry uses the "Extended Accessory Decoder CV" method 
+                &lt;p&gt;to access the SE74's "OpSw"s.  This is effectively the same as 
+                &lt;p&gt;is described in the SE74 instruction in the "Program SE74 CVs 
+                &lt;p&gt;on LocoNet" section.
+                &lt;/li&gt;
                 &lt;li&gt;
                 The SE74 Roster entry has no ability to change the entry's "Base Address".
                 &lt;p&gt;Use the mechanisms shown in the SE74's Manual for Digitrax' suggestions
