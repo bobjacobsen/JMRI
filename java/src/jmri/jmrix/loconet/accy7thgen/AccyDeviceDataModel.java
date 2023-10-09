@@ -187,8 +187,8 @@ public class AccyDeviceDataModel extends javax.swing.table.AbstractTableModel {
                 String res2 = ds.getApects();
                 if (ds.getAspectsBroadcast()) {
                     res2 += " **";
-                return res2;
                 }
+                return res2;
             case POWERSCOLUMN:
                 return ds.getPowers();
             default:
