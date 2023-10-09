@@ -17,7 +17,6 @@ public class Accy7thGenDevice {
     public int  firstOnes;
     private Integer turnoutAddrStart;
     private Integer turnoutAddrEnd;
-    private boolean turnoutFootnote;
     private Integer SensorAddrStart;
     private Integer SensorAddrEnd;
     private Integer ReportersAddrStart;
@@ -178,8 +177,8 @@ public class Accy7thGenDevice {
                 if ((firstOnes & 0x20) == 0x20) {
                     i = baseAddr+15;
                 }
-                if (i > 2047) {
-                    i = 4047;
+                if (i > 2048) {
+                    i = 2048;
                 }
                 return i;
             default:
@@ -205,6 +204,7 @@ public class Accy7thGenDevice {
                 return false;
         }
     }
+
     public String getTurnouts() {
         if (turnoutAddrStart > 0) {
             return Integer.toString(turnoutAddrStart)+"-"+
@@ -237,6 +237,15 @@ public class Accy7thGenDevice {
         return res;
     }
     
+    public boolean getAspectsBroadcast() {
+        switch (device) {
+            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+                return (AspectAddrStart > 0) ? true: false;
+            default:
+                return false;
+        }
+    }
+
     public String getApects() {
         if (AspectAddrStart > 0) {
             return Integer.toString(AspectAddrStart)+"-"+Integer.toString(AspectAddrEnd);
