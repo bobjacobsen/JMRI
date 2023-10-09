@@ -121,7 +121,8 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         gotTheFindMessage = false;
         gotA7thGenReply = false;
         add(new JSeparator());
-        add(new JLabel(Bundle.getMessage("FOOTNOTESE74")));
+        add(new JLabel(Bundle.getMessage("FOOTNOTEASE74")));
+        add(new JLabel(Bundle.getMessage("FOOTNOTEBSE74")));
     }
     
     public void find7thGenDevices() {
@@ -141,7 +142,8 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
 
                     String value = table.getValueAt(rowIndex, columnIndex).toString();
                     log.debug("value {}", value);
-                    String value2 = value.replace(" *", "");
+                    String value2 = value.replace(" **", "");
+                    value2 = value2.replace(" *", "");
                     log.debug("modified value {}", value);
                     int val1;
                     int val2;
@@ -157,6 +159,20 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
                         val1 = -2;
                         val2 = -2;
                     }
+                    
+                    if ((columnIndex == 3) && ((val2 >= 1021) && (val1 <= 1025))) {
+                        overlap = true;
+                        log.debug("OVERLAP!");
+                    }
+                    if ((!overlap) && (columnIndex == 3) && ((val2 >= 2041) && (val1 <= 2044))) {
+                        overlap = true;
+                        log.debug("OVERLAP!");
+                    }
+                    if ((!overlap) && (columnIndex == 6) && ((val2 >= 2048) && (val1 <= 2048))) {
+                        overlap = true;
+                        log.debug("OVERLAP!");
+                    }
+
                     log.debug("val range {} to {}", val1, val2);
                     for (int i = 0; (i < table.getRowCount()) && (!overlap); i++) {
                         if (i == rowIndex) {
@@ -164,7 +180,8 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
                         } else {
                             // get row's count and see if overlap
                             String ref = table.getValueAt(i, columnIndex).toString();
-                            String ref2 = ref.replace(" *", "");
+                            String ref2 = ref.replace(" **", "");
+                            ref2 = ref2.replace(" *", "");
                             log.debug("modified value {}", value);
                             
                             int refval1;
@@ -221,6 +238,20 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
                                     if ((val2 >= refval1) && (val1 <= refval2) ){
                                         overlap = true;
                                         log.debug("OVERLAP (on broadcast (c))!");
+                                    }
+                                }
+                            }
+
+                            if (columnIndex == 6) {
+                                log.debug("Checking if broadcast (d)");
+                                if ((overlap == false) && (value.contains(" *"))) {
+                                    // check against "broadcast" addresses
+                                    log.debug("Checking broadcast addresses (d)!");
+                                    refval1 = 2048;
+                                    refval2 = 2048;
+                                    if ((val2 >= refval1) && (val1 <= refval2) ){
+                                        overlap = true;
+                                        log.debug("OVERLAP (on broadcast d)!");
                                     }
                                 }
                             }
