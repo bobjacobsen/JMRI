@@ -649,6 +649,8 @@
 
   </tocitem>
   <tocitem text="Digitrax ">
+   <tocitem text="7th-generation Digitrax Accessory Decoder Base Address Configuration Tool " target="package.jmri.jmrix.loconet.accy7thgen.Accy7thgen"/>
+
    <tocitem text="BDL16, BDL162, BDL168 Configuration Tool " target="package.jmri.jmrix.loconet.bdl16.BDL16Frame"/>
 
    <tocitem text="Digitrax Command Station Configuration Tool " target="package.jmri.jmrix.loconet.cmdstnconfig.CmdStnConfigFrame"/>
