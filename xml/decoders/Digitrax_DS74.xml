@@ -22,8 +22,9 @@
         </programming>
 
         <variables>
-
-          <variable CV="1,2" comment="Board address" item="Long Address" default="1" readOnly="yes">
+          <!-- Needed to set the "Base Address" value. May be set when creating 
+            the initial roster entry.  May not be modified after creation! -->
+          <variable CV="1,2" comment="Board address" item="Long Address" default="1" infoOnly="yes">
             <splitVal highCV="2" min="1" max="2045"/>
             <label>Base Address</label>
           </variable>
