@@ -9,10 +9,11 @@
                 >
 
     <version author="Bob Jacobsen" version="1" lastUpdated="20230410" />
+    <version author="Bob Jacobsen and Bob Milhaupt" version="2" lastUpdated="20230925" />
 
     <decoder>
 
-        <family name="Series 7 Boards" mfg="Digitrax">
+        <family name="Series 7 Accessory Devices" mfg="Digitrax">
             <model model="PM74"/>
         </family>
 
@@ -22,10 +23,10 @@
 
         <variables>
 
-          <variable CV="1" comment="Board address" item="Long Address" default="40" infoOnly="yes">
-            <!-- needed to set the board address value -->
-            <decVal min="1" max="2045" />
-            <label>Board Address</label>
+          <!-- needed to set the base address value -->
+          <variable CV="1,2" comment="Base address" item="Long Address" default="1" infoOnly="yes">
+            <splitVal highCV="2" min="1" max="2045"/>
+            <label>Base Address</label>
           </variable>
 
           <variable CV="7" item="Decoder Version" readOnly="yes" default="74">
@@ -43,8 +44,8 @@
             <label xml:lang="de">Hersteller ID: </label>
           </variable>
 
-          <variable item="Product Number" CV="9,10" readOnly="yes">
-            <splitVal highCV="9"/>
+          <variable item="Serial Number" CV="9,10" readOnly="yes">
+            <splitVal highCV="10"/>
             <label>Serial Number</label>
           </variable>
 
@@ -56,9 +57,6 @@
               </enumChoice>
               <enumChoice>
                 <choice>auto-reverse</choice>
-              </enumChoice>
-              <enumChoice>
-                <choice value="5">light mode (8 outputs)</choice>
               </enumChoice>
             </enumVal>
             <label>DS1 mode: </label>
@@ -73,9 +71,6 @@
               <enumChoice>
                 <choice>auto-reverse</choice>
               </enumChoice>
-              <enumChoice>
-                <choice value="5">light mode (8 outputs)</choice>
-              </enumChoice>
             </enumVal>
             <label>DS2 mode: </label>
           </variable>
@@ -88,9 +83,6 @@
               </enumChoice>
               <enumChoice>
                 <choice>auto-reverse</choice>
-              </enumChoice>
-              <enumChoice>
-                <choice value="5">light mode (8 outputs)</choice>
               </enumChoice>
             </enumVal>
             <label>DS3 mode: </label>
@@ -105,9 +97,6 @@
               <enumChoice>
                 <choice>auto-reverse</choice>
               </enumChoice>
-              <enumChoice>
-                <choice value="5">light mode (8 outputs)</choice>
-              </enumChoice>
             </enumVal>
             <label>DS4 mode: </label>
           </variable>
@@ -116,13 +105,13 @@
                 tooltip="OpSw7-8" mask="VVXXXXXX"><!-- opsw 7-8 -->
             <enumVal>
               <enumChoice><!-- 00 -->
-                <choice>normal</choice>
+                <choice>normal - 4 Amps</choice>
               </enumChoice>
               <enumChoice><!-- 01 -->
-                <choice>lower</choice>
+                <choice>lower - 3 Amps</choice>
               </enumChoice>
               <enumChoice><!-- 10 -->
-                <choice>higher</choice>
+                <choice>higher - 6 Amps</choice>
               </enumChoice>
             </enumVal>
             <label>Trip current: </label>
@@ -142,7 +131,7 @@
           </variable>
 
           <variable CV="12" item="Transponding" default="0"
-                tooltip="OpSw12" mask="XXXXXVXX"><!-- opsw 12 -->
+                tooltip="OpSw12" mask="XXXXVXXX"><!-- opsw 12 -->
             <enumVal>
               <enumChoice>
                 <choice>enabled</choice>
@@ -152,6 +141,25 @@
               </enumChoice>
             </enumVal>
             <label>Transponding detection: </label>
+          </variable>
+
+          <variable CV="12" item="LocoNet Power Reporting" default="0"
+                tooltip="OpSw13" mask="XXXVXXXX"><!-- opsw 12 -->
+            <enumVal>
+              <enumChoice>
+                <choice>enabled</choice>
+              </enumChoice>
+              <enumChoice>
+                <choice>disabled</choice>
+              </enumChoice>
+            </enumVal>
+            <label>LocoNet Reporting of Power Status: </label>
+          </variable>
+          
+          <variable CV="13" item="CV 13" default="0" infoOnly="yes"
+                tooltip="OpSw17-24" mask="VVVVVVVV">
+            <decVal min="0" max="255" />
+            <label>CV 13: </label>
           </variable>
 
           <variable CV="14" item="Sensitivity" default="0"
@@ -164,7 +172,13 @@
                 <choice>increased</choice>
               </enumChoice>
             </enumVal>
-            <label>Sensitivity: </label>
+            <label>Occupancy Sensitivity: </label>
+          </variable>
+
+          <variable CV="15" item="CV 15" default="0" infoOnly="yes"
+                tooltip="OpSw33-40" mask="VVVVVVVV">
+            <decVal min="0" max="255" />
+            <label>CV 15: </label>
           </variable>
 
           <variable CV="16" item="LEDs" default="0"
@@ -203,7 +217,7 @@
                     <text>&lt;html&gt;The "CV" column in the table above shows CV
                         numbers, not the Op Switch number.  To see those, hover
                         your mouse over a variable on the OpSw Settings pane.
-                        &lt;p&gt;&lt;p&gt;The top-most row above reflects the Board
+                        &lt;p&gt;&lt;p&gt;The top-most row above reflects the Base
                         Address configured on the "Basic" sheet.
                     </text>
                 </label>
@@ -225,11 +239,11 @@
           <label>
             <text>&lt;html&gt;&lt;p&gt;
                 &lt;p&gt;This roster entry will only access the specified
-                board if the Board Address (i.e. Board ID), specified above,
+                board if the Base Address (i.e. Board ID), specified above,
                 &lt;br&gt;was correctly entered when the roster entry was first created.
                 You cannot change it here.
                 &lt;p&gt;Note that some Digitrax documentation refers
-                to Board Address, while other documentation refers to
+                to Base Address, while other documentation refers to
                 &lt;p&gt;Board ID.  These are equivalent concepts.
             &lt;/html&gt;</text>
           </label>
@@ -238,25 +252,86 @@
               <text> </text>
           </label>
 
-          <display item="Product Number"/>
+          <display item="Serial Number"/>
 
       </column>
   </pane>
 
     <pane>
-        <name>OpSw Settings</name>
+        <name>Configuration</name>
         <column>
-            <display item="DS1 mode"/>
-            <display item="DS2 mode"/>
-            <display item="DS3 mode"/>
-            <display item="DS4 mode"/>
-
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Outputs Modes&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            <row>
+                <column><display item="DS1 mode"/></column>
+                <column><label><text>          </text></label></column>
+                <column><display item="DS3 mode"/></column>
+            </row>
+            <row>
+                <column><display item="DS2 mode"/></column>
+                <column><label><text>          </text></label></column>
+                <column><display item="DS4 mode"/></column>
+            </row>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Power Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Trip current"/>
-            <display item="Occupancy"/>
-            <display item="Transponding"/>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Occupancy and Transponding Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            <display item="LocoNet Power Reporting"/>
+            <label>
+                <text>&lt;html&gt;The PM74 &lt;em&gt;always&lt;/em&gt; performs over-currect and/or auto-reverse detection, but 
+                    &lt;p&gt;it may or may not report it via LocoNet depending on this configuration setting.</text>
+            </label>
+            <label><text> </text></label>
             <display item="Sensitivity"/>
+            <display item="Occupancy"/>
+            <label>
+                <text>&lt;html&gt;The PM74 may be configured to disable occupancy detection - both LocoNet reporting and LED display.</text>
+            </label>
+            <label><text> </text></label>
+            <display item="Transponding"/>
+            <label>
+                <text>&lt;html&gt;The PM74 may be configured to disable transponding - both LocoNet reporting and LED display.</text>
+            </label>
+            <label><text> </text></label>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Miscellaneous&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="LEDs"/>
         </column>
     </pane>
 
+    <pane>
+      <name>Notes</name>
+      <column>
+        <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;
+            &lt;h2&gt;&lt;strong&gt;Notes on PM74 Roster Entries and Programming
+            &lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+        </label>
+        <label>
+            <text>&lt;html&gt;&lt;/strong&gt;&lt;ul&gt;
+                &lt;li&gt;
+                This roster entry uses the "Extended Accessory Decoder CV" method 
+                &lt;p&gt;to access the PM74's "OpSw"s.  This is effectively the same as 
+                &lt;p&gt;is described in the PM74 instruction in the "Programming DS74 CVs"
+                &lt;p&gt;section.
+                &lt;/li&gt;
+                &lt;li&gt;
+                The PM74 Roster entry has no ability to change the entry's "Base Address".
+                &lt;p&gt;Use the mechanisms shown in the PM74's Manual for Digitrax' suggestions
+                &lt;p&gt;for changing the Base Address.
+                &lt;/li&gt;
+                &lt;li&gt;
+                Use care when defining the PM74's "Base Address".  The PM74 defines its Base 
+                &lt;p&gt;Address to be the device's single "Power" address.  All of its other addresses 
+                &lt;p&gt;are defined based on the number of addresses implemented by the PM74.
+                &lt;/li&gt;
+                &lt;li&gt;
+                The PM74's Reporter functionality does not work for all "Base Address" 
+                &lt;p&gt;values (at least for some PM74 firmware versions!).  Be aware that "Base Address"es 
+                &lt;p&gt;between 129 and 253 do not map, at all, to reporters, and "Base Address"es   
+                &lt;p&gt;between 126 and 128, and between 254 thru 256, do no map all four of the
+                &lt;p&gt;detection sections to Reporters.  The same happpens between 385 and 512, 
+                &lt;p&gt;between 641 and 768, between 897 and 1024, between 1153 and 1280, between
+                &lt;p&gt;1409 and 1536, between 1665 and 1792, and between 1921 and 2048.
+                &lt;/li&gt;
+            </text>
+        </label>
+      </column>
+  </pane>
 </decoder-config>

@@ -13,7 +13,7 @@
 
     <decoder>
 
-        <family name="Series 7 Boards" mfg="Digitrax">
+        <family name="Series 7 Accessory Devices" mfg="Digitrax">
             <model model="DS78V"/>
         </family>
 
@@ -44,8 +44,8 @@
             <label xml:lang="de">Hersteller ID: </label>
           </variable>
 
-          <variable item="Product Number" CV="9,10" readOnly="yes">
-            <splitVal highCV="9"/>
+          <variable item="Serial Number" CV="9,10" readOnly="yes">
+            <splitVal highCV="10"/>
             <label>Serial Number</label>
           </variable>
 
@@ -131,108 +131,132 @@
             <label>Route Switch Commands</label>
           </variable>
 
+          <variable CV="13" item="CV13" default="0" readOnly="yes"
+                tooltip="OpSws 17-24" mask="VVVVVVVV">
+            <decVal min="0" max="255"/>
+            <label>CV13</label>
+          </variable>
+
+          <variable CV="14" item="CV14" default="0" readOnly="yes"
+                tooltip="OpSws 25-32" mask="VVVVVVVV">
+            <decVal min="0" max="255"/>
+            <label>CV13</label>
+          </variable>
+
+          <variable CV="15" item="CV15" default="0" readOnly="yes"
+                tooltip="OpSws 33-40" mask="VVVVVVVV">
+            <decVal min="0" max="255"/>
+            <label>CV15</label>
+          </variable>
+
+          <variable CV="16" item="CV16" default="0" readOnly="yes"
+                tooltip="OpSws 41-48" mask="VVVVVVVV">
+            <decVal min="0" max="255"/>
+            <label>CV16</label>
+          </variable>
+
           <variable CV="0.25" item="Servo 1 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="0.26" item="Servo 1 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="0.27" item="Servo 1 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="0.28" item="Servo 1 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
           <variable CV="1.25" item="Servo 2 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="1.26" item="Servo 2 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="1.27" item="Servo 2 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="1.28" item="Servo 2 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
           <variable CV="2.25" item="Servo 3 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="2.26" item="Servo 3 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="2.27" item="Servo 3 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="2.28" item="Servo 3 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
           <variable CV="3.25" item="Servo 4 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="3.26" item="Servo 4 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="3.27" item="Servo 4 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="3.28" item="Servo 4 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
           <variable CV="4.25" item="Servo 5 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="4.26" item="Servo 5 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="4.27" item="Servo 5 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="4.28" item="Servo 5 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
           <variable CV="5.25" item="Servo 6 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="5.26" item="Servo 6 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="5.27" item="Servo 6 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="5.28" item="Servo 6 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
           <variable CV="6.25" item="Servo 7 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="6.26" item="Servo 7 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="6.27" item="Servo 7 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="6.28" item="Servo 7 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
           <variable CV="7.25" item="Servo 8 Thrown Angle" default="10">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="7.26" item="Servo 8 Closed Angle" default="240">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="7.27" item="Servo 8 Approach Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
           <variable CV="7.28" item="Servo 8 Approach Medium Angle" default="125">
-            <decVal min="1" max="2045" />
+            <decVal min="0" max="255" />
           </variable>
 
         </variables>
@@ -293,7 +317,7 @@
               <text> </text>
           </label>
 
-          <display item="Product Number"/>
+          <display item="Serial Number"/>
 
       </column>
   </pane>
@@ -301,13 +325,17 @@
     <pane>
         <name>OpSw Settings</name>
         <column>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Output Chacteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Output Type"/>
-            <display item="Internal Routes"/>
+            <display item="Command Source"/>
             <display item="Bushby"/>
 
-            <display item="Input Lines"/>
-            <display item="Command Source"/>
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;LocoNet Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            <display item="Internal Routes"/>
             <display item="Route Echo"/>
+
+            <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Input Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            <display item="Input Lines"/>
         </column>
     </pane>
 
@@ -364,5 +392,29 @@
             </row>
         </column>
     </pane>
-
-</decoder-config>
+    <pane>
+      <name>Notes</name>
+      <column>
+        <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;
+            &lt;h2&gt;&lt;strong&gt;Notes on DS78V Roster Entries and Programming
+            &lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+        </label>
+        <label>
+            <text>&lt;html&gt;&lt;/strong&gt;&lt;ul&gt;
+                &lt;li&gt;
+                This roster entry uses the "Extended Accessory Decoder CV" method 
+                &lt;p&gt;to access the DS78V's "OpSw"s.  This is effectively the same as 
+                &lt;p&gt;is described in the DS78V instruction in the "Programming DS74 CVs"
+                &lt;p&gt;section.
+                &lt;/li&gt;
+                &lt;li&gt;
+                The DS78V Roster entry has no ability to change the entry's "Base Address".
+                &lt;p&gt;Use the mechanisms shown in the DS78V's Manual for Digitrax' suggestions
+                &lt;p&gt;for changing the Base Address.
+                &lt;/li&gt;
+                &lt;li&gt;
+                &lt;/li&gt;
+            </text>
+        </label>
+      </column>
+  </pane></decoder-config>

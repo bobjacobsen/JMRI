@@ -2,6 +2,10 @@ package jmri.jmrix.loconet.accy7thgen;
 
 import jmri.jmrix.loconet.LnConstants;
 
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,11 +14,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Bob Milhaupt
  */
-public class Accy7thGenDevice {
-    public int device;
-    public int serNum;
-    public int baseAddr;
-    public int  firstOnes;
+public class Accy7thGenDevice extends java.beans.Beans {
+    private String device;
+    private int serNum;
+    private int baseAddr;
+    private int  firstOps;
     private Integer turnoutAddrStart;
     private Integer turnoutAddrEnd;
     private Integer SensorAddrStart;
@@ -24,43 +28,119 @@ public class Accy7thGenDevice {
     private Integer AspectAddrStart;
     private Integer AspectAddrEnd;
     private Integer PowerAddrStart;
+    public JButton action;
     
-    public Accy7thGenDevice(int device, int serNum, int baseAddr, int firstOnes) {
-        this.device = device;
+    /**
+     * Constructor
+     * @param device - integer device type (0-7f)
+     * @param serNum - Integer serial number (0-0xFFFF or 0-0x3FFF)
+     * @param baseAddr - Integer base address (0-2045)
+     * @param firstOps - Integer first Ops (0-255)
+     */
+    public Accy7thGenDevice(int device, int serNum, int baseAddr, int firstOps) {
+        setDevice(device);
         this.serNum = serNum;
         this.baseAddr = baseAddr;
-        this.firstOnes = firstOnes;
-        turnoutAddrStart = getTurnoutAddressStart();
-        turnoutAddrEnd = getTurnoutAddressEnd();
-        SensorAddrStart = getSensorAddressStart();
-        SensorAddrEnd = getSensorAddressEnd();
-        ReportersAddrStart = getReportersStart();
-        ReportersAddrEnd = getReportersEnd();
-        AspectAddrStart = getAspectStart();
-        AspectAddrEnd = getAspectEnd();
-        PowerAddrStart = getPowerStart();
+        this.firstOps = firstOps;
+        turnoutAddrStart = gitTurnoutAddressStart();
+        turnoutAddrEnd = gitTurnoutAddressEnd();
+        SensorAddrStart = gitSensorAddressStart();
+        SensorAddrEnd = gitSensorAddressEnd();
+        ReportersAddrStart = gitReportersStart();
+        ReportersAddrEnd = gitReportersEnd();
+        AspectAddrStart = gitAspectStart();
+        AspectAddrEnd = gitAspectEnd();
+        PowerAddrStart = gitPowerStart();
+        action = new JButton("Change Base Addr");
+        action.setActionCommand("changeAddr");
+
+    } 
+               
+    public JButton getAction() {
+        return action;
+    }
+
+    public void setAction(JButton action) {
+        this.action = action;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public final void setDevice(int device) {
+        String s = LnConstants.IPL_NAME(device);
+        switch (s) {
+            case "SE74":
+            case "PM74":
+            case "DS78V":
+            case "DS74":
+                break;
+            default:
+                s = "Unknown - "+Integer.toString(device);
+                            }
+        this.device = s;
+    }
+
+    public void setDevice(String s) {
+        String dev = s;
+        switch (dev) {
+            case "SE74":
+            case "PM74":
+            case "DS78V":
+            case "DS74":
+                break;
+            default:
+                dev = "Unknown - "+s;
+        }
+        this.device = dev;
+    }
+
+    public int getSerNum() {
+        return serNum;
+    }
+
+    public void setSerNum(int serNum) {
+        this.serNum = serNum;
+    }
+
+    public int getBaseAddr() {
+        return baseAddr;
+    }
+
+    public void setBaseAddr(int baseAddr) {
+        this.baseAddr = baseAddr;
+    }
+
+    public int gitFirstOps() {
+        return firstOps;
+    }
+
+    public void seetFirstOps(int firstOps) {
+        this.firstOps = firstOps;
     }
     
-    private Integer getTurnoutAddressStart() {
+    
+    private Integer gitTurnoutAddressStart() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS74:
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS78V:
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+            case "DS74":
+            case "DS78V":
+            case "SE74":
                 return baseAddr;
             default:
                 return -1;
         }
     }
 
-    private Integer getTurnoutAddressEnd() {
+    private Integer gitTurnoutAddressEnd() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS74:
+            case "DS74":
                 return baseAddr + 3;
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS78V:
+            case "DS78V":
                 return baseAddr+7;
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+            case "SE74":
                 int i = baseAddr+35;
-                if ((firstOnes & 0x20) == 0x20) {
+                if ((firstOps & 0x20) == 0x20) {
                     i = baseAddr+3;
                 }
                 return i;
@@ -69,29 +149,29 @@ public class Accy7thGenDevice {
         }
     }
     
-    private Integer getSensorAddressStart() {
+    private Integer gitSensorAddressStart() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS74:
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS78V:
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+            case "DS74":
+            case "DS78V":
+            case "SE74":
                 return baseAddr;
-            case LnConstants.RE_IPL_DIGITRAX_HOST_PM74:
+            case "PM74":
                 return (2 * (baseAddr - 1)) + 1;
             default:
                 return -1;
         }
     }
 
-    private Integer getSensorAddressEnd() {
+    private Integer gitSensorAddressEnd() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS74:
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+            case "DS74":
+            case "SE74":
                 return baseAddr+7;
-            case LnConstants.RE_IPL_DIGITRAX_HOST_DS78V:
+            case "DS78V":
                 return baseAddr+15;
-            case LnConstants.RE_IPL_DIGITRAX_HOST_PM74:
+            case "PM74":
                 // Four sensors: ( 2 * (Base Addr -1)) + 1), +2, +4, +6
-                // This is sorta onsistent with DT602 "version 0.1 
+                // This is sorta consistent with DT602 "version 0.1 
                 // subversion 8" firmware...  I think...
                 return ((2 * (baseAddr -1)) + 1) + 7;
             default:
@@ -99,9 +179,9 @@ public class Accy7thGenDevice {
         }
     }
 
-    private Integer getReportersStart() {
+    private Integer gitReportersStart() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_PM74:
+            case "PM74":
                 int i = baseAddr - 1;
                 int j = baseAddr;
                 int k = baseAddr + 1;
@@ -128,9 +208,9 @@ public class Accy7thGenDevice {
         }
     }
 
-    private Integer getReportersEnd() {
+    private Integer gitReportersEnd() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_PM74:
+            case "PM74":
                 int i = baseAddr - 1;
                 int j = baseAddr;
                 int k = baseAddr + 1;
@@ -157,10 +237,10 @@ public class Accy7thGenDevice {
         }
     }
 
-    private Integer getAspectStart() {
+    private Integer gitAspectStart() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
-                if ((firstOnes & 0x20) == 0x20) {
+            case "SE74":
+                if ((firstOps & 0x20) == 0x20) {
                     return baseAddr;
                 } else {
                     return 0;
@@ -170,11 +250,11 @@ public class Accy7thGenDevice {
         }
     }
 
-    private Integer getAspectEnd() {
+    private Integer gitAspectEnd() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+            case "SE74":
                 int i = 0;
-                if ((firstOnes & 0x20) == 0x20) {
+                if ((firstOps & 0x20) == 0x20) {
                     i = baseAddr+15;
                 }
                 if (i > 2048) {
@@ -186,9 +266,9 @@ public class Accy7thGenDevice {
         }
     }
 
-    private Integer getPowerStart() {
+    private Integer gitPowerStart() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_PM74:
+            case "PM74":
                 int i = ((baseAddr - 1) & 0xFF) + 1;
                 return i;
             default:
@@ -196,9 +276,9 @@ public class Accy7thGenDevice {
         }
     }
 
-    public boolean getTurnoutsBroadcast() {
+    public boolean gitTurnoutsBroadcast() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+            case "SE74":
                 return true;
             default:
                 return false;
@@ -237,16 +317,16 @@ public class Accy7thGenDevice {
         return res;
     }
     
-    public boolean getAspectsBroadcast() {
+    public boolean gitAspectsBroadcast() {
         switch (device) {
-            case LnConstants.RE_IPL_DIGITRAX_HOST_SE74:
+            case "SE74":
                 return (AspectAddrStart > 0) ? true: false;
             default:
                 return false;
         }
     }
 
-    public String getApects() {
+    public String getAspects() {
         if (AspectAddrStart > 0) {
             return Integer.toString(AspectAddrStart)+"-"+Integer.toString(AspectAddrEnd);
         } else {
@@ -261,20 +341,5 @@ public class Accy7thGenDevice {
         } else {
             return "";
         }
-    }
-    
-    public boolean isConflicting(Integer row, Integer col) {
-        switch (col) {
-            case 2:
-                log.warn("row {} col {} is true!", row, col);
-                return true;
-            case 0:
-            case 1:
-            default:
-                return false;
-        }
-    } 
-    
-    private static final Logger log = LoggerFactory.getLogger(Accy7thGenDevice.class);
-    
+    }   
 }

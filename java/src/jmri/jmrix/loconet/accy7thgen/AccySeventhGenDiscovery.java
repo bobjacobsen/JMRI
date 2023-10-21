@@ -1,30 +1,42 @@
 package jmri.jmrix.loconet.accy7thgen;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import java.util.TimerTask;
 
 import javax.swing.*;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.SwingConstants;
-import javax.swing.table.TableRowSorter;
-
+import javax.swing.table.*;
 
 import jmri.jmrix.loconet.*;
 import jmri.jmrix.loconet.swing.LnPanel;
-import jmri.jmrix.loconet.messageinterp.LocoNetMessageInterpret;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Discovery and "change base address" tool for Digitrax 7th-Generation Accessory 
+ * decoders.
+ * 
+ * This tool uses LocoNet operations to query the 7th-generation Accessory devices,
+ * and their "base addresses", and displays a table showing each 7th-generation 
+ * Accessory device and each of its turnout, sensor, ... address usage (based on 
+ * the device's 'base address').  
+ * 
+ * When any 7th gen. accessory device "conflicts" with another 7th-gen. accessory 
+ * device, the tool will change the background to 'red'.
+ * 
+ * Each entry includes a button which asks for a new "base address".  When a 7th-gen. 
+ * accessory device gets its base address changed using this tool, the tool will 
+ * re-query the LocoNet devices and update the table.  Conflicts will be updated, 
+ * if needed.
  */
 public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener {
     JButton findButton;
@@ -32,14 +44,16 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
     boolean gotA7thGenReply;
     protected LnTrafficController tc;
     
-    private AccyDeviceDataModel devicesModel;
-    private JTable devicesTable;
+    private BeanTableModel<Accy7thGenDevice> devicesModel;
+    
+    public ReorderableBeanTable devicesTable;
     private JScrollPane devicesScroll;
-    private transient TableRowSorter<AccyDeviceDataModel> sorter;
 
     String prefixTurnout;
     String prefixSensor;
     String prefixReporter;
+  
+    JButton button = new JButton();    
     
     public AccySeventhGenDiscovery() {
         super();
@@ -48,6 +62,11 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
     public void initContext(Object context) {
         if (context instanceof LocoNetSystemConnectionMemo) {
             initComponents((LocoNetSystemConnectionMemo) context);
+            if (devicesModel != null) {
+                devicesModel.extraInit(((LocoNetSystemConnectionMemo) context).getLnTrafficController());
+            } else {
+                log.warn("Cannot initialize the traffic controller for LocoNet.");
+            }
         }
     }
     
@@ -58,8 +77,10 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         prefixTurnout = memo.getSystemPrefix()+"T";
         prefixSensor  = memo.getSystemPrefix()+"S";
         prefixReporter = memo.getSystemPrefix()+"R";
-        memo.getLnTrafficController().addLocoNetListener(~0, this);
-        
+        tc = memo.getLnTrafficController();
+        devicesModel.extraInit(tc) ;
+        tc.addLocoNetListener(~0, this);
+
         find7thGenDevices();
     }
 
@@ -68,8 +89,9 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         findButton = new JButton(Bundle.getMessage("FINDLABEL"));
         add(findButton);
-        devicesModel = new AccyDeviceDataModel(1, 8) ;
-        devicesTable = new JTable(devicesModel) {
+        devicesModel = new BeanTableModel<>(Accy7thGenDevice.class);
+        
+        devicesTable = new ReorderableBeanTable(devicesModel) {
             private final Color cellsOrigForeColor = new JTable().getForeground();
             private final Color conflictingColor = Color.decode("#c00000");         // Dark Red
             private final Color cellsOrigBackColor = new JTable().getBackground();
@@ -79,12 +101,11 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
 
             private static final long serialVersionUID = 1L;
             // Here is where all the cell formatting is done
-            // based on stack overflow : java - JTable cell render based on content
+            // based on 'Stack Overflow" web page  : java - JTable cell render based on content
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, 
                     int columnIndex) {
-                /* Acquire the current cell component being Rendered. ALL cells get Rendered. */
-                
+                // Acquire the current cell component being Rendered. ALL cells get Rendered.
                 JComponent component = (JComponent) super.prepareRenderer(renderer, rowIndex, columnIndex);
 
                 cellBackColor = cellsOrigBackColor;
@@ -102,15 +123,105 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
                 }
                 return component;
             }
+            @Override
+            public Object getValueAt(int row, int column) {
+                Object ret = super.getValueAt(row, column);
+                return ret;
+            }
+            @Override
+            public void setValueAt(Object o, int row, int column) {
+                super.setValueAt(o, row, column);
+            }
         };
+
+        Action changeBaseAddrAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTable table = (JTable)e.getSource();
+                int modelRow = Integer.valueOf( e.getActionCommand() );
                 
+                TableColumnModel model = devicesTable.getColumnModel();
+                int modelsDeviceColumn = model.getColumnIndex("Device");
+                int modelsSerNumColumn = model.getColumnIndex("Ser Num");
+                int modelsBaseAddrColumn = model.getColumnIndex("Base Addr");
+                
+                Object device =  devicesTable.getValueAt(modelRow,modelsDeviceColumn);
+                Object serNum = devicesTable.getValueAt(modelRow, modelsSerNumColumn);
+                
+                Window window = SwingUtilities.windowForComponent(table);
+
+                String result = "-1";
+                result = JOptionPane.showInputDialog(
+                        devicesTable, 
+                        "Enter the new 'Base Address', in decimal",
+                        "New Base Address for "+device.toString()+ ", Serial Number "+serNum.toString() +".",
+                         javax.swing.JOptionPane.QUESTION_MESSAGE);
+                
+                int baseAddr = -1;
+                try {
+                    baseAddr = Integer.parseInt(result);
+                    if ((baseAddr <1) || (baseAddr > 2045)) {
+                        baseAddr = -1;
+                    }
+                } catch (java.lang.IllegalArgumentException e2) {
+                    log.warn("wrong value!");
+                }
+                
+                if ((baseAddr >=1) && (baseAddr <= 2045)) {
+                    int devNum;
+                    switch (device.toString()) {
+                        case "DS74":
+                            devNum = 0x74;
+                            break;
+                        case "DS78V":
+                            devNum = 0x7c;
+                            break;
+                        case "PM74":
+                            devNum = 74;
+                            break;
+                        case "SE74":
+                            devNum = 70;
+                            break;
+                        default:
+                            log.error("illegal device type {}", device.toString());
+                            return;
+                    }
+                    int sn = Integer.parseInt(serNum.toString());
+                    tc.sendLocoNetMessage(new LocoNetMessage(new int[] {
+                        0xEE, 0x10, 0x02, 0x0f, 0,0, 0, 0, 0, devNum,
+                        0, sn & 0x7f, (sn >> 7) & 0x7F, (baseAddr-1) & 0x7f,
+                        ((baseAddr-1) >> 7) & 0x7f, 0}));
+                    find7thGenDevices();
+                }
+            }
+        };
+        
+        TableColumnModel model = devicesTable.getColumnModel();
+
+        ReorderableBeanTable.reorderColumns(devicesTable, 
+                "Device", "Ser Num", "Base Addr", "Turnouts", "Sensors", 
+                "Reporters", "Aspects", "Powers","Action");
+        int modelsActionColumn = model.getColumnIndex("Action");
+
+        ButtonColumn buttonColumn = new ButtonColumn(devicesTable, 
+                changeBaseAddrAction, modelsActionColumn);
+        
+        devicesModel.setColumnClass(9, JButton.class);
+
         devicesTable.setName(this.getTitle());
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER );
         devicesTable.setDefaultRenderer(String.class, centerRenderer);
 
-        sorter = new TableRowSorter<>(devicesModel);
-        devicesTable.setRowSorter(sorter);
+        TableCellRenderer tableRenderer;
+        tableRenderer = devicesTable.getDefaultRenderer(JButton.class);
+        devicesTable.setDefaultRenderer(JButton.class, new JTableButtonRenderer(tableRenderer));
+
+        javax.swing.table.JTableHeader header = devicesTable.getTableHeader();
+        header.setPreferredSize(new java.awt.Dimension(100, 
+            new javax.swing.JLabel("A").getPreferredSize().height * 3
+            ));
+
         devicesScroll = new JScrollPane(devicesTable);
         add(devicesScroll);
 
@@ -123,35 +234,59 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         add(new JSeparator());
         add(new JLabel(Bundle.getMessage("FOOTNOTEASE74")));
         add(new JLabel(Bundle.getMessage("FOOTNOTEBSE74")));
+        add(new JLabel(Bundle.getMessage("FOOTNOTEPM74")));
     }
-    
+
+    class JTableButtonRenderer implements TableCellRenderer {
+        private TableCellRenderer defaultRenderer;
+        public JTableButtonRenderer(TableCellRenderer renderer) {
+            defaultRenderer = renderer;
+        }
+        public Component getTableCellRendererComponent(JTable table, Object value, 
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            if (value instanceof Component) {
+                return (Component)value;
+            }
+            return defaultRenderer.getTableCellRendererComponent(table, value, 
+                    isSelected, hasFocus, row, column);
+        }
+    }
+
     public void find7thGenDevices() {
         findButton.setEnabled(false);
-        if (devicesModel.getRowCount() > 0) {
-            devicesModel.removeDevices();
+        int rows = devicesModel.getRowCount();
+        if (rows > 0) {
+            devicesModel.removeRowRange(0, devicesModel.getRowCount()-1);
+            devicesModel.fireTableRowsDeleted(0, rows);
         }
-        tc.sendLocoNetMessage(msgRoutesQuery());
-        startRoutesResponseTimer();
+        this.repaint();
+        jmri.util.ThreadingUtil.runOnLayoutEventually(() -> get7thGenDevices());
     }
 
+    public void get7thGenDevices() {
+        if (tc != null) {
+            tc.sendLocoNetMessage(msgRoutesQuery());
+            startRoutesResponseTimer();
+        }
+    }
+    
     public boolean checkOverlappingResources(JTable table, Integer rowIndex, Integer columnIndex) {
                 boolean overlap = false;
-                if ((columnIndex >= 3)  && (columnIndex <= 7) ) {
-                    log.debug("checking row {} col {}", rowIndex, columnIndex);
-                    // get Sensors/Reorters/Aspects/Powers used
+                if ((columnIndex == 3)  ||
+                        (columnIndex == 4)  ||
+                        (columnIndex == 5)  ||
+                        (columnIndex == 6)  ||
+                        (columnIndex == 7) ) {
 
                     String value = table.getValueAt(rowIndex, columnIndex).toString();
-                    log.debug("value {}", value);
                     String value2 = value.replace(" **", "");
                     value2 = value2.replace(" *", "");
-                    log.debug("modified value {}", value);
                     int val1;
                     int val2;
                     if (value2.contains("-")) {
                         int where = value2.indexOf('-');
                         val1 = Integer.parseInt(value2.substring(0, where));
                         val2 = Integer.parseInt(value2.substring(where + 1));
-                        log.debug("sensors {} to {} inclusive.",val1, val2);
                     } else if (!value2.isEmpty()) {
                         val1 = Integer.parseInt(value2);
                         val2 = val1;
@@ -160,84 +295,70 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
                         val2 = -2;
                     }
                     
-                    if ((columnIndex == 3) && ((val2 >= 1021) && (val1 <= 1025))) {
+                    if ((columnIndex == 3) && 
+                            ((val2 >= 1021) && (val1 <= 1025))) {
                         overlap = true;
-                        log.debug("OVERLAP!");
                     }
-                    if ((!overlap) && (columnIndex == 3) && ((val2 >= 2041) && (val1 <= 2044))) {
+                    if ((!overlap) && (columnIndex == 3) && 
+                            ((val2 >= 2041) && (val1 <= 2044))) {
                         overlap = true;
-                        log.debug("OVERLAP!");
                     }
-                    if ((!overlap) && (columnIndex == 6) && ((val2 >= 2048) && (val1 <= 2048))) {
+                    if ((!overlap) && (columnIndex == 6) && 
+                            ((val2 >= 2048) && (val1 <= 2048))) {
                         overlap = true;
-                        log.debug("OVERLAP!");
                     }
 
-                    log.debug("val range {} to {}", val1, val2);
                     for (int i = 0; (i < table.getRowCount()) && (!overlap); i++) {
                         if (i == rowIndex) {
-                            log.debug("Skipping this row; same as the target row!");
                         } else {
                             // get row's count and see if overlap
                             String ref = table.getValueAt(i, columnIndex).toString();
                             String ref2 = ref.replace(" **", "");
                             ref2 = ref2.replace(" *", "");
-                            log.debug("modified value {}", value);
                             
-                            int refval1;
-                            int refval2;
+                            int refval1 = -1;
+                            int refval2 = -1;
                             if (ref2.contains("-")) {
                                 int where = ref2.indexOf('-');
                                 refval1 = Integer.parseInt(ref2.substring(0, where));
                                 refval2 = Integer.parseInt(ref2.substring(where + 1));
-                                log.debug("refval, low {}, hi {}", refval1, refval2);
                             } else if (!ref2.isEmpty()) {
                                 refval1 = Integer.parseInt(ref2);
-                                refval2 = val1;
+                                refval2 = val2;
+                                refval2 = refval1;
                             } else {
                                 // ??? getOut of here???
                                 refval1 = -1;
                                 refval2 = -1;
                             }
-                            log.debug("refval range {} to {}", refval1, refval2);
                             // 1. check if val2 < refval1.
                             if ((val2 >= refval1) && (val1 <= refval2) ) {
                                 overlap = true;
-                                log.debug("OVERLAP!");
                             }
                             
                             if (columnIndex == 3) {
-                                log.debug("Checking if broadcast (a)");
                                 if ((overlap == false) && (value.contains(" *"))) {
                                     // check against "broadcast" addresses
-                                    log.debug("Checking broadcast addresses (a)!");
                                     refval1 = 1021;
                                     refval2 = 1028;
                                     if ((val2 >= refval1) && (val1 <= refval2) ){
                                         overlap = true;
-                                        log.debug("OVERLAP (on broadcast a)!");
                                     }
                                 }
-                                log.debug("Checking if broadcast (b)");
                                 if ((overlap == false) && (value.contains(" *"))) {
                                     // check against "broadcast" addresses
-                                    log.debug("Checking broadcast addresses (b)!");
                                     refval1 = 2041;
                                     refval2 = 2044;
                                     if ((val2 >= refval1) && (val1 <= refval2) ){
                                         overlap = true;
-                                        log.debug("OVERLAP (on broadcast (b))!");
                                     }
                                 }
-                                log.debug("Checking if broadcast (c)");
                                 if ((overlap == false) && (value.contains(" *"))) {
                                     // check against "broadcast" addresses
-                                    log.debug("Checking broadcast addresses (c)!");
                                     refval1 = 2048;
                                     refval2 = 2048;
                                     if ((val2 >= refval1) && (val1 <= refval2) ){
                                         overlap = true;
-                                        log.debug("OVERLAP (on broadcast (c))!");
                                     }
                                 }
                             }
@@ -246,12 +367,10 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
                                 log.debug("Checking if broadcast (d)");
                                 if ((overlap == false) && (value.contains(" *"))) {
                                     // check against "broadcast" addresses
-                                    log.debug("Checking broadcast addresses (d)!");
                                     refval1 = 2048;
                                     refval2 = 2048;
                                     if ((val2 >= refval1) && (val1 <= refval2) ){
                                         overlap = true;
-                                        log.debug("OVERLAP (on broadcast d)!");
                                     }
                                 }
                             }
@@ -263,7 +382,7 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
     
     public void message(LocoNetMessage m) {
         if (findButton.isEnabled() == true)  {
-            // Ignore messages when not lookimg fir the routes info 
+            // Ignore messages when not lookimg for the routes info 
             return;
         }
         
@@ -283,22 +402,22 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
                 (m.getElement(13) == 0) &&
                 (m.getElement(14) == 0) 
                 ) {
-//            log.warn("received message {}", LocoNetMessageInterpret.interpretMessage(m, 
-//                    prefixTurnout, prefixSensor, prefixReporter));
             // 0xEE 0x10 0x01 
             gotTheFindMessage = true;
         } else if ((m.getOpCode() == LnConstants.OPC_ALM_READ) &&
                 (m.getElement(1) == 0x10) &&
                 (m.getElement(2) == 1) // (command station route report?)
                 ) {
+            // TODO: improve the message check!
+            
             // Ignore reply from command station "routes"!
-//            log.warn("received message {}", LocoNetMessageInterpret.interpretMessage(m, 
-//                    prefixTurnout, prefixSensor, prefixReporter));
             return;
         } else if ((m.getOpCode() == LnConstants.OPC_ALM_READ) &&
                 (m.getElement(1) == 0x10) &&
                 (m.getElement(2) == 2) // (2nd gen route report?)
                 ) {
+            // TODO: improve the message check!
+            
             /* Some example "Routes capabilities" messages:
             * [E6 10 02 00 20 00 00 02 08 7C 2C 28 02 31 00 6A]  Device DS78V (s/n 0x128)
             *       in Servo (3-position) mode (routes currently enabled), using turnout
@@ -316,8 +435,6 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
             *       configured using ALM messaging.
             */
             // 0xEE 0x10 0x02 - Routes Reply, 2nd-generation(?)
-//            log.warn("received message {}", LocoNetMessageInterpret.interpretMessage(m, 
-//                    prefixTurnout, prefixSensor, prefixReporter));
             gotA7thGenReply = true;
             int device = m.getElement(9) + (((m.getElement(8) & 0x1 ) == 1) ? 0x80 : 0);
             int serNum = m.getElement(11) + (m.getElement(12) << 7); // correct ??? pull in 
@@ -327,11 +444,10 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
             int firstOnes = m.getElement(10);
             Accy7thGenDevice d = new Accy7thGenDevice(device, serNum, baseAddr, firstOnes);
             
-            devicesModel.add(d);
+            devicesModel.addRow(d);
             
             cancelRoutesResponseTimer();
             startRoutesResponseTimer();
-//            log.warn("initial number rows = {}", devicesModel.getRowCount() );
         }
     }
     
@@ -339,7 +455,6 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         // no response found now.
         findButton.setEnabled(true);
         gotTheFindMessage = false;
-//        log.warn("RoutesResponseTimer timer Expired.");
     }
     
     private void cancelRoutesResponseTimer() {
@@ -376,19 +491,7 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         devicesScroll = null;
         super.dispose();
     }
-
     
-    
-    
-    
-    
-    
-    // Age Group colors
-
-    // Row Selection Color
-
-    // Table Default Colors
-
     /**
      * Returns either the Color WHITE or the Color BLACK dependent upon the
      * brightness of what the supplied background color might be. If the
@@ -420,9 +523,6 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         }
         return determinedColor;
     }
-    
-    
 
     private final static Logger log = LoggerFactory.getLogger(AccySeventhGenDiscovery.class);
-
 }

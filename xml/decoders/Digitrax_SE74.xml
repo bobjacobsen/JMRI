@@ -28,7 +28,6 @@
             <label>Base Address</label>
           </variable>
 
-
           <variable CV="7" item="Decoder Version" readOnly="yes" default="112">
             <decVal/>
             <label>Version ID</label>
@@ -44,8 +43,8 @@
             <label xml:lang="de">Hersteller ID: </label>
           </variable>
          
-          <variable item="Product Number" CV="9,10" readOnly="yes">
-            <splitVal highCV="9"/>
+          <variable item="Serial Number" CV="9,10" readOnly="yes">
+            <splitVal highCV="10"/>
             <label>Serial Number</label>
           </variable>
   
@@ -165,46 +164,6 @@
             </enumVal>
             <label>For switch messages, send</label>
           </variable>
-
-<!--          <variable CV="15" item="Searchlight 2-wire" default="0"
-                tooltip="OpSw33" mask="XXXXXXXV">
-            <enumVal>
-              <enumChoice>
-                <choice>normal signals (one color per SE7c output)</choice>
-              </enumChoice>
-              <enumChoice>
-                <choice>2-wire searchlight signals</choice>
-              </enumChoice>
-            </enumVal>
-            <label>Signals are</label>
-          </variable>
-
-          <variable CV="15" item="Searchlight Type" default="0"
-                tooltip="OpSw34" mask="XXXXXXVX">
-            <enumVal>
-              <enumChoice>
-                <choice>3-color signal type</choice>
-              </enumChoice>
-              <enumChoice>
-                <choice>search light type</choice>
-              </enumChoice>
-            </enumVal>
-            <label>Signals are</label>
-          </variable>
-
-          <variable CV="15" item="Wiring" default="0"
-                tooltip="OpSw35" mask="XXXXXVXX">
-            <enumVal>
-              <enumChoice>
-                <choice>common anode</choice>
-              </enumChoice>
-              <enumChoice>
-                <choice>common cathode</choice>
-              </enumChoice>
-            </enumVal>
-            <label>Signals wired as</label>
-          </variable>
--->
 
           <variable CV="15" item="LED Type" default="0"
           tooltip="OpSws 33-35: LED Type and wiring"
@@ -343,7 +302,7 @@
           <label>
               <text> </text>
           </label>
-          <display item="Product Number"/>
+          <display item="Serial Number"/>
       </column>
   </pane>
 
