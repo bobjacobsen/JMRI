@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="generator" content="HTML">
+  <title>JMRI Hardware Support - LocoNet&reg; 7th-Generation Accessory Decoder Addressing and Base Address Change</title>
+  <meta name="author" content="Bob M.">
+  <meta name="keywords" content="Digitrax 7th-Generation Accessory Addressing 'Base Address'">
+  <!--#include virtual="/Style.shtml" -->
+</head>
+<body>
+  <!--#include virtual="/Header.shtml" -->
+
+  <div id="mBody">
+    <!--#include virtual="Sidebar.shtml" -->
+
+    <div id="mainContent">
+      <h1>Support: Digitrax 7th-generation Accessory Decoder Addressing and Base Address Change</h1>
+
+      <table>
+        <tr><td>
+            <ul class="snav">
+              <li>
+                <a href="#general">Managing 7th-Generation Digitrax Accessory Decoder Addresses and 'Base Address'</a>
+                <ul>
+                    <li><a href="#viewing">Viewing All 7th-generation Accessory Addressing</a></li>
+                    <li><a href="#baseChange">Changing 7th-generation Accessory 'Base Address'</a></li>
+                    <li><a href="#rosterentries">Updating Roster entries when changing
+                            a device's 'Base Address'</a></li>
+                </ul>
+              </li>
+            <!-- h2 TOC -->
+            </ul>
+        </td><td>
+            <img src="images/Accy7thGenTool.png"  
+                 alt="An image of the 7th-generation 
+                 Accessory Addressing Viewer and Base Address modifier">
+        </td>   
+      </table>
+
+      <h1 id="general">Managing 7th-Generation Digitrax Accessory Decoder Addresses and 'Base Address'</h1>
+    
+      <p>JMRI can display the address usage of and may change the "Base Address" of Digitrax 
+        "7th-generation" accessory decoders, such as the DS74, DS78V, PM74, and SE74 
+        devices, using the "7th-Generation Accessory Base Address Change" tool.  
+        <p>The tool also highlights 7th-generation Accessory devices' addresses 
+        when they conflict with the address usage by other 7th-generation Accessory 
+        devices.  Be aware that this tool <em>does not</em> identify any conflicts 
+        with non-7th-generation Digitrax Accessory devices.  Users must carefully 
+        check all of their address assignments to ensure that no two or more devices 
+        use the same address(es)!
+      
+      <h2 id="viewing">Viewing All 7th-generation Accessory Addressing</h2>
+      <p>By starting this tool, it automatically "discovers" all LocoNet-connected
+          Digitrax 7th-generation Accessory devices.  Each discovered device is 
+          shown on its own row, with the device type, serial number 'Base Address', 
+          and lists of the addresses used by the device.
+      <p>The "Find 7th-gen. Devices" button can be activated to recreate the list.  
+          This can be useful if the set of devices on LocoNet has changed since the 
+          tool was started.
+      <p>This tool highlights any known conflicts between any two or more 7th-generation 
+          accessory devices.  Any address group for an address type which conflicts 
+          with another address group for <em>the same address type</em> is identified 
+          by an address group with a <strong>red background</strong>.  This is 
+          shown in the image below.
+          
+          <br>
+            <img src="images/Accy7thGenToolWithSensorConflicts.png"  
+                 alt="An image of the 7th-generation 
+                 Accessory Addressing Viewer and Base Address modifier showing Sensor 
+                 Conflicts" >
+
+      <p>Remember that LocoNet has different address "spaces" for the various types of addressing.  
+          This means that, for example, a "Turnout" (switch) address numbered 10 
+          cannot conflict with a "Sensor" address numbered 10, or a "Reporter" 
+          (transponding) address numbered 10, or an signal "Aspect" address numbered 10, 
+          or a "Power" address numbered 10.  Each "type" is in a different "address 
+          space"!
+          
+      <p>Digitrax devices can produce "Power  Short-circuit" or "Power Auto-reverse" 
+          information.  When it does so, it uses a single "Power" address for <em> four </em>
+          power "sub-district" outputs for the PM74 device.  As such, all four of 
+          the device are transmitted simultaneously in one LocoNet message at <em> one </em>
+          Power" address.  This is significantly different from the other addressing 
+          modes, where each reported piece of information corresponds to a single 
+          address.
+
+      <h2 href="#baseChange">Changing 7th-generation Accessory 'Base Address'</h2>
+      <p>To change a device's "Base Address", which changes the individual associated 
+          addresses of the device, use the "Change Base Addr." button.  The tool then 
+          opens a "dialog box" asking for the new "base address".  If the entered 
+          "Base Address" is acceptable, the LocoNet message to change the device's 
+          base address is sent.  The tool then removes ALL of the device entries 
+          and re-scans the available Digitrax 7th-generation Accessory devices, and,
+          if necessary, updates the highlighting of any "conflicting" addresses.
+
+      <h3 href="#Addressnuances">Nots on choosing a 'Base Address'</h3>
+      <p>Most devices use the "Base Address" as the first of several "Turnout" 
+          addresses.  But the PM74 "Base Address" is defined to be the "Power"
+          address, with Sensors at about 8 times the "Base Address" and with 
+          the "Reporter" address at about 4 times the "Base Address".  And the 
+          PM74 will neglect to provide certain address types for large ranges of
+          "Base Address" values - about the last 128 Base Address values of every 
+          256 Base Addresses.  Perhaps this problem has been or will be solved in
+          certain PM74 firmware releases.  Please check the Digitrax "updates" page 
+          for further information.
+      <p>The SE74 will use its addresses differently depending on whether the device 
+          uses "SE8C-mode" signaling or "Aspect-mode" signaling.  When the SE74 
+          uses "Aspect-mode" signaling, it uses FAR fewer turnout addresses.  That 
+          makes "Aspect-mode" the preferred mode, in this author's opinion.  The 
+          best solution is to modify the OpSw (or equivalent CV bit) for "Aspect-mode" 
+          signaling.  That way this tool can get the signaling mode information
+          and calculate the address correctly.
+                    
+      <h2 href="#rosterentries">Updating Roster entries when changing a device's 'Base Address'</h2>    
+      <p>Note that changing a device's "Base Address" will make its "Roster Entry",
+          effectively, "unusable", if there was one created.  This is because the
+          Roster Entry does allow the user to define the "Base Address" when the
+          entry was created, but <em>does not</em> allow the "Base Address" to be 
+          changed.
+      <p>After changing the "Base Address", one should delete the appropriate 
+          Roster Entry and create a new Roster Entry with the appropriate new "Base 
+          Address".  (But make sure the new "Base Address" does not have any conflicts,
+          either the ones that the 7th-generation Accessory device base address 
+          management tool identifies, or any other devices!)
+
+      <p>LocoNet&reg; is a registered trademark of <a href="https://www.digitrax.com/">Digitrax,
+      Inc.</a></p>
+      <!--#include virtual="/Footer.shtml" -->
+    </div>
+    <!-- closes #mainContent-->
+  </div>
+  <!-- closes #mBody-->
+</body>
+</html>
