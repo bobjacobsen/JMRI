@@ -479,7 +479,7 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
     
     @Override
     public String getHelpTarget() {
-        return "package.jmri.jmrix.loconet.accy7thgen.7thgen"; // NOI18N
+        return "package.jmri.jmrix.loconet.accy7thgen.Accy7thgen"; // NOI18N
     }
 
     @Override
