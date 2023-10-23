@@ -137,6 +137,10 @@ public class Accy7thGenDevice extends java.beans.Beans {
             case "DS74":
                 return baseAddr + 3;
             case "DS78V":
+                if ((firstOps & 0x1e) == 0x0C) {
+                    // four position mode
+                    return baseAddr + 15;
+                }
                 return baseAddr+7;
             case "SE74":
                 int i = baseAddr+35;
@@ -168,11 +172,11 @@ public class Accy7thGenDevice extends java.beans.Beans {
             case "SE74":
                 return baseAddr+7;
             case "DS78V":
+                if ((firstOps & 0x1e) == 0x0C) {
+                    return baseAddr+31;
+                }
                 return baseAddr+15;
             case "PM74":
-                // Four sensors: ( 2 * (Base Addr -1)) + 1), +2, +4, +6
-                // This is sorta consistent with DT602 "version 0.1 
-                // subversion 8" firmware...  I think...
                 return ((2 * (baseAddr -1)) + 1) + 7;
             default:
                 return -1;
