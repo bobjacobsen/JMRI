@@ -200,7 +200,7 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
 
         ReorderableBeanTable.reorderColumns(devicesTable, 
                 "Device", "Ser Num", "Base Addr", "Turnouts", "Sensors", 
-                "Reporters", "Aspects", "Powers","Action");
+                "Reporters", "Aspects", "Powers","Action","First Op Sws");
         int modelsActionColumn = model.getColumnIndex("Action");
 
         ButtonColumn buttonColumn = new ButtonColumn(devicesTable, 
