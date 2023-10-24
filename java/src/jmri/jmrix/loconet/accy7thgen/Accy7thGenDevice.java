@@ -18,7 +18,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     private String device;
     private int serNum;
     private int baseAddr;
-    private int  firstOps;
+    private int  firstOpSws;
     private Integer turnoutAddrStart;
     private Integer turnoutAddrEnd;
     private Integer SensorAddrStart;
@@ -41,7 +41,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
         setDevice(device);
         this.serNum = serNum;
         this.baseAddr = baseAddr;
-        this.firstOps = firstOps;
+        this.firstOpSws = firstOps;
         turnoutAddrStart = gitTurnoutAddressStart();
         turnoutAddrEnd = gitTurnoutAddressEnd();
         SensorAddrStart = gitSensorAddressStart();
@@ -112,14 +112,13 @@ public class Accy7thGenDevice extends java.beans.Beans {
         this.baseAddr = baseAddr;
     }
 
-    public int gitFirstOps() {
-        return firstOps;
+    public int getFirstOpSws() {
+        return firstOpSws;
     }
 
-    public void seetFirstOps(int firstOps) {
-        this.firstOps = firstOps;
+    public void setFirstOpSws(int firstOps) {
+        this.firstOpSws = firstOps;
     }
-    
     
     private Integer gitTurnoutAddressStart() {
         switch (device) {
@@ -137,14 +136,14 @@ public class Accy7thGenDevice extends java.beans.Beans {
             case "DS74":
                 return baseAddr + 3;
             case "DS78V":
-                if ((firstOps & 0x1e) == 0x0C) {
+                if ((firstOpSws & 0x1e) == 0x0C) {
                     // four position mode
                     return baseAddr + 15;
                 }
                 return baseAddr+7;
             case "SE74":
                 int i = baseAddr+35;
-                if ((firstOps & 0x20) == 0x20) {
+                if ((firstOpSws & 0x20) == 0x20) {
                     i = baseAddr+3;
                 }
                 return i;
@@ -157,8 +156,9 @@ public class Accy7thGenDevice extends java.beans.Beans {
         switch (device) {
             case "DS74":
             case "DS78V":
-            case "SE74":
                 return baseAddr;
+            case "SE74":
+                return (2 * baseAddr) - 1;
             case "PM74":
                 return (2 * (baseAddr - 1)) + 1;
             default:
@@ -172,10 +172,10 @@ public class Accy7thGenDevice extends java.beans.Beans {
             case "SE74":
                 return baseAddr+7;
             case "DS78V":
-                if ((firstOps & 0x1e) == 0x0C) {
-                    return baseAddr+31;
+                if ((firstOpSws & 0x1e) == 0x0C) {
+                    return (2 * baseAddr) + 30;
                 }
-                return baseAddr+15;
+                return (2 * baseAddr)+14;
             case "PM74":
                 return ((2 * (baseAddr -1)) + 1) + 7;
             default:
@@ -244,7 +244,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     private Integer gitAspectStart() {
         switch (device) {
             case "SE74":
-                if ((firstOps & 0x20) == 0x20) {
+                if ((firstOpSws & 0x20) == 0x20) {
                     return baseAddr;
                 } else {
                     return 0;
@@ -258,7 +258,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
         switch (device) {
             case "SE74":
                 int i = 0;
-                if ((firstOps & 0x20) == 0x20) {
+                if ((firstOpSws & 0x20) == 0x20) {
                     i = baseAddr+15;
                 }
                 if (i > 2048) {
