@@ -59,6 +59,7 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         super();
     }
     
+    @Override
     public void initContext(Object context) {
         if (context instanceof LocoNetSystemConnectionMemo) {
             initComponents((LocoNetSystemConnectionMemo) context);
