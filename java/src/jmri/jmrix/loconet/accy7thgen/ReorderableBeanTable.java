@@ -103,7 +103,7 @@ public class ReorderableBeanTable extends JTable
      * @param rowData           the data for the new table
      * @param columnNames       names of each column
      */
-    public ReorderableBeanTable(Vector rowData, Vector columnNames) {
+    public ReorderableBeanTable(Vector<? extends Vector<?>> rowData, Vector<?> columnNames) {
         this(new DefaultTableModel(rowData, columnNames));
     }
 
