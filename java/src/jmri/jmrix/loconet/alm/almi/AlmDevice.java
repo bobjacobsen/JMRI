@@ -4,7 +4,6 @@ import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrix.loconet.LnConstants;
 import jmri.jmrix.loconet.alm.Alm;
 import jmri.jmrix.loconet.LocoNetMessage;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -155,12 +154,10 @@ public abstract class AlmDevice {
         return "None";
     }
     
-    @Nullable
     public RosterEntry findCorrespondingRosterEntry() {
         return null;
     }
 
-    @Nullable
     public RosterEntry getRosterEntry() {
         if (rosterEntry == null) {
             findCorrespondingRosterEntry();
