@@ -134,7 +134,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  This is required for the getRowsAsArray() method to return the
      *  proper class of row.
      *
-     * @param rowClas		 the class of the row
+     * @param rowClass		 the class of the row
      */
     protected void setRowClass(Class<?> rowClass) {
         this.rowClass = rowClass;
