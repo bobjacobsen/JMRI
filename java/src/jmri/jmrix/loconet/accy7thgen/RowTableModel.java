@@ -240,6 +240,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Returns the Object of the requested <code>row</code>.
      *
+     * @param row  selected row number
      * @return the Object of the requested row.
      */
     public T getRow(int row) {
@@ -249,6 +250,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Returns an array of Objects for the requested <code>rows</code>.
      *
+     * @param rows requested rows
      * @return an array of Objects for the requested rows.
      */
     @SuppressWarnings("unchecked")
@@ -261,6 +263,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Returns a List of Objects for the requested <code>rows</code>.
      *
+     * @param rows requested rows
      * @return a List of Objects for the requested rows.
      */
     public List<T> getRowsAsList(int... rows)  {
@@ -318,19 +321,19 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  After the move, the row that was at index <code>start</code>
      *  will be at index <code>to</code>.
      *  This method will send a <code>tableRowsUpdated</code> notification
-     *  message to all the listeners. <p>
+     *  message to all the listeners.
      *
      *  <pre>
      *  Examples of moves:
-     *  <p>
+     *  
      *  1. moveRow(1,3,5);
      *		  a|B|C|D|e|f|g|h|i|j|k   - before
      *		  a|e|f|g|h|B|C|D|i|j|k   - after
-     *  <p>
+     *  
      *  2. moveRow(6,7,1);
      *		  a|b|c|d|e|f|G|H|i|j|k   - before
      *		  a|G|H|b|c|d|e|f|i|j|k   - after
-     *  <p>
+     * 
      *  </pre>
      *
      * @param   start	   the starting row index to be moved

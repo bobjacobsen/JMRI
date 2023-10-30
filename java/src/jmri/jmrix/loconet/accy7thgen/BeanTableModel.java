@@ -343,6 +343,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  This method must be invoked before the model is added to the table.
      *
      *  @param   column     the column whose value is to be queried
+     *  @param   name       new header name
      *  @exception  IndexOutOfBoundsException  if an invalid column
      *	            was given
      */
@@ -366,7 +367,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     /*
      *  Class to hold data required to implement the TableModel interface
      */
-    private class ColumnInformation implements Comparable<ColumnInformation> {
+    static private class ColumnInformation implements Comparable<ColumnInformation> {
         private String name;
         private Class<?> returnType;
         private Method getter;
@@ -420,6 +421,24 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     	public int compareTo(ColumnInformation o) {
             return getName().compareTo(o.getName());
     	}
+    	/**
+    	 * Implement equality in a way that's compatible
+    	 * to the natural sort order
+    	 */
+    	 @Override
+    	 public boolean equals(Object o) {
+    	    if ( o == null) return false;
+    	    if (! (o instanceof ColumnInformation) ) return false;
+    	    return 0 == this.compareTo((ColumnInformation)o);
+    	 }
+    	/**
+    	 * Implement hashcode in a way that's compatible
+    	 * to the natural sort order
+    	 */
+    	 @Override
+    	 public int hashCode() {
+    	    return getName().hashCode();
+    	 }
     }
         private final static Logger log = LoggerFactory.getLogger(BeanTableModel.class);
 

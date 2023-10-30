@@ -139,7 +139,7 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTable table = (JTable)e.getSource();
-                int modelRow = Integer.valueOf( e.getActionCommand() );
+                int modelRow = Integer.parseInt( e.getActionCommand() );
                 
                 TableColumnModel model = devicesTable.getColumnModel();
                 int modelsDeviceColumn = model.getColumnIndex("Device");
@@ -238,7 +238,7 @@ public class AccySeventhGenDiscovery extends LnPanel implements LocoNetListener 
         add(new JLabel(Bundle.getMessage("FOOTNOTEPM74")));
     }
 
-    class JTableButtonRenderer implements TableCellRenderer {
+    static class JTableButtonRenderer implements TableCellRenderer {
         private TableCellRenderer defaultRenderer;
         public JTableButtonRenderer(TableCellRenderer renderer) {
             defaultRenderer = renderer;
