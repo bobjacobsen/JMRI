@@ -255,7 +255,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     public T[] getRowsAsArray(int... rows) {
         List<T> rowData = getRowsAsList(rows);
         T[] array = (T[])Array.newInstance(rowClass, rowData.size());
-        return (T[]) rowData.toArray( array );
+        return rowData.toArray( array );
     }
 
     /**

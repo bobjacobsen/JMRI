@@ -239,6 +239,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      * @exception  ArrayIndexOutOfBoundsException
      *				  if any row index is invalid
      */
+    @Override
     public void removeRows(int... rows) {
         for (int i = rows.length - 1; i >= 0; i--) {
             int row = rows[i];
@@ -260,7 +261,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      */
     @Override
     public Object getValueAt(int row, int column) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
 
         Object value = null;
 
@@ -271,7 +272,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
         catch(InvocationTargetException e) {}
         
         if ((value != null) && (value.toString().startsWith("javax.swing.JButton["))) {
-            value = (Object) "Change Base Addr";
+            value = "Change Base Addr";
         }
         
         return value;
@@ -290,12 +291,12 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      */
     @Override
     public void setValueAt(Object value, int row, int column) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
         try {
             Method setMethod = ci.getSetter();
 
             if (setMethod != null) {
-                if (!value.equals(((Object) "Change Base Addr"))) {
+                if (!value.equals(("Change Base Addr"))) {
                     // DO NOT do this for the "button" cell!
                     // It is ALL RIGHT for all other cells.
                     setMethod.invoke(getRow(row), value);
@@ -327,7 +328,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      */
     @Override
     public void setColumnEditable(int column, boolean isEditable) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
 
         if (isEditable && ci.getSetter() == null) {
             return;
@@ -346,7 +347,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *	            was given
      */
     public void setColumnName(int column, String name) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
         ci.setName( name );
         resetModelDefaults();
     }
