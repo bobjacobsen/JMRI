@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 abstract class RowTableModel<T> extends AbstractTableModel {
     protected  transient List<T> modelData;
     protected transient List<String> columnNames;
-    protected Class[] columnClasses;
+    protected Class<?>[] columnClasses;
     protected Boolean[] isColumnEditable;
-    private Class rowClass = Object.class;
+    private Class<?> rowClass = Object.class;
     private boolean isModelEditable = true;
     private LnTrafficController lnTC;
 
@@ -43,7 +43,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *
      * @param rowClass  the class of row data to be added to the model
      */
-    protected RowTableModel(Class rowClass) {
+    protected RowTableModel(Class<?> rowClass) {
         setRowClass( rowClass );
     }
 
@@ -101,7 +101,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *						of the new columns
      *  @param rowClass     the class of row data to be added to the model
      */
-    protected RowTableModel(List<T> modelData, List<String> columnNames, Class rowClass) {
+    protected RowTableModel(List<T> modelData, List<String> columnNames, Class<?> rowClass) {
         setDataAndColumnNames(modelData, columnNames);
         setRowClass( rowClass );
     }
@@ -123,7 +123,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     protected void setDataAndColumnNames(List<T> modelData, List<String> columnNames) {
         this.modelData = modelData;
         this.columnNames = columnNames;
-        columnClasses = new Class[getColumnCount()];
+        columnClasses = new Class<?>[getColumnCount()];
         isColumnEditable = new Boolean[getColumnCount()];
         fireTableStructureChanged();
     }
@@ -136,7 +136,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *
      * @param rowClas		 the class of the row
      */
-    protected void setRowClass(Class rowClass) {
+    protected void setRowClass(Class<?> rowClass) {
         this.rowClass = rowClass;
     }
 //
@@ -153,8 +153,8 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  @return the Class of the column being queried
     */
     @Override
-    public Class getColumnClass(int column) {
-        Class columnClass = null;
+    public Class<?> getColumnClass(int column) {
+        Class<?> columnClass = null;
 
         //  Get the class, if set, for the specified column
 
@@ -448,7 +448,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      * @exception  ArrayIndexOutOfBoundsException
      *						if an invalid column was given
      */
-    public void setColumnClass(int column, Class columnClass) {
+    public void setColumnClass(int column, Class<?> columnClass) {
         columnClasses[column] = columnClass;
         fireTableRowsUpdated(0, getRowCount() - 1);
     }

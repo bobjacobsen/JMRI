@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class BeanTableModel<T> extends RowTableModel<T> {
     //  Map "type" to "class". Class is needed for the getColumnClass() method.
 
-    private static Map<Class, Class> primitives = new HashMap<Class, Class>(10);
+    private static Map<Class<?>, Class<?>> primitives = new HashMap<>(10);
 
     static {
         primitives.put(Boolean.TYPE, Boolean.class);
@@ -42,8 +42,8 @@ public class BeanTableModel<T> extends RowTableModel<T> {
         primitives.put(Short.TYPE, Short.class);
     }
 
-    private Class beanClass;
-    private Class ancestorClass;
+    private Class<?> beanClass;
+    private Class<?> ancestorClass;
 
     private List<ColumnInformation> columns = new ArrayList<ColumnInformation>();
 
@@ -54,7 +54,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *                    The class is also used to determine the columns that
      *                    will be displayed in the model
      */
-    public BeanTableModel(Class beanClass) {
+    public BeanTableModel(Class<?> beanClass) {
         this(beanClass, beanClass, new ArrayList<T>());
     }
 
@@ -65,7 +65,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  @param ancestorClass  the methods of this class and its descendants down
      *						 to the bean class can be included in the model.
      */
-    public BeanTableModel(Class beanClass, Class ancestorClass) {
+    public BeanTableModel(Class<?> beanClass, Class<?> ancestorClass) {
         this(beanClass, ancestorClass, new ArrayList<T>());
     }
 
@@ -75,7 +75,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  @param beanClass      class of the beans that will be added to the model.
      *  @param modelData      the data of the table
      */
-    public BeanTableModel(Class beanClass, List<T> modelData) {
+    public BeanTableModel(Class<?> beanClass, List<T> modelData) {
         this(beanClass, beanClass, modelData);
     }
 
@@ -87,7 +87,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *						 to the bean class can be included in the model.
      *  @param modelData      the data of the table
      */
-    public BeanTableModel(Class beanClass, Class ancestorClass, List<T> modelData) {
+    public BeanTableModel(Class<?> beanClass, Class<?> ancestorClass, List<T> modelData) {
         super( beanClass );
         this.beanClass = beanClass;
         this.ancestorClass = ancestorClass;
@@ -148,7 +148,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     private void buildColumnInformation(Method theMethod, String theMethodName) {
         //  Make sure the method returns an appropriate type
 
-        Class returnType = getReturnType( theMethod );
+        Class<?> returnType = getReturnType( theMethod );
 
         if (returnType == null) {
             return;
@@ -177,8 +177,8 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     /*
      *  Make sure the return type of the method is something we can use
      */
-    private Class getReturnType(Method theMethod) {
-        Class returnType = theMethod.getReturnType();
+    private Class<?> getReturnType(Method theMethod) {
+        Class<?> returnType = theMethod.getReturnType();
 
         if (returnType.isInterface()||  returnType.isArray()) {
             return null;
@@ -310,7 +310,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  You are not allowed to change the class of any column.
      */
     @Override
-    public void setColumnClass(int column, Class columnClass) {
+    public void setColumnClass(int column, Class<?> columnClass) {
     }
 
     /**
@@ -366,11 +366,11 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      */
     private class ColumnInformation implements Comparable<ColumnInformation> {
         private String name;
-        private Class returnType;
+        private Class<?> returnType;
         private Method getter;
         private Method setter;
 
-        public ColumnInformation(String name, Class returnType, Method getter, Method setter) {
+        public ColumnInformation(String name, Class<?> returnType, Method getter, Method setter) {
             this.name = name;
             this.returnType = returnType;
             this.getter = getter;
@@ -380,7 +380,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
         /*
          *  The column class of the model
          */
-        public Class getReturnType() {
+        public Class<?> getReturnType() {
             return returnType;
         }
 
