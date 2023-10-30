@@ -224,6 +224,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      * @exception  ArrayIndexOutOfBoundsException
      *								if any row index is invalid
      */
+    @Override
     public void removeRowRange(int start, int end)  {
         modelData.subList(start, end + 1).clear();
         fireTableRowsDeleted(start, end);
