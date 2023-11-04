@@ -149,12 +149,6 @@
             <label>CV15</label>
           </variable>
 
-          <variable CV="16" item="CV16" default="0" readOnly="yes"
-                tooltip="OpSws 41-48" mask="VVVVVVVV">
-            <decVal min="0" max="255"/>
-            <label>CV16</label>
-          </variable>
-
           <variable CV="0.25" item="Servo 1 Thrown Angle" default="10">
             <decVal min="0" max="255" />
           </variable>
