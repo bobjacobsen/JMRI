@@ -12,7 +12,7 @@
                         <li><a href="DCS52.shtml">DCS52</a></li>
                         <li><a href="DCS240.shtml">DCS240</a></li>
                         <li><a href="Digitrax.shtml#Setup">Other Command Stations</a></li>
-                        <li><a href="CommandStationConfig.shtml">OpSw Configuration</a></li>
+                        <li><a href="CommandStationConfig.shtml">Command Station OpSw Configuration</a></li>
                     </ul>
                     <li>Programmers &amp; Adapters</li>
                     <ul>
@@ -24,6 +24,14 @@
                         <li><a href="LocoBufferUSB.shtml">LocoBuffer-USB</a></li>
                         <li><a href="MS100.shtml">MS100</a></li>
                         <li><a href="KeyspanUSB.shtml">Keyspan USB Adapter</a></li>
+                    </ul>
+                    <li>Seventh-generation Accessory Decoders</li>
+                    <ul>
+                        <li><a href="SeventhGenAccyDecoders.shtml">General Information</a></li>
+                        <li><a href="DS74.shtml">DS74</a></li>
+                        <li><a href="DS78V.shtml">DS78V</a></li>
+                        <li><a href="PM74.shtml">PM74</a></li>
+                        <li><a href="SE74.shtml">SE74</a></li>
                     </ul>
                     <li>Networking</li>
                     <ul>
