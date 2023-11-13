@@ -112,8 +112,8 @@ public class Accy7thGenDevice extends java.beans.Beans {
         this.baseAddr = baseAddr;
     }
 
-    public int getFirstOpSws() {
-        return firstOpSws;
+    public String getFirstOpSws() {
+        return "0x"+Integer.toHexString(firstOpSws);
     }
 
     public void setFirstOpSws(int firstOps) {
@@ -121,6 +121,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
     
     private Integer gitTurnoutAddressStart() {
+        // TODO: needs to be updated to handle the end-of-turnouts addresss.
         switch (device) {
             case "DS74":
             case "DS78V":
@@ -132,8 +133,12 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitTurnoutAddressEnd() {
+        // TODO: needs to be updated to handle the end-of-turnouts addresss.
         switch (device) {
             case "DS74":
+                if ((firstOpSws & 0x1e) == 0xa) {
+                    return baseAddr+7;
+                }
                 return baseAddr + 3;
             case "DS78V":
                 if ((firstOpSws & 0x1e) == 0x0C) {
@@ -153,37 +158,48 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
     
     private Integer gitSensorAddressStart() {
+        // TODO: needs to be updated to handle the end-of-sensors addresss.
         switch (device) {
-            case "DS74":
             case "DS78V":
                 return baseAddr;
+            case "DS74":
             case "SE74":
-                return (2 * baseAddr) - 1;
             case "PM74":
-                return (2 * (baseAddr - 1)) + 1;
+                return (2 * baseAddr) - 1;
             default:
                 return -1;
         }
     }
 
     private Integer gitSensorAddressEnd() {
+        int ret = 0;
         switch (device) {
-            case "DS74":
             case "SE74":
-                return baseAddr+7;
+                ret = baseAddr+7;
+                break;
             case "DS78V":
                 if ((firstOpSws & 0x1e) == 0x0C) {
-                    return (2 * baseAddr) + 30;
+                    ret =  (2 * baseAddr) + 30;
+                } else {
+                    ret = (2 * baseAddr)+14;
                 }
-                return (2 * baseAddr)+14;
+                break;
+            case "DS74":
             case "PM74":
-                return ((2 * (baseAddr -1)) + 1) + 7;
+                ret = ((2 * (baseAddr -1)) + 1) + 7;
+                break;
             default:
-                return -1;
+                ret = -1;
+                break;
         }
+        if (ret > 4096) {
+            ret = 4096;
+        }
+        return ret;
     }
 
     private Integer gitReportersStart() {
+        // TODO: needs to be updated to handle the end-of-reporters addresss.
         switch (device) {
             case "PM74":
                 int i = baseAddr - 1;
@@ -213,6 +229,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitReportersEnd() {
+        // TODO: needs to be updated to handle the end-of-reporters addresss.
         switch (device) {
             case "PM74":
                 int i = baseAddr - 1;
@@ -242,6 +259,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitAspectStart() {
+        // TODO: needs to be updated to handle the end-of-aspects addresss.
         switch (device) {
             case "SE74":
                 if ((firstOpSws & 0x20) == 0x20) {
@@ -255,6 +273,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitAspectEnd() {
+        // TODO: needs to be updated to handle the end-of-aspects addresss.
         switch (device) {
             case "SE74":
                 int i = 0;
@@ -271,6 +290,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitPowerStart() {
+        // TODO: needs to be updated to handle the end-of-powers addresss.
         switch (device) {
             case "PM74":
                 int i = ((baseAddr - 1) & 0xFF) + 1;
