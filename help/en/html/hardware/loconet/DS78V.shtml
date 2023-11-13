@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Apple macOS version 5.8.0">
+  <title>JMRI Hardware Support - Digitrax DS78V "7th-Generation" Servo Motor Controller</title>
+  <meta name="author" content="Bob M.">
+  <meta name="keywords" content="Digitrax DS78V JMRI LocoNet">
+  <link rel="shortcut icon" href="../../../images/jmri48x48.gif" />
+  <!--#include virtual="/Style.shtml" -->
+</head>
+<body>
+  <!--#include virtual="/Header.shtml" -->
+
+  <div id="mBody">
+    <!--#include virtual="Sidebar.shtml" -->
+
+    <div id="mainContent">
+      <h1>Support - Digitrax DS78V "7th-Generation" Servo Motor Controller</h1>
+
+      <div class="toc">
+          <p class="not_mapped_style" style="text-align:left"><strong>Contents</strong>
+          <ul class="snav">
+              <li>
+                <a href="#general">Using the DS78V with JMRI</a>
+                <ul>
+                  <li><a href="#configuring">Configuring the DS78V with JMRI</a>
+                  <ul>
+                      <li><a href="#WrongProgrammingMode">Do Not Use Programming "On the Programming Track"!</a></li>
+                      <li><a href="#WrongBaseAddress">Changing a Roster Entry's "Base Address"</a></li>
+                  </ul>
+                  </li>
+                  <li><a href="#loconetaddresses">DS78V LocoNet Addressing</a>
+                    <ul>
+                        <li><a href="#loconetturnoutaddressess">DS78V Switch Usage</a>
+                        <li><a href="#loconetsensoraddresses">DS78V Sensor Usage</a></li>
+                    </ul>
+                    </li>
+                  <li><a href="#turnouts">Controlling DS78V "turnout" outputs</a></li>
+                  <li><a href="#inputs">Using DS78V Inputs</a></li>
+                  <li><a href="#routes">Using DS78V "Routes"</a></li>
+                </ul>
+              </li>
+            </ul>
+      </div>
+      
+      <h1 id="general">Using the DS78V with JMRI</h1>
+      <p>The Digitrax DS78V provides a variety of features which may be used with JMRI.
+      JMRI-supported features include Switch control, Sensor "inputs" and the 
+      DS78V's "Routes".
+
+      <h2 id="configuring">Configuring the DS78V with JMRI</h2>
+      <span class="since">Since <a href="jmri5.3.4.shtml">JMRI 5.3.4</a></span>
+      DecoderPro and/or PanelPro, via the "Roster", can configure the Op Switches 
+      of the DS78V so long as it has a LocoNet connection to the DS78V.  See 
+      <a href="SeventhGenAccyDecoders.shtml#configuring">Configuring the Seventh-
+         Generation Accessory Device with JMRI's "Roster Entry"</a>.
+      
+      <H3 id="WrongBaseAddress">Changing a Roster Entry's "Base Address"</H3>
+      Well... you cannot, at least within a JMRI Roster Entry.  This is because the 
+      7th-generation "Base Address" cannot be reliably changed in JMRI via CV writes.
+      Some other solution must be used.  This is described in <a href="SeventhGenAccyDecoders.shtml#WrongBaseAddress">
+          Changing a Seventh-generation Accessory's "Base Address"</a>
+
+      <h2 id="loconetaddresses">DS78V LocoNet Addressing</h2>
+      <p>The DS78V uses LocoNet Switch addresses for controlling the "Servo" motors.  
+          It uses LocoNet Sensor addresses :
+      <ul>
+          <li>for requesting switch positions of the switches it controls, primarily 
+              for use with Digitrax' accessory push-buttons;</li>
+          <li>and for general-purpose input reporting.</li>
+      </ul>
+
+      <h3 id="loconetturnoutaddressess">DS78V Switch Usage</h3>
+      <p>The DS78V uses "Switch" controls to control the eight "Servo" outputs.  The 
+          DS78V's Servo outputs can be configured in "two-position" mode or "four-
+          position" mode:
+      <ul>
+          <li>When the DS78V is set for "two-position" mode, each Servo 
+          output can be controlled to either of two positions.  One "Switch" address
+          controls each of the Servos, starting at the "Base Address", for total 
+          of 8 Switch addresses.  Each Servo may be independently configured so that
+          its "Thrown" and "Closed" positions suit the individual Servo's application.</li>
+          
+          <li>When the DS78V is set for "four-position" mode, each Servo 
+          output can be controlled to any of four positions.  Two "Switch" addresses
+          control each of the Servos, starting at the "Base Address", for total 
+          of <em> 16</em> total Switch addresses.  Each Servo may be independently 
+          configured so that its four rotational positions suit the application.
+          Note that two of the four "default" Servo positions are configured to the same 
+          rotational position, leaving the default effectively for a three-position 
+          Servo.  Careful configuration allows a Servo to have four different 
+          rotational positions.</li>
+      </ul>
+      <p>It is normally important to ensure that the Switch usage for a DS78V 
+          does not "overlap" the usage usage by any other device - either on 
+          LocoNet or on the DCC track signal.  Be sure to check every Switch address!
+      <br>          
+      <h3 id="loconetsensoraddresses">DS78V Sensor Usage</h3>
+      <p>The DS78V implements 16 or 32 Sensors, depending on the DS78V's Servo 
+          output's number of positions.  When configured for two position mode,
+          the DS78V occupies 16 Sensor addresses, starting at the "Base Address"
+          and the following 15 sensors.  When configured for four-position 
+          mode, the DS78V occupies effectively a range of 32 Sensor addresses, 
+          starting at the "Base Address", with two "used" addresses followed by 
+          two "unused" addresses, for each of the 32 total "Switch" addresses.    
+
+      <h2 id="turnouts">Controlling DS78V "turnout" outputs</h2>
+      <p>JMRI may control the DS78V's "turnout" outputs just like it controls any
+      other Turnout - via a JMRI "Turnout" object.  In general, JMRI Turnout objects are defined
+      in the JMRI "Turnouts" table, and are discussed elsewhere.
+
+      <p>JMRI's LocoNet mechanisms provide a mechanism where JMRI can "discover"
+          LocoNet-connected turnouts.  That mechanism is able to discover
+          DS78V-related turnout objects, and will do so when the DS78V is powered and is
+          connected to LocoNet when JMRI starts up with a live connection to that
+          LocoNet.
+      <p>Several "broadcast" addresses are implemented by the DS78V device,  These 
+          may be used for testing and configuring the signal outputs and switch 
+          outputs.  For further information, see <a href="#loconetturnoutaddressess">
+          DS78V Switch Usage</a>.
+
+      <h2 id="inputs">Using DS78V Inputs</h2>
+      <p>While the DS78V's inputs may be used with JMRI, the behaviors of the DS78V's
+          inputs, at least for DS78V firmware versions available to the date of
+          this writing, are "odd".  In general, the DS78V input pin behaviors do not
+          match the behaviors of any previous Digitrax product.  The DS78V "SWx" input pins
+          "sort-of" behave like the similarly-named DS64 input pins do when the DS64 is in
+          configured one way.  The "SENSx" pins "sort-of" behave like the "AUXx"
+          DS64 input pins do for other DS64 configurations.
+      <p>With DS78V firmware implementations available in early 2023, the "default"
+          values of DS78V OpSws 11 and 30 result in the SENSx input pins generating
+          LocoNet messaging which is suitable for "general-purpose" sensor input.
+          Those inputs will be reflected as four JMRI "Sensor" objects, with sensor
+          hardware addresses of:
+
+      <h2 id="routes">Using DS78V "Routes"</h2>
+      <p>The DS78V provides a "Routes" functionality, which is independent of the JMRI 
+          "Routes" function.  DS78V Routes provides a number of functions:
+      <ul>
+        <li>provides up to sixteen different programmable routes;</li>
+        <li>each route can include a "top" switch plus up to 7 additional switch operations;</li>
+        <li>a DS78V route can control any LocoNet-controllable switch when 
+            connected to a live LocoNet connection;</li>
+        <li>when not LocoNet-connected, or when an OpSw is disabled, a DS78V route
+            does not control switches other than its own Servo motors;</li>
+        <li>can disable its routes, via an OpSw;</li>
+        <li>can use its sensors, by default OpSw settings, to trigger its routes.</li>
+      </ul>
+          
+        <p>When the DS78V "sees" any one of its sixteen "top switch address" commands,
+            on LocoNet (if not disabled), on the NMRA DCC track signal, or as a 
+            route command in another of the DS78V's routes, that route will be 
+            triggered.  When triggered, the DS78V route will sequentially issue the
+            switch requests which have been programmed for the route.
+
+        <p>JMRI does not have a tool for configuring the DS78V's
+        "routes" functionality at this time.  Instead, use the mechanisms described
+        in the DS78V manual.
+
+      <hr>
+      <p>LocoNet&reg; is a registered trademark of <a href="https://www.digitrax.com/">Digitrax,
+      Inc.</a></p>
+      <!--#include virtual="/Footer.shtml" -->
+    </div>
+    <!-- closes #mainContent-->
+  </div>
+  <!-- closes #mBody-->
+</body>
+</html>
