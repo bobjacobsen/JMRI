@@ -4,8 +4,10 @@
   <meta name="generator" content="HTML Tidy for HTML5 for Apple macOS version 5.8.0">
   <title>JMRI Hardware Support - Digitrax LocoNet</title>
   <meta name="keywords" content=
-  "Digitrax LocoNet LocoBuffer LocoBuffer-II LocoBuffer-USB LocoBuffer-NG MS100 PR2 PR3 PR4 DCS210 DCS240 DCS100 DCS240 DCS50 DCS51 DB150 JMRI DCS210Plus">
+  "Digitrax LocoNet LocoBuffer LocoBuffer-II LocoBuffer-USB LocoBuffer-NG MS100 PR2 
+  PR3 PR4 DCS210 DCS240 DCS100 DCS240 DCS50 DCS51 DB150 JMRI DS74 DS78V PM74 SE74">
   <!--#include virtual="/Style.shtml" -->
+  <link rel="shortcut icon" href="../../../images/jmri48x48.gif" />
 
   <style>
     .ctr {
@@ -676,8 +678,8 @@
               <p>The image below shows one possible configuration which takes advantage of this
               JMRI feature for a LocoNet turnout.</p>
 
-              <p><a href="images/LnTurnoutFeedbackAutomationSettings.png"><img width="558" src=
-              "images/LnTurnoutFeedbackAutomationSettings.png" alt=
+              <p><a href="images/LnTurnoutFeedbackAutomationSettings.png">
+	      <img width="558" src= "images/LnTurnoutFeedbackAutomationSettings.png" alt=
               "Image showing JMRI turnout entry with feecback and automation settings visible"></a>
               </p>
 
@@ -719,8 +721,8 @@
               In the image, turnouts LT11 and LT13 have the checkbox unchecked, so JMRI will only
               send "ON" messages when JMRI controls these turnouts.</p>
 
-              <p><a href="images/LnTurnoutBushbySettings.png"><img src=
-              "images/LnTurnoutBushbySettings.png" alt=
+              <p><a href="images/LnTurnoutBushbySettings.png">
+			  <img src= "images/LnTurnoutBushbySettings.png" alt=
               "sample display of LocoNet turnouts configured for various JMRI Bushby modes" width=
               "499"></a>.</p>
 
