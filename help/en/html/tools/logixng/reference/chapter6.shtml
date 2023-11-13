@@ -166,7 +166,7 @@
       <h5>Audio<span class="since">since 5.5.4</span></h5>
 
       <p>Returns true if the selected audio object has the indicated state.  The drop-down list
-      contains the defined audio listeners, audio buffers and audio sources.</p>
+      contains the defined audio listeners and audio sources.</p>
 
       <div style="margin-left: 2em;">
         <a href="images/chapter6/digital_expression_audio.png"><img src=
@@ -712,6 +712,21 @@
 
       <p>Or evaluates the child expressions and if at least one of them returns true, the Or
       expression returns true as well.</p>
+
+      <!-- = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = -->
+
+      <h5 id="timer_id">Timer</h5>
+
+      <p>The <strong>Timer</strong> expression returns <strong>False</strong> until some time has
+      passed. It then returns <strong>True</strong> once and the timer starts again. This expression
+      is intended to be used together with the <a href="chapter5#sequence_id">Sequence</a> action.
+      This makes it possible to have sequence steps based on time durations.</p>
+
+      <div style="margin-left: 2em;">
+        <a href="images/chapter6/timer_expression.png"><img class="image-border" src=
+        "images/chapter6/timer_expression.png"
+        alt="Chapter 6 timer expression"></a>
+      </div>
 
       <!-- = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = -->
 

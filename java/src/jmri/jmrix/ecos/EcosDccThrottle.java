@@ -147,11 +147,14 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
                 return;
             }
         }
-        int value = (int) ((127 - 1) * speed);     // -1 for rescale to avoid estop
-        if (value > 128) {
+        int value = Math.round((127 - 1) * speed);     // -1 for rescale to avoid estop
+        if (value == 0 && speed > 0) {                 // make sure to output non-zero speed for non-zero input speed
+            value = 1;
+        }
+        if (value > 126) {
             value = 126;    // max possible speed
         }
-        if ((value > 0) || (value == 0.0)) {
+        if ((value > 0) || (value == 0)) {
             String message = "set(" + this.objectNumber + ", speed[" + value + "])";
             EcosMessage m = new EcosMessage(message);
             tc.sendEcosMessage(m, this);
@@ -380,8 +383,8 @@ public class EcosDccThrottle extends AbstractThrottle implements EcosListener {
         } else if (resultCode == 15) {
             log.info("Loco can not be accessed via the Ecos Object Id {}", this.objectNumber);
             try {
-                javax.swing.JOptionPane.showMessageDialog(null, Bundle.getMessage("UnknownLocoDialog", this.address),
-                        Bundle.getMessage("WarningTitle"), javax.swing.JOptionPane.WARNING_MESSAGE);
+                JmriJOptionPane.showMessageDialog(null, Bundle.getMessage("UnknownLocoDialog", this.address),
+                        Bundle.getMessage("WarningTitle"), JmriJOptionPane.WARNING_MESSAGE);
             } catch (HeadlessException he) {
                 // silently ignore inability to display dialog
             }

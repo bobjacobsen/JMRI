@@ -2,7 +2,8 @@ package jmri.jmrit.operations.locations;
 
 import javax.swing.BorderFactory;
 
-import jmri.jmrit.operations.locations.tools.*;
+import jmri.jmrit.operations.locations.tools.ChangeTrackTypeAction;
+import jmri.jmrit.operations.locations.tools.TrackDestinationEditAction;
 
 /**
  * Frame for user edit of a classification/interchange track. Adds two panels to
@@ -18,7 +19,7 @@ public class InterchangeEditFrame extends TrackEditFrame {
     
     @Override
     public void initComponents(Track track) {
-        setTitle(Bundle.getMessage("EditInterchange"));
+        setTitle(Bundle.getMessage("EditInterchange", track.getLocation().getName()));
         initComponents(track.getLocation(), track);
     }
 
@@ -28,9 +29,8 @@ public class InterchangeEditFrame extends TrackEditFrame {
 
         super.initComponents(location, track);
 
-        _toolMenu.insert(new IgnoreUsedTrackAction(this), TOOL_MENU_OFFSET);
-        _toolMenu.insert(new TrackDestinationEditAction(this), TOOL_MENU_OFFSET + 1);
-        _toolMenu.insert(new ChangeTrackTypeAction(this), TOOL_MENU_OFFSET + 2);
+        _toolMenu.insert(new TrackDestinationEditAction(this), TOOL_MENU_OFFSET);
+        _toolMenu.insert(new ChangeTrackTypeAction(this), TOOL_MENU_OFFSET + 1);
         addHelpMenu("package.jmri.jmrit.operations.Operations_Interchange", true); // NOI18N
 
         // override text strings for tracks
