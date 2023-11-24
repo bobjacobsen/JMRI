@@ -224,6 +224,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      * @exception  ArrayIndexOutOfBoundsException
      *								if any row index is invalid
      */
+    @Override
     public void removeRowRange(int start, int end)  {
         modelData.subList(start, end + 1).clear();
         fireTableRowsDeleted(start, end);
@@ -238,6 +239,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      * @exception  ArrayIndexOutOfBoundsException
      *				  if any row index is invalid
      */
+    @Override
     public void removeRows(int... rows) {
         for (int i = rows.length - 1; i >= 0; i--) {
             int row = rows[i];
@@ -270,7 +272,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
         catch(InvocationTargetException e) {}
         
         if ((value != null) && (value.toString().startsWith("javax.swing.JButton["))) {
-            value = (Object) "Change Base Addr";
+            value = "Change Base Addr";
         }
         
         return value;

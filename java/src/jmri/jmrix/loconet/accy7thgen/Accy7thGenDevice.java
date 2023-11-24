@@ -3,8 +3,6 @@ package jmri.jmrix.loconet.accy7thgen;
 import jmri.jmrix.loconet.LnConstants;
 
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;

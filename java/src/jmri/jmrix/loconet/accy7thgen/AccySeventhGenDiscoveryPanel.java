@@ -3,9 +3,6 @@ package jmri.jmrix.loconet.accy7thgen;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import java.util.TimerTask;
 
 import javax.swing.*;
@@ -59,6 +56,7 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         super();
     }
     
+    @Override
     public void initContext(Object context) {
         if (context instanceof LocoNetSystemConnectionMemo) {
             initComponents((LocoNetSystemConnectionMemo) context);
@@ -96,7 +94,6 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
             private final Color conflictingColor = Color.decode("#c00000");         // Dark Red
             private final Color cellsOrigBackColor = new JTable().getBackground();
             Color cellBackColor = cellsOrigBackColor;  // Original Cells Backgound color.
-            Color cellForeColor = cellsOrigForeColor;  // Original Cells Foregound (text) color.
             private final Color selection = Color.decode("#7FB3D5");         // A lighter Blue 
 
             private static final long serialVersionUID = 1L;
@@ -108,7 +105,6 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
                 // Acquire the current cell component being Rendered. ALL cells get Rendered.
                 JComponent component = (JComponent) super.prepareRenderer(renderer, rowIndex, columnIndex);
 
-                cellBackColor = cellsOrigBackColor;
                 boolean overlap = checkOverlappingResources(devicesTable, rowIndex, columnIndex);
                 cellBackColor = (overlap)? conflictingColor: cellsOrigBackColor;
                 
@@ -143,15 +139,11 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
                 TableColumnModel model = devicesTable.getColumnModel();
                 int modelsDeviceColumn = model.getColumnIndex("Device");
                 int modelsSerNumColumn = model.getColumnIndex("Ser Num");
-                int modelsBaseAddrColumn = model.getColumnIndex("Base Addr");
                 
                 Object device =  devicesTable.getValueAt(modelRow,modelsDeviceColumn);
                 Object serNum = devicesTable.getValueAt(modelRow, modelsSerNumColumn);
                 
-                Window window = SwingUtilities.windowForComponent(table);
-
-                String result = "-1";
-                result = JOptionPane.showInputDialog(
+                String result = JOptionPane.showInputDialog(
                         devicesTable, 
                         "Enter the new 'Base Address', in decimal",
                         "New Base Address for "+device.toString()+ ", Serial Number "+serNum.toString() +".",
@@ -203,9 +195,6 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
                 "Reporters", "Aspects", "Powers","Action","First Op Sws");
         int modelsActionColumn = model.getColumnIndex("Action");
 
-        ButtonColumn buttonColumn = new ButtonColumn(devicesTable, 
-                changeBaseAddrAction, modelsActionColumn);
-        
         devicesModel.setColumnClass(9, JButton.class);
 
         devicesTable.setName(this.getTitle());
