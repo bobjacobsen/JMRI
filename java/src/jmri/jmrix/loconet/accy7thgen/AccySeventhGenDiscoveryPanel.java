@@ -90,6 +90,7 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         devicesModel = new BeanTableModel<>(Accy7thGenDevice.class);
         
         devicesTable = new ReorderableBeanTable(devicesModel) {
+            private final Color cellsOrigForeColor = new JTable().getForeground();
             private final Color conflictingColor = Color.decode("#c00000");         // Dark Red
             private final Color cellsOrigBackColor = new JTable().getBackground();
             Color cellBackColor = cellsOrigBackColor;  // Original Cells Backgound color.
@@ -132,6 +133,7 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         Action changeBaseAddrAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JTable table = (JTable)e.getSource();
                 int modelRow = Integer.valueOf( e.getActionCommand() );
                 
                 TableColumnModel model = devicesTable.getColumnModel();
@@ -141,7 +143,8 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
                 Object device =  devicesTable.getValueAt(modelRow,modelsDeviceColumn);
                 Object serNum = devicesTable.getValueAt(modelRow, modelsSerNumColumn);
                 
-                String result = JOptionPane.showInputDialog(
+                String result;
+                result = JOptionPane.showInputDialog(
                         devicesTable, 
                         "Enter the new 'Base Address', in decimal",
                         "New Base Address for "+device.toString()+ ", Serial Number "+serNum.toString() +".",
@@ -191,7 +194,11 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         ReorderableBeanTable.reorderColumns(devicesTable, 
                 "Device", "Ser Num", "Base Addr", "Turnouts", "Sensors", 
                 "Reporters", "Aspects", "Powers","Action","First Op Sws");
+        int modelsActionColumn = model.getColumnIndex("Action");
 
+        ButtonColumn buttonColumn = new ButtonColumn(devicesTable, 
+                changeBaseAddrAction, modelsActionColumn);
+        
         devicesModel.setColumnClass(9, JButton.class);
 
         devicesTable.setName(this.getTitle());
