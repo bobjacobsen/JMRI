@@ -209,16 +209,21 @@
     <name>CVs</name>
     <column>
         <row>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;PM74 OpSw Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
+        </row>
+        <row>
             <cvtable/>
         </row>
         <row>
             <column>
                 <label>
-                    <text>&lt;html&gt;The "CV" column in the table above shows CV
-                        numbers, not the Op Switch number.  To see those, hover
-                        your mouse over a variable on the OpSw Settings pane.
-                        &lt;p&gt;&lt;p&gt;The top-most row above reflects the Base
-                        Address configured on the "Basic" sheet.
+                    <text>&lt;html&gt;Notes:&lt;ul&gt;
+                        &lt;li&gt;The "CV" column in the table above shows CV numbers, not the Op Switch number.  To 
+                        &lt;br&gt;see those, hover your mouse over a variable on the 'Configuration' pane.
+                        &lt;li&gt;CVs 1 and 2 reflect the Board Address configured on the "Basic" sheet as a 11 bit value,
+                        &lt;br&gt;with the lowest 8 bits in CV 1 and the remaining 3 bits in CV 2 as its least-significant bits.
                     </text>
                 </label>
                 <label>
@@ -232,19 +237,22 @@
   <pane>
       <name>Basic</name>
       <column>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;PM74 OpSw Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
           <display item="Long Address"/>
           <label>
               <text> </text>
           </label>
           <label>
             <text>&lt;html&gt;&lt;p&gt;
+                &lt;p&gt;Note that some Digitrax documentation refers
+                to Board Address, while other documentation refers to
+                &lt;p&gt;Board ID.  These are equivalent concepts.
                 &lt;p&gt;This roster entry will only access the specified
-                board if the Base Address (i.e. Board ID), specified above,
+                board if the Board Address (i.e. Board ID), specified above,
                 &lt;br&gt;was correctly entered when the roster entry was first created.
                 You cannot change it here.
-                &lt;p&gt;Note that some Digitrax documentation refers
-                to Base Address, while other documentation refers to
-                &lt;p&gt;Board ID.  These are equivalent concepts.
             &lt;/html&gt;</text>
           </label>
 
@@ -260,6 +268,9 @@
     <pane>
         <name>Configuration</name>
         <column>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;PM74 Configuration Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Outputs Modes&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <row>
                 <column><display item="DS1 mode"/></column>
