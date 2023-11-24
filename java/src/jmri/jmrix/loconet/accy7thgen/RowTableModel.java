@@ -6,8 +6,8 @@ import javax.swing.table.*;
 
 import jmri.jmrix.loconet.LnTrafficController;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 /**
  *  A TableModel that better supports the processing of rows of data. That
@@ -31,6 +31,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     protected Boolean[] isColumnEditable;
     private Class rowClass = Object.class;
     private boolean isModelEditable = true;
+    private LnTrafficController lnTC;
 
     /**
      *  Constructs a <code>RowTableModel</code> with the row class.
