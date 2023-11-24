@@ -90,7 +90,6 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         devicesModel = new BeanTableModel<>(Accy7thGenDevice.class);
         
         devicesTable = new ReorderableBeanTable(devicesModel) {
-            private final Color cellsOrigForeColor = new JTable().getForeground();
             private final Color conflictingColor = Color.decode("#c00000");         // Dark Red
             private final Color cellsOrigBackColor = new JTable().getBackground();
             Color cellBackColor = cellsOrigBackColor;  // Original Cells Backgound color.
