@@ -2,7 +2,6 @@ package jmri.jmrix.loconet.accy7thgen;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -156,15 +155,9 @@ public class ReorderableBeanTable extends JTable
             KeyEvent ke = (KeyEvent)e;
 
             //  F2 is used to start the editor
-
-//		if (ke.getKeyCode() == KeyEvent.VK_F2
-//		&&  ke.getModifiers() == 0)
-//			return true;
-
             //  The Shift key is only valid when used with another character
 
-            if (ke.getModifiersEx() != 0
-            &&  ke.getModifiersEx() != KeyEvent.SHIFT_DOWN_MASK)
+            if (ke.getModifiersEx() != 0 &&  ke.getModifiersEx() != KeyEvent.SHIFT_DOWN_MASK)
                     return false;
 
             //  Make sure the key char is a valid unicode character
@@ -178,8 +171,7 @@ public class ReorderableBeanTable extends JTable
     private void selectAll(EventObject e) {
         final Component editor = getEditorComponent();
 
-        if (editor == null
-        || ! (editor instanceof JTextComponent))
+        if (editor == null || ! (editor instanceof JTextComponent))
             return;
 
         if (e == null)
