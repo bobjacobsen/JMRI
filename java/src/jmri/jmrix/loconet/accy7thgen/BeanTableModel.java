@@ -261,7 +261,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      */
     @Override
     public Object getValueAt(int row, int column) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
 
         Object value = null;
 
@@ -291,7 +291,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      */
     @Override
     public void setValueAt(Object value, int row, int column) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
         try {
             Method setMethod = ci.getSetter();
 
@@ -421,6 +421,6 @@ public class BeanTableModel<T> extends RowTableModel<T> {
             return getName().compareTo(o.getName());
     	}
     }
-        private final static Logger log = LoggerFactory.getLogger(BeanTableModel.class);
+//        private final static Logger log = LoggerFactory.getLogger(BeanTableModel.class);
 
 }

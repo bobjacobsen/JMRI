@@ -132,7 +132,6 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         Action changeBaseAddrAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JTable table = (JTable)e.getSource();
                 int modelRow = Integer.valueOf( e.getActionCommand() );
                 
                 TableColumnModel model = devicesTable.getColumnModel();
@@ -192,7 +191,6 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         ReorderableBeanTable.reorderColumns(devicesTable, 
                 "Device", "Ser Num", "Base Addr", "Turnouts", "Sensors", 
                 "Reporters", "Aspects", "Powers","Action","First Op Sws");
-        int modelsActionColumn = model.getColumnIndex("Action");
 
         devicesModel.setColumnClass(9, JButton.class);
 

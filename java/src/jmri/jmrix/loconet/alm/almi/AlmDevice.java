@@ -1,8 +1,6 @@
 package jmri.jmrix.loconet.alm.almi;
 import jmri.jmrit.roster.RosterEntry;
-import jmri.jmrit.decoderdefn.DecoderFile;
 import jmri.jmrix.loconet.LnConstants;
-import jmri.jmrix.loconet.alm.Alm;
 import jmri.jmrix.loconet.LocoNetMessage;
 import javax.annotation.Nullable;
 import java.util.List;
