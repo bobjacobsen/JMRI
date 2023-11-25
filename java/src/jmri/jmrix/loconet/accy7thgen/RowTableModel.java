@@ -27,11 +27,10 @@ import jmri.jmrix.loconet.LnTrafficController;
 abstract class RowTableModel<T> extends AbstractTableModel {
     protected  transient List<T> modelData;
     protected transient List<String> columnNames;
-    protected Class[] columnClasses;
+    protected Class<?>[] columnClasses;
     protected Boolean[] isColumnEditable;
-    private Class rowClass = Object.class;
+    private Class<?> rowClass = Object.class;
     private boolean isModelEditable = true;
-    private LnTrafficController lnTC;
 
     /**
      *  Constructs a <code>RowTableModel</code> with the row class.
@@ -43,7 +42,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *
      * @param rowClass  the class of row data to be added to the model
      */
-    protected RowTableModel(Class rowClass) {
+    protected RowTableModel(Class<?> rowClass) {
         setRowClass( rowClass );
     }
 
@@ -57,8 +56,8 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  Sub classes creating a model using this constructor must make sure
      *  to invoke the setRowClass() method.
      *
-     * @param columnNames	   <code>List</code> containing the names
-     *							of the new columns
+     * @param columnNames      <code>List</code> containing the names
+     *                          of the new columns
      */
     protected RowTableModel(List<String> columnNames) {
         this(new ArrayList<T>(), columnNames);
@@ -78,9 +77,9 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  Sub classes creating a model using this constructor must make sure
      *  to invoke the setRowClass() method.
      *
-     * @param modelData		 the data of the table
-     * @param columnNames	   <code>List</code> containing the names
-     *							of the new columns
+     * @param modelData      the data of the table
+     * @param columnNames      <code>List</code> containing the names
+     *                          of the new columns
      */
     protected RowTableModel(List<T> modelData, List<String> columnNames) {
         setDataAndColumnNames(modelData, columnNames);
@@ -96,34 +95,35 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  List and the number of colums is determined by thenumber of items
      *  in the <code>columnNames</code> List.
      *
-     *  @param modelData	the data of the table
-     *  @param columnNames	<code>List</code> containing the names
-     *						of the new columns
+     *  @param modelData    the data of the table
+     *  @param columnNames  <code>List</code> containing the names
+     *                      of the new columns
      *  @param rowClass     the class of row data to be added to the model
      */
-    protected RowTableModel(List<T> modelData, List<String> columnNames, Class rowClass) {
+    protected RowTableModel(List<T> modelData, List<String> columnNames, Class<?> rowClass) {
         setDataAndColumnNames(modelData, columnNames);
         setRowClass( rowClass );
     }
 
     public void extraInit(LnTrafficController lnTC) {
-        this.lnTC = lnTC;
+        // this.lnTC is not referenced in this class
+        //this.lnTC = lnTC;
     }
 
 
     /**
      *  Reset the data and column names of the model.
      *
-     *	A fireTableStructureChanged event will be generated.
+     *  A fireTableStructureChanged event will be generated.
      *
-     * @param modelData		 the data of the table
-     * @param columnNames	   <code>List</code> containing the names
-     *							of the new columns
+     * @param modelData      the data of the table
+     * @param columnNames      <code>List</code> containing the names
+     *                          of the new columns
      */
     protected void setDataAndColumnNames(List<T> modelData, List<String> columnNames) {
         this.modelData = modelData;
         this.columnNames = columnNames;
-        columnClasses = new Class[getColumnCount()];
+        columnClasses = new Class<?>[getColumnCount()];
         isColumnEditable = new Boolean[getColumnCount()];
         fireTableStructureChanged();
     }
@@ -134,9 +134,9 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  This is required for the getRowsAsArray() method to return the
      *  proper class of row.
      *
-     * @param rowClass		 the class of the row
+     * @param rowClass       the class of the row
      */
-    protected void setRowClass(Class rowClass) {
+    protected void setRowClass(Class<?> rowClass) {
         this.rowClass = rowClass;
     }
 //
@@ -153,8 +153,8 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  @return the Class of the column being queried
     */
     @Override
-    public Class getColumnClass(int column) {
-        Class columnClass = null;
+    public Class<?> getColumnClass(int column) {
+        Class<?> columnClass = null;
 
         //  Get the class, if set, for the specified column
 
@@ -208,9 +208,9 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Returns true regardless of parameter values.
      *
-     * @param   row		   the row whose value is to be queried
-     * @param   column		the column whose value is to be queried
-     * @return				  true
+     * @param   row        the row whose value is to be queried
+     * @param   column      the column whose value is to be queried
+     * @return                true
      */
     @Override
     public boolean isCellEditable(int row, int column) {
@@ -231,7 +231,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  Adds a row of data to the end of the model.
      *  Notification of the row being added will be generated.
      *
-     * @param   rowData		 data of the row being added
+     * @param   rowData      data of the row being added
      */
     public void addRow(T rowData) {
         insertRow(getRowCount(), rowData);
@@ -240,6 +240,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Returns the Object of the requested <code>row</code>.
      *
+     * @param row  selected row number
      * @return the Object of the requested row.
      */
     public T getRow(int row) {
@@ -249,6 +250,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Returns an array of Objects for the requested <code>rows</code>.
      *
+     * @param rows requested rows
      * @return an array of Objects for the requested rows.
      */
     @SuppressWarnings("unchecked")
@@ -261,6 +263,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Returns a List of Objects for the requested <code>rows</code>.
      *
+     * @param rows requested rows
      * @return a List of Objects for the requested rows.
      */
     public List<T> getRowsAsList(int... rows)  {
@@ -275,7 +278,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  Insert a row of data at the <code>row</code> location in the model.
      *  Notification of the row being added will be generated.
      *
-     *  @param   row	  row in the model where the data will be inserted
+     *  @param   row      row in the model where the data will be inserted
      *  @param   rowData  data of the row being added
      */
     public void insertRow(int row, T rowData) {
@@ -287,7 +290,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  Insert multiple rows of data at the <code>row</code> location in the model.
      *  Notification of the row being added will be generated.
      *
-     * @param   row	  row in the model where the data will be inserted
+     * @param   row   row in the model where the data will be inserted
      * @param   rowList  each item in the list is a separate row of data
      */
     public void insertRows(int row, List<T> rowList) {
@@ -299,7 +302,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  Insert multiple rows of data at the <code>row</code> location in the model.
      *  Notification of the row being added will be generated.
      *
-     * @param   row	  row in the model where the data will be inserted
+     * @param   row   row in the model where the data will be inserted
      * @param   rowArray  each item in the Array is a separate row of data
      */
     public void insertRows(int row, T[] rowArray) {
@@ -318,27 +321,27 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  After the move, the row that was at index <code>start</code>
      *  will be at index <code>to</code>.
      *  This method will send a <code>tableRowsUpdated</code> notification
-     *  message to all the listeners. <p>
+     *  message to all the listeners.
      *
      *  <pre>
      *  Examples of moves:
-     *  <p>
+     *  
      *  1. moveRow(1,3,5);
-     *		  a|B|C|D|e|f|g|h|i|j|k   - before
-     *		  a|e|f|g|h|B|C|D|i|j|k   - after
-     *  <p>
+     *        a|B|C|D|e|f|g|h|i|j|k   - before
+     *        a|e|f|g|h|B|C|D|i|j|k   - after
+     *  
      *  2. moveRow(6,7,1);
-     *		  a|b|c|d|e|f|G|H|i|j|k   - before
-     *		  a|G|H|b|c|d|e|f|i|j|k   - after
-     *  <p>
+     *        a|b|c|d|e|f|G|H|i|j|k   - before
+     *        a|G|H|b|c|d|e|f|i|j|k   - after
+     * 
      *  </pre>
      *
-     * @param   start	   the starting row index to be moved
-     * @param   end		 the ending row index to be moved
-     * @param   to		  the destination of the rows to be moved
+     * @param   start      the starting row index to be moved
+     * @param   end      the ending row index to be moved
+     * @param   to        the destination of the rows to be moved
      * @exception  IllegalArgumentException
-     *					  if any of the elements would be moved out
-     *					  of the table's range
+     *                    if any of the elements would be moved out
+     *                    of the table's range
      */
     public void moveRow(int start, int end, int to) {
         if (start < 0) {
@@ -399,10 +402,10 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  and ending indexes, inclusively, will be removed.
      *  Notification of the rows being removed will be generated.
      *
-     * @param   start		 starting row index
-     * @param   end		   ending row index
+     * @param   start        starting row index
+     * @param   end        ending row index
      * @exception  ArrayIndexOutOfBoundsException
-     *								if any row index is invalid
+     *                              if any row index is invalid
      */
     public void removeRowRange(int start, int end)  {
         modelData.subList(start, end + 1).clear();
@@ -416,7 +419,7 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *
      * @param   rows  array containing indexes of rows to be removed
      * @exception  ArrayIndexOutOfBoundsException
-     *				  if any row index is invalid
+     *                if any row index is invalid
      */
     public void removeRows(int... rows) {
         for (int i = rows.length - 1; i >= 0; i--) {
@@ -430,10 +433,10 @@ abstract class RowTableModel<T> extends AbstractTableModel {
      *  Replace a row of data at the <code>row</code> location in the model.
      *  Notification of the row being replaced will be generated.
      *
-     * @param   row	  row in the model where the data will be replaced
+     * @param   row   row in the model where the data will be replaced
      * @param   rowData  data of the row to replace the existing data
      * @exception  IllegalArgumentException  when the Class of the row data
-     *			 does not match the row Class of the model.
+     *           does not match the row Class of the model.
      */
     public void replaceRow(int row, T rowData) {
         modelData.set(row, rowData);
@@ -443,12 +446,12 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Sets the Class for the specified column.
      *
-     * @param  column	   the column whose Class is being changed
+     * @param  column      the column whose Class is being changed
      * @param  columnClass  the new Class of the column
      * @exception  ArrayIndexOutOfBoundsException
-     *						if an invalid column was given
+     *                      if an invalid column was given
      */
-    public void setColumnClass(int column, Class columnClass) {
+    public void setColumnClass(int column, Class<?> columnClass) {
         columnClasses[column] = columnClass;
         fireTableRowsUpdated(0, getRowCount() - 1);
     }
@@ -456,10 +459,10 @@ abstract class RowTableModel<T> extends AbstractTableModel {
     /**
      * Sets the editability for the specified column.
      *
-     * @param  column	   the column whose Class is being changed
+     * @param  column      the column whose Class is being changed
      * @param  isEditable   indicates if the column is editable or not
      * @exception  ArrayIndexOutOfBoundsException
-     *						if an invalid column was given
+     *                      if an invalid column was given
      */
     public void setColumnEditable(int column, boolean isEditable) {
         isColumnEditable[column] = isEditable ? Boolean.TRUE : Boolean.FALSE;
