@@ -190,7 +190,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
         int ret;
         switch (device) {
             case "SE74":
-                ret = (2 * baseAddr)+7;
+                ret = (2 * baseAddr) + 6;
                 break;
             case "DS78V":
                 if ((firstOpSws & 0x1e) == 0x0C) {
