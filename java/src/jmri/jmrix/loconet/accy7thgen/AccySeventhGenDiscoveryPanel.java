@@ -232,12 +232,18 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
     }
 
     private void sendWarnindDialogBox() {
-        JOptionPane.showMessageDialog(this.getParent(), 
+        JOptionPane.showMessageDialog(this.getParent(),
                 "<html>The " + Bundle.getMessage("MenuItem7thGenAccy") + " tool is still under development." 
-                + "<p>It is provided to users as a usable method for changing a Seventh-generation accessory"
-                + "<p>device's 'Base Address'." 
-                + "<p>It also attempts to help users determine the addresses for each Seventh-gneration "
-                + "<p>accessory device's address usage, but this feature of the tool is NOT been proven...");
+                + "<p><p>It is provided to give a usable method for changing a Digitrax Seventh-generation"
+                + "<p>Accessory device's 'Base Address'.  This feature seems to be fully-functional." 
+                + "<p><p>It is also an <em>unproven</em> method to help users determine the types of LocoNet"
+                + "<p>messages and their addresses for each type of Digitrax Seventh-generation"
+                + "<p>accessory device seen on the LocoNet connection. And a single device can"
+                + "<p>appear in the table twice."
+                + "<p><p>This message will be <em>removed</em> from this tool when these features have been"
+                + "<p>proven.",
+                "Informational Notice", 
+                JOptionPane.INFORMATION_MESSAGE);
     }
     
     class JTableButtonRenderer implements TableCellRenderer {
