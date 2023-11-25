@@ -10,7 +10,7 @@ import javax.swing.JButton;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.SwingConstants;
-import javax.swing.table.*;
+//import javax.swing.table.*;
 
 import jmri.jmrix.loconet.*;
 import jmri.jmrix.loconet.swing.LnPanel;
@@ -129,75 +129,71 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
             }
         };
 
-        Action changeBaseAddrAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JTable table = (JTable)e.getSource();
-                int modelRow = Integer.parseInt( e.getActionCommand() );
-                
-                TableColumnModel model = devicesTable.getColumnModel();
-                int modelsDeviceColumn = model.getColumnIndex("Device");
-                int modelsSerNumColumn = model.getColumnIndex("Ser Num");
-                
-                Object device =  devicesTable.getValueAt(modelRow,modelsDeviceColumn);
-                Object serNum = devicesTable.getValueAt(modelRow, modelsSerNumColumn);
-                
-                String result;
-                result = JOptionPane.showInputDialog(
-                        devicesTable, 
-                        "Enter the new 'Base Address', in decimal",
-                        "New Base Address for "+device.toString()+ ", Serial Number "+serNum.toString() +".",
-                         javax.swing.JOptionPane.QUESTION_MESSAGE);
-                
-                int baseAddr = -1;
-                try {
-                    baseAddr = Integer.parseInt(result);
-                    if ((baseAddr <1) || (baseAddr > 2045)) {
-                        baseAddr = -1;
-                    }
-                } catch (java.lang.IllegalArgumentException e2) {
-                    log.warn("wrong value!");
-                }
-                
-                if ((baseAddr >=1) && (baseAddr <= 2045)) {
-                    int devNum;
-                    switch (device.toString()) {
-                        case "DS74":
-                            devNum = 0x74;
-                            break;
-                        case "DS78V":
-                            devNum = 0x7c;
-                            break;
-                        case "PM74":
-                            devNum = 74;
-                            break;
-                        case "SE74":
-                            devNum = 70;
-                            break;
-                        default:
-                            log.error("illegal device type {}", device.toString());
-                            return;
-                    }
-                    int sn = Integer.parseInt(serNum.toString());
-                    tc.sendLocoNetMessage(new LocoNetMessage(new int[] {
-                        0xEE, 0x10, 0x02, 0x0f, 0,0, 0, 0, 0, devNum,
-                        0, sn & 0x7f, (sn >> 7) & 0x7F, (baseAddr-1) & 0x7f,
-                        ((baseAddr-1) >> 7) & 0x7f, 0}));
-                    find7thGenDevices();
-                }
-            }
-        };
+//         Action changeBaseAddrAction = new AbstractAction() {
+//             @Override
+//             public void actionPerformed(ActionEvent e) {
+//                 int modelRow = Integer.parseInt( e.getActionCommand() );
+//                 
+//                 TableColumnModel model = devicesTable.getColumnModel();
+//                 int modelsDeviceColumn = model.getColumnIndex("Device");
+//                 int modelsSerNumColumn = model.getColumnIndex("Ser Num");
+//                 
+//                 Object device =  devicesTable.getValueAt(modelRow,modelsDeviceColumn);
+//                 Object serNum = devicesTable.getValueAt(modelRow, modelsSerNumColumn);
+//                 
+//                 String result;
+//                 result = JOptionPane.showInputDialog(
+//                         devicesTable, 
+//                         "Enter the new 'Base Address', in decimal",
+//                         "New Base Address for "+device.toString()+ ", Serial Number "+serNum.toString() +".",
+//                          javax.swing.JOptionPane.QUESTION_MESSAGE);
+//                 
+//                 int baseAddr = -1;
+//                 try {
+//                     baseAddr = Integer.parseInt(result);
+//                     if ((baseAddr <1) || (baseAddr > 2045)) {
+//                         baseAddr = -1;
+//                     }
+//                 } catch (java.lang.IllegalArgumentException e2) {
+//                     log.warn("wrong value!");
+//                 }
+//                 
+//                 if ((baseAddr >=1) && (baseAddr <= 2045)) {
+//                     int devNum;
+//                     switch (device.toString()) {
+//                         case "DS74":
+//                             devNum = 0x74;
+//                             break;
+//                         case "DS78V":
+//                             devNum = 0x7c;
+//                             break;
+//                         case "PM74":
+//                             devNum = 74;
+//                             break;
+//                         case "SE74":
+//                             devNum = 70;
+//                             break;
+//                         default:
+//                             log.error("illegal device type {}", device.toString());
+//                             return;
+//                     }
+//                     int sn = Integer.parseInt(serNum.toString());
+//                     tc.sendLocoNetMessage(new LocoNetMessage(new int[] {
+//                         0xEE, 0x10, 0x02, 0x0f, 0,0, 0, 0, 0, devNum,
+//                         0, sn & 0x7f, (sn >> 7) & 0x7F, (baseAddr-1) & 0x7f,
+//                         ((baseAddr-1) >> 7) & 0x7f, 0}));
+//                     find7thGenDevices();
+//                 }
+//             }
+//         };
         
-        TableColumnModel model = devicesTable.getColumnModel();
+//        TableColumnModel model = devicesTable.getColumnModel();
 
         ReorderableBeanTable.reorderColumns(devicesTable, 
                 "Device", "Ser Num", "Base Addr", "Turnouts", "Sensors", 
                 "Reporters", "Aspects", "Powers","Action","First Op Sws");
-        int modelsActionColumn = model.getColumnIndex("Action");
+//         int modelsActionColumn = model.getColumnIndex("Action");
 
-        ButtonColumn buttonColumn = new ButtonColumn(devicesTable, 
-                changeBaseAddrAction, modelsActionColumn);
-        
         devicesModel.setColumnClass(9, JButton.class);
 
         devicesTable.setName(this.getTitle());
