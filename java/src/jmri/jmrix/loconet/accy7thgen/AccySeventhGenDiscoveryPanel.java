@@ -10,7 +10,7 @@ import javax.swing.JButton;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.SwingConstants;
-import javax.swing.table.*;
+//import javax.swing.table.*;
 
 import jmri.jmrix.loconet.*;
 import jmri.jmrix.loconet.swing.LnPanel;
@@ -129,74 +129,71 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
             }
         };
 
-        Action changeBaseAddrAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int modelRow = Integer.valueOf( e.getActionCommand() );
-                
-                TableColumnModel model = devicesTable.getColumnModel();
-                int modelsDeviceColumn = model.getColumnIndex("Device");
-                int modelsSerNumColumn = model.getColumnIndex("Ser Num");
-                
-                Object device =  devicesTable.getValueAt(modelRow,modelsDeviceColumn);
-                Object serNum = devicesTable.getValueAt(modelRow, modelsSerNumColumn);
-                
-                String result;
-                result = JOptionPane.showInputDialog(
-                        devicesTable, 
-                        "Enter the new 'Base Address', in decimal",
-                        "New Base Address for "+device.toString()+ ", Serial Number "+serNum.toString() +".",
-                         javax.swing.JOptionPane.QUESTION_MESSAGE);
-                
-                int baseAddr = -1;
-                try {
-                    baseAddr = Integer.parseInt(result);
-                    if ((baseAddr <1) || (baseAddr > 2045)) {
-                        baseAddr = -1;
-                    }
-                } catch (java.lang.IllegalArgumentException e2) {
-                    log.warn("wrong value!");
-                }
-                
-                if ((baseAddr >=1) && (baseAddr <= 2045)) {
-                    int devNum;
-                    switch (device.toString()) {
-                        case "DS74":
-                            devNum = 0x74;
-                            break;
-                        case "DS78V":
-                            devNum = 0x7c;
-                            break;
-                        case "PM74":
-                            devNum = 74;
-                            break;
-                        case "SE74":
-                            devNum = 70;
-                            break;
-                        default:
-                            log.error("illegal device type {}", device.toString());
-                            return;
-                    }
-                    int sn = Integer.parseInt(serNum.toString());
-                    tc.sendLocoNetMessage(new LocoNetMessage(new int[] {
-                        0xEE, 0x10, 0x02, 0x0f, 0,0, 0, 0, 0, devNum,
-                        0, sn & 0x7f, (sn >> 7) & 0x7F, (baseAddr-1) & 0x7f,
-                        ((baseAddr-1) >> 7) & 0x7f, 0}));
-                    find7thGenDevices();
-                }
-            }
-        };
+//         Action changeBaseAddrAction = new AbstractAction() {
+//             @Override
+//             public void actionPerformed(ActionEvent e) {
+//                 int modelRow = Integer.parseInt( e.getActionCommand() );
+//                 
+//                 TableColumnModel model = devicesTable.getColumnModel();
+//                 int modelsDeviceColumn = model.getColumnIndex("Device");
+//                 int modelsSerNumColumn = model.getColumnIndex("Ser Num");
+//                 
+//                 Object device =  devicesTable.getValueAt(modelRow,modelsDeviceColumn);
+//                 Object serNum = devicesTable.getValueAt(modelRow, modelsSerNumColumn);
+//                 
+//                 String result;
+//                 result = JOptionPane.showInputDialog(
+//                         devicesTable, 
+//                         "Enter the new 'Base Address', in decimal",
+//                         "New Base Address for "+device.toString()+ ", Serial Number "+serNum.toString() +".",
+//                          javax.swing.JOptionPane.QUESTION_MESSAGE);
+//                 
+//                 int baseAddr = -1;
+//                 try {
+//                     baseAddr = Integer.parseInt(result);
+//                     if ((baseAddr <1) || (baseAddr > 2045)) {
+//                         baseAddr = -1;
+//                     }
+//                 } catch (java.lang.IllegalArgumentException e2) {
+//                     log.warn("wrong value!");
+//                 }
+//                 
+//                 if ((baseAddr >=1) && (baseAddr <= 2045)) {
+//                     int devNum;
+//                     switch (device.toString()) {
+//                         case "DS74":
+//                             devNum = 0x74;
+//                             break;
+//                         case "DS78V":
+//                             devNum = 0x7c;
+//                             break;
+//                         case "PM74":
+//                             devNum = 74;
+//                             break;
+//                         case "SE74":
+//                             devNum = 70;
+//                             break;
+//                         default:
+//                             log.error("illegal device type {}", device.toString());
+//                             return;
+//                     }
+//                     int sn = Integer.parseInt(serNum.toString());
+//                     tc.sendLocoNetMessage(new LocoNetMessage(new int[] {
+//                         0xEE, 0x10, 0x02, 0x0f, 0,0, 0, 0, 0, devNum,
+//                         0, sn & 0x7f, (sn >> 7) & 0x7F, (baseAddr-1) & 0x7f,
+//                         ((baseAddr-1) >> 7) & 0x7f, 0}));
+//                     find7thGenDevices();
+//                 }
+//             }
+//         };
         
-        TableColumnModel model = devicesTable.getColumnModel();
+//        TableColumnModel model = devicesTable.getColumnModel();
 
         ReorderableBeanTable.reorderColumns(devicesTable, 
                 "Device", "Ser Num", "Base Addr", "Turnouts", "Sensors", 
                 "Reporters", "Aspects", "Powers","Action","First Op Sws");
-        int modelsActionColumn = model.getColumnIndex("Action");
+//         int modelsActionColumn = model.getColumnIndex("Action");
 
-        ButtonColumn buttonColumn = new ButtonColumn(devicesTable, 
-                changeBaseAddrAction, modelsActionColumn);
-        
         devicesModel.setColumnClass(9, JButton.class);
 
         devicesTable.setName(this.getTitle());
@@ -227,26 +224,26 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         add(new JLabel(Bundle.getMessage("FOOTNOTEBSE74")));
         add(new JLabel(Bundle.getMessage("FOOTNOTEPM74")));
         add(new JLabel(Bundle.getMessage("FOOTNOTEGENERAL")));
-        
+
         sendWarnindDialogBox();
-    }
+     }
 
     private void sendWarnindDialogBox() {
         JOptionPane.showMessageDialog(this.getParent(),
-                "<html>The " + Bundle.getMessage("MenuItem7thGenAccy") + " tool is still under development." 
+                "<html>The " + Bundle.getMessage("MenuItem7thGenAccy") + " tool is still under development."
                 + "<p><p>It is provided to give a usable method for changing a Digitrax Seventh-generation"
-                + "<p>Accessory device's 'Base Address'.  This feature seems to be fully-functional." 
+                + "<p>Accessory device's 'Base Address'.  This feature seems to be fully-functional."
                 + "<p><p>It is also an <em>unproven</em> method to help users determine the types of LocoNet"
                 + "<p>messages and their addresses for each type of Digitrax Seventh-generation"
                 + "<p>accessory device seen on the LocoNet connection. And a single device can"
                 + "<p>appear in the table twice."
                 + "<p><p>This message will be <em>removed</em> from this tool when these features have been"
                 + "<p>proven.",
-                "Informational Notice", 
+                "Informational Notice",
                 JOptionPane.INFORMATION_MESSAGE);
     }
-    
-    class JTableButtonRenderer implements TableCellRenderer {
+
+    static class JTableButtonRenderer implements TableCellRenderer {
         private TableCellRenderer defaultRenderer;
         public JTableButtonRenderer(TableCellRenderer renderer) {
             defaultRenderer = renderer;
