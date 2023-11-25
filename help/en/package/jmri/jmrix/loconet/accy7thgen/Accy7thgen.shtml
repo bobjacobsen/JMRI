@@ -22,6 +22,7 @@
               <li>
                 <a href="#general">Managing 7th-Generation Digitrax Accessory Decoder Addresses and 'Base Address'</a>
                 <ul>
+                    <li><a href="#informationalwarn">Informational Notice</a></li>
                     <li><a href="#viewing">Viewing All 7th-generation Accessory Addressing</a></li>
                     <li><a href="#baseChange">Changing 7th-generation Accessory 'Base Address'</a></li>
                     <li><a href="#rosterentries">Updating Roster entries when changing
@@ -49,6 +50,58 @@
         check all of their address assignments to ensure that no two or more devices 
         use the same address(es)!
       
+      <h2 id="informationalwarn">Informational Notice</h2>
+      <p>When launching this tool, it currently provides an informational notice
+          that describes its status of development.  Yes, there are a few  "problems"
+          that have been problematic.  If you desire a more-detailed look at the 
+          developer's problems, read on.  If not, consider skipping ahead to 
+          <a href="#viewing">Viewing All 7th-generation Accessory Addressing</a>.
+          <br><img src="images/InformationalNotice.png" alt="Informational notice">
+          
+          <p>The tool provides three basic functions:
+          <ol>
+              <li>Listing the available Digitrax Seventh-generation Accessory devices 
+                  found on the LocoNet connection;</li>
+              <li>Allowing the user to change a Digitrax Seventh-generation Accessory 
+                  device's 'Base Address' setting;</li>
+              <li>And displaying the address usage for each Digitrax Seventh-generation 
+                  Accessory device on LocoNet connection.</li>
+          </ol>
+          <p>Of these, the developers find that the tool can perform the middle function 
+              without difficulty.
+          <p>The first function does, <em>occasionally,</em> have problems
+              where the tool can provide "duplicate" entries in the table.  It will 
+              cause a device to be "in contention" with its various addresses.  In 
+              this case, it has been a simple process to "re-query" the available 
+              Digitrax Seventh-generation Accessory devices by pressing the "Find 
+              7th-gen. Devices" button.  This problem is being investigated.
+          <p>The last function is a bit more problematic.  It is not simple to 
+              correctly report the various Digitrax Seventh-
+              generation Accessory devices, in each of their modes.  The developers 
+              have not found any comprehensive way to get the information from the 
+              devices themselves.  So the tool must <em>infer</em> the information from the
+              information which is provided by the devices themselves.
+              
+          <p>This has been a difficult process, as these devices can use the following 
+              LocoNet message types, each with its own independent "address space":
+          <ul>
+              <li>Turnout (or "Switch")</li>
+              <li>Sensor</li>
+              <li>Reporter (or "Transponding")</li>
+              <li>Extended Accessory Decoder 'Aspect'</li>
+              <li>Power Sub-District</li>
+          </ul>
+              Each type of LocoNet message can have device-specific limitations.
+              Often, these limitations are subtle.  As such, 
+              the code developers are not sure that the code implements the 
+              appropriate device-specific limitations.  
+          <p>The "Informational Notice" exists because of these difficulties.  The tool's 
+              developers are reasonably sure of the data that that have provided, but
+              have some questions about the implementation, especially for the 
+              "boundary-conditions".  Users should bring their questions about 
+              this tool to the attention of the members of the 
+              <a href="https://groups.io/g/jmriusers/">"jmriusers" group at "groups.io".</a> 
+          
       <h2 id="viewing">Viewing All 7th-generation Accessory Addressing</h2>
       <p>By starting this tool, it automatically "discovers" all LocoNet-connected
           Digitrax 7th-generation Accessory devices.  Each discovered device is 
