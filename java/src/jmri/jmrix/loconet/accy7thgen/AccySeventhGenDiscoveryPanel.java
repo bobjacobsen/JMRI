@@ -227,8 +227,19 @@ public class AccySeventhGenDiscoveryPanel extends LnPanel implements LocoNetList
         add(new JLabel(Bundle.getMessage("FOOTNOTEBSE74")));
         add(new JLabel(Bundle.getMessage("FOOTNOTEPM74")));
         add(new JLabel(Bundle.getMessage("FOOTNOTEGENERAL")));
+        
+        sendWarnindDialogBox();
     }
 
+    private void sendWarnindDialogBox() {
+        JOptionPane.showMessageDialog(this.getParent(), 
+                "<html>The " + Bundle.getMessage("MenuItem7thGenAccy") + " tool is still under development." 
+                + "<p>It is provided to users as a usable method for changing a Seventh-generation accessory"
+                + "<p>device's 'Base Address'." 
+                + "<p>It also attempts to help users determine the addresses for each Seventh-gneration "
+                + "<p>accessory device's address usage, but this feature of the tool is NOT been proven...");
+    }
+    
     class JTableButtonRenderer implements TableCellRenderer {
         private TableCellRenderer defaultRenderer;
         public JTableButtonRenderer(TableCellRenderer renderer) {
