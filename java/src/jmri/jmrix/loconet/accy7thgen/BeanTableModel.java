@@ -27,7 +27,7 @@ import java.util.*;
 public class BeanTableModel<T> extends RowTableModel<T> {
     //  Map "type" to "class". Class is needed for the getColumnClass() method.
 
-    private static Map<Class, Class> primitives = new HashMap<Class, Class>(10);
+    private static Map<Class<?>, Class<?>> primitives = new HashMap<>(10);
 
     static {
         primitives.put(Boolean.TYPE, Boolean.class);
@@ -40,8 +40,8 @@ public class BeanTableModel<T> extends RowTableModel<T> {
         primitives.put(Short.TYPE, Short.class);
     }
 
-    private Class beanClass;
-    private Class ancestorClass;
+    private Class<?> beanClass;
+    private Class<?> ancestorClass;
 
     private List<ColumnInformation> columns = new ArrayList<ColumnInformation>();
 
@@ -52,7 +52,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *                    The class is also used to determine the columns that
      *                    will be displayed in the model
      */
-    public BeanTableModel(Class beanClass) {
+    public BeanTableModel(Class<?> beanClass) {
         this(beanClass, beanClass, new ArrayList<T>());
     }
 
@@ -61,9 +61,9 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *
      *  @param beanClass      class of the beans that will be added to the model.
      *  @param ancestorClass  the methods of this class and its descendants down
-     *						 to the bean class can be included in the model.
+     *                       to the bean class can be included in the model.
      */
-    public BeanTableModel(Class beanClass, Class ancestorClass) {
+    public BeanTableModel(Class<?> beanClass, Class<?> ancestorClass) {
         this(beanClass, ancestorClass, new ArrayList<T>());
     }
 
@@ -73,7 +73,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  @param beanClass      class of the beans that will be added to the model.
      *  @param modelData      the data of the table
      */
-    public BeanTableModel(Class beanClass, List<T> modelData) {
+    public BeanTableModel(Class<?> beanClass, List<T> modelData) {
         this(beanClass, beanClass, modelData);
     }
 
@@ -82,10 +82,10 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *
      *  @param beanClass      class of the beans that will be added to the model.
      *  @param ancestorClass  the methods of this class and its descendants down
-     *						 to the bean class can be included in the model.
+     *                       to the bean class can be included in the model.
      *  @param modelData      the data of the table
      */
-    public BeanTableModel(Class beanClass, Class ancestorClass, List<T> modelData) {
+    public BeanTableModel(Class<?> beanClass, Class<?> ancestorClass, List<T> modelData) {
         super( beanClass );
         this.beanClass = beanClass;
         this.ancestorClass = ancestorClass;
@@ -139,14 +139,14 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     }
 
     /*
-     *	We found a method candidate so gather the information needed to fully
+     *  We found a method candidate so gather the information needed to fully
      *  implemennt the table model.
      */
     @SuppressWarnings("unchecked")
     private void buildColumnInformation(Method theMethod, String theMethodName) {
         //  Make sure the method returns an appropriate type
 
-        Class returnType = getReturnType( theMethod );
+        Class<?> returnType = getReturnType( theMethod );
 
         if (returnType == null) {
             return;
@@ -175,8 +175,8 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     /*
      *  Make sure the return type of the method is something we can use
      */
-    private Class getReturnType(Method theMethod) {
-        Class returnType = theMethod.getReturnType();
+    private Class<?> getReturnType(Method theMethod) {
+        Class<?> returnType = theMethod.getReturnType();
 
         if (returnType.isInterface()||  returnType.isArray()) {
             return null;
@@ -217,10 +217,10 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  and ending indexes, inclusively, will be removed.
      *  Notification of the rows being removed will be generated.
      *
-     * @param   start		 starting row index
-     * @param   end		   ending row index
+     * @param   start        starting row index
+     * @param   end        ending row index
      * @exception  ArrayIndexOutOfBoundsException
-     *								if any row index is invalid
+     *                              if any row index is invalid
      */
     @Override
     public void removeRowRange(int start, int end)  {
@@ -235,7 +235,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *
      * @param   rows  array containing indexes of rows to be removed
      * @exception  ArrayIndexOutOfBoundsException
-     *				  if any row index is invalid
+     *                if any row index is invalid
      */
     @Override
     public void removeRows(int... rows) {
@@ -285,7 +285,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      * @param   row             the row whose value is to be changed
      * @param   column          the column whose value is to be changed
      * @exception  IndexOutOfBoundsException  if an invalid row or
-     *			   column was given
+     *             column was given
      */
     @Override
     public void setValueAt(Object value, int row, int column) {
@@ -310,23 +310,23 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  You are not allowed to change the class of any column.
      */
     @Override
-    public void setColumnClass(int column, Class columnClass) {
+    public void setColumnClass(int column, Class<?> columnClass) {
     }
 
     /**
      *  Sets the editability for the specified column.
      *
-     *	Override to make sure you can't set a column editable that doesn't
+     *  Override to make sure you can't set a column editable that doesn't
      *  have a defined setter method.
      *
      *  @param  column       the column whose Class is being changed
      *  @param  isEditable   indicates if the column is editable or not
      *  @exception  ArrayIndexOutOfBoundsException
-     *	 		            if an invalid column was given
+     *                      if an invalid column was given
      */
     @Override
     public void setColumnEditable(int column, boolean isEditable) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
 
         if (isEditable && ci.getSetter() == null) {
             return;
@@ -341,11 +341,12 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  This method must be invoked before the model is added to the table.
      *
      *  @param   column     the column whose value is to be queried
+     *  @param   name       new header name
      *  @exception  IndexOutOfBoundsException  if an invalid column
-     *	            was given
+     *              was given
      */
     public void setColumnName(int column, String name) {
-        ColumnInformation ci = (ColumnInformation)columns.get( column );
+        ColumnInformation ci = columns.get( column );
         ci.setName( name );
         resetModelDefaults();
     }
@@ -364,13 +365,13 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     /*
      *  Class to hold data required to implement the TableModel interface
      */
-    private class ColumnInformation implements Comparable<ColumnInformation> {
+    static private class ColumnInformation implements Comparable<ColumnInformation> {
         private String name;
-        private Class returnType;
+        private Class<?> returnType;
         private Method getter;
         private Method setter;
 
-        public ColumnInformation(String name, Class returnType, Method getter, Method setter) {
+        public ColumnInformation(String name, Class<?> returnType, Method getter, Method setter) {
             this.name = name;
             this.returnType = returnType;
             this.getter = getter;
@@ -380,7 +381,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
         /*
          *  The column class of the model
          */
-        public Class getReturnType() {
+        public Class<?> getReturnType() {
             return returnType;
         }
 
@@ -412,11 +413,29 @@ public class BeanTableModel<T> extends RowTableModel<T> {
             this.name = name;
         }
 
-    	/*
-    	 *  Implement the natural sort order for this class
-    	 */
-    	public int compareTo(ColumnInformation o) {
+        /*
+         *  Implement the natural sort order for this class
+         */
+        public int compareTo(ColumnInformation o) {
             return getName().compareTo(o.getName());
-    	}
+        }
+        /**
+         * Implement equality in a way that's compatible
+         * to the natural sort order
+         */
+         @Override
+         public boolean equals(Object o) {
+            if ( o == null) return false;
+            if (! (o instanceof ColumnInformation) ) return false;
+            return 0 == this.compareTo((ColumnInformation)o);
+         }
+        /**
+         * Implement hashcode in a way that's compatible
+         * to the natural sort order
+         */
+         @Override
+         public int hashCode() {
+            return getName().hashCode();
+         }
     }
 }
