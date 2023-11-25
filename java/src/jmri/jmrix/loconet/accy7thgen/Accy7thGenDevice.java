@@ -19,13 +19,13 @@ public class Accy7thGenDevice extends java.beans.Beans {
     private int  firstOpSws;
     private Integer turnoutAddrStart;
     private Integer turnoutAddrEnd;
-    private Integer SensorAddrStart;
-    private Integer SensorAddrEnd;
-    private Integer ReportersAddrStart;
-    private Integer ReportersAddrEnd;
-    private Integer AspectAddrStart;
-    private Integer AspectAddrEnd;
-    private Integer PowerAddrStart;
+    private Integer sensorAddrStart;
+    private Integer sensorAddrEnd;
+    private Integer reportersAddrStart;
+    private Integer reportersAddrEnd;
+    private Integer aspectAddrStart;
+    private Integer aspectAddrEnd;
+    private Integer powerAddrStart;
     public JButton action;
     
     /**
@@ -42,13 +42,13 @@ public class Accy7thGenDevice extends java.beans.Beans {
         this.firstOpSws = firstOps;
         turnoutAddrStart = gitTurnoutAddressStart();
         turnoutAddrEnd = gitTurnoutAddressEnd();
-        SensorAddrStart = gitSensorAddressStart();
-        SensorAddrEnd = gitSensorAddressEnd();
-        ReportersAddrStart = gitReportersStart();
-        ReportersAddrEnd = gitReportersEnd();
-        AspectAddrStart = gitAspectStart();
-        AspectAddrEnd = gitAspectEnd();
-        PowerAddrStart = gitPowerStart();
+        sensorAddrStart = gitSensorAddressStart();
+        sensorAddrEnd = gitSensorAddressEnd();
+        reportersAddrStart = gitReportersStart();
+        reportersAddrEnd = gitReportersEnd();
+        aspectAddrStart = gitAspectStart();
+        aspectAddrEnd = gitAspectEnd();
+        powerAddrStart = gitPowerStart();
         action = new JButton("Change Base Addr");
         action.setActionCommand("changeAddr");
 
@@ -337,8 +337,8 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
     
     public String getSensors() {
-        if (SensorAddrStart > 0) {
-            return Integer.toString(SensorAddrStart)+"-"+Integer.toString(SensorAddrEnd);
+        if (sensorAddrStart > 0) {
+            return Integer.toString(sensorAddrStart)+"-"+Integer.toString(sensorAddrEnd);
         } else {
             return "";
         }
@@ -346,12 +346,12 @@ public class Accy7thGenDevice extends java.beans.Beans {
     
     public String getReporters() {
         String res ;
-        if ((ReportersAddrStart > 0) && (ReportersAddrEnd > 0)) {
-            res = Integer.toString(ReportersAddrStart)+"-"+Integer.toString(ReportersAddrEnd);
-        } else if ((ReportersAddrStart > 0) && (ReportersAddrEnd <= 0)) {
-            res = Integer.toString(ReportersAddrStart);
-        } else if ((ReportersAddrStart <= 0) && (ReportersAddrEnd > 0)) {
-            res = Integer.toString(ReportersAddrEnd);
+        if ((reportersAddrStart > 0) && (reportersAddrEnd > 0)) {
+            res = Integer.toString(reportersAddrStart)+"-"+Integer.toString(reportersAddrEnd);
+        } else if ((reportersAddrStart > 0) && (reportersAddrEnd <= 0)) {
+            res = Integer.toString(reportersAddrStart);
+        } else if ((reportersAddrStart <= 0) && (reportersAddrEnd > 0)) {
+            res = Integer.toString(reportersAddrEnd);
         } else {
             res = "";
         }
@@ -361,24 +361,24 @@ public class Accy7thGenDevice extends java.beans.Beans {
     public boolean gitAspectsBroadcast() {
         switch (device) {
             case "SE74":
-                return (AspectAddrStart > 0) ? true: false;
+                return (aspectAddrStart > 0) ? true: false;
             default:
                 return false;
         }
     }
 
     public String getAspects() {
-        if (AspectAddrStart > 0) {
-            return Integer.toString(AspectAddrStart)+"-"+Integer.toString(AspectAddrEnd);
+        if (aspectAddrStart > 0) {
+            return Integer.toString(aspectAddrStart)+"-"+Integer.toString(aspectAddrEnd);
         } else {
             return "";
         }
     }
     
     public String getPowers() {
-        if (PowerAddrStart >= 0) {
+        if (powerAddrStart >= 0) {
             // only one power address (for 4 sub-addresses) for PM74
-            return Integer.toString(PowerAddrStart);
+            return Integer.toString(powerAddrStart);
         } else {
             return "";
         }
