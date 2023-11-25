@@ -61,7 +61,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *
      *  @param beanClass      class of the beans that will be added to the model.
      *  @param ancestorClass  the methods of this class and its descendants down
-     *						 to the bean class can be included in the model.
+     *                       to the bean class can be included in the model.
      */
     public BeanTableModel(Class<?> beanClass, Class<?> ancestorClass) {
         this(beanClass, ancestorClass, new ArrayList<T>());
@@ -82,7 +82,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *
      *  @param beanClass      class of the beans that will be added to the model.
      *  @param ancestorClass  the methods of this class and its descendants down
-     *						 to the bean class can be included in the model.
+     *                       to the bean class can be included in the model.
      *  @param modelData      the data of the table
      */
     public BeanTableModel(Class<?> beanClass, Class<?> ancestorClass, List<T> modelData) {
@@ -139,7 +139,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     }
 
     /*
-     *	We found a method candidate so gather the information needed to fully
+     *  We found a method candidate so gather the information needed to fully
      *  implemennt the table model.
      */
     @SuppressWarnings("unchecked")
@@ -217,10 +217,10 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  and ending indexes, inclusively, will be removed.
      *  Notification of the rows being removed will be generated.
      *
-     * @param   start		 starting row index
-     * @param   end		   ending row index
+     * @param   start        starting row index
+     * @param   end        ending row index
      * @exception  ArrayIndexOutOfBoundsException
-     *								if any row index is invalid
+     *                              if any row index is invalid
      */
     @Override
     public void removeRowRange(int start, int end)  {
@@ -235,7 +235,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *
      * @param   rows  array containing indexes of rows to be removed
      * @exception  ArrayIndexOutOfBoundsException
-     *				  if any row index is invalid
+     *                if any row index is invalid
      */
     @Override
     public void removeRows(int... rows) {
@@ -285,7 +285,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      * @param   row             the row whose value is to be changed
      * @param   column          the column whose value is to be changed
      * @exception  IndexOutOfBoundsException  if an invalid row or
-     *			   column was given
+     *             column was given
      */
     @Override
     public void setValueAt(Object value, int row, int column) {
@@ -316,13 +316,13 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     /**
      *  Sets the editability for the specified column.
      *
-     *	Override to make sure you can't set a column editable that doesn't
+     *  Override to make sure you can't set a column editable that doesn't
      *  have a defined setter method.
      *
      *  @param  column       the column whose Class is being changed
      *  @param  isEditable   indicates if the column is editable or not
      *  @exception  ArrayIndexOutOfBoundsException
-     *	 		            if an invalid column was given
+     *                      if an invalid column was given
      */
     @Override
     public void setColumnEditable(int column, boolean isEditable) {
@@ -343,7 +343,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
      *  @param   column     the column whose value is to be queried
      *  @param   name       new header name
      *  @exception  IndexOutOfBoundsException  if an invalid column
-     *	            was given
+     *              was given
      */
     public void setColumnName(int column, String name) {
         ColumnInformation ci = columns.get( column );
@@ -413,29 +413,29 @@ public class BeanTableModel<T> extends RowTableModel<T> {
             this.name = name;
         }
 
-    	/*
-    	 *  Implement the natural sort order for this class
-    	 */
-    	public int compareTo(ColumnInformation o) {
+        /*
+         *  Implement the natural sort order for this class
+         */
+        public int compareTo(ColumnInformation o) {
             return getName().compareTo(o.getName());
-    	}
-    	/**
-    	 * Implement equality in a way that's compatible
-    	 * to the natural sort order
-    	 */
-    	 @Override
-    	 public boolean equals(Object o) {
-    	    if ( o == null) return false;
-    	    if (! (o instanceof ColumnInformation) ) return false;
-    	    return 0 == this.compareTo((ColumnInformation)o);
-    	 }
-    	/**
-    	 * Implement hashcode in a way that's compatible
-    	 * to the natural sort order
-    	 */
-    	 @Override
-    	 public int hashCode() {
-    	    return getName().hashCode();
-    	 }
+        }
+        /**
+         * Implement equality in a way that's compatible
+         * to the natural sort order
+         */
+         @Override
+         public boolean equals(Object o) {
+            if ( o == null) return false;
+            if (! (o instanceof ColumnInformation) ) return false;
+            return 0 == this.compareTo((ColumnInformation)o);
+         }
+        /**
+         * Implement hashcode in a way that's compatible
+         * to the natural sort order
+         */
+         @Override
+         public int hashCode() {
+            return getName().hashCode();
+         }
     }
 }

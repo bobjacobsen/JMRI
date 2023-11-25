@@ -17,9 +17,9 @@ import javax.swing.text.*;
  */
 public class ReorderableBeanTable extends JTable
 {
-	private boolean isSelectAllForMouseEvent = false;
-	private boolean isSelectAllForActionEvent = false;
-	private boolean isSelectAllForKeyEvent = false;
+    private boolean isSelectAllForMouseEvent = false;
+    private boolean isSelectAllForActionEvent = false;
+    private boolean isSelectAllForKeyEvent = false;
 
 //
 // Constructors
