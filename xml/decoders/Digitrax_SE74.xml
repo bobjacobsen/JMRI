@@ -25,7 +25,7 @@
           <!-- Needed to set the "Base Address" value. May be set when creating 
             the initial roster entry.  May not be modified after creation! -->
           <variable CV="1,2" comment="Base address" item="Long Address" default="1" infoOnly="yes">
-            <splitVal highCV="2" min="1" max="2045"/>
+            <splitVal highCV="2" min="1" max="2044"/>
             <label>Base Address</label>
           </variable>
 
@@ -256,6 +256,11 @@
     <name>CVs</name>
     <column>
         <row>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;SE74 OpSw Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
+        </row>
+        <row>
             <cvtable/>
         </row>
         <row>
@@ -278,6 +283,10 @@
   <pane>
       <name>Basic</name>
       <column>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;SE74 Base Address Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
+
           <display item="Long Address"/>
           <label>
               <text> </text>
@@ -291,13 +300,13 @@
             &lt;/html&gt;</text>
           </label>          <label>
             <text>&lt;html&gt;&lt;p&gt;
+                &lt;p&gt;Note that some Digitrax documentation refers
+                to Board Address, while other documentation refers to
+                &lt;p&gt;Board ID.  These are equivalent concepts.
                 &lt;p&gt;This roster entry will only access the specified
-                board if the Base Address (i.e. Board ID, board address, etc.), specified above,
+                board if the Board Address (i.e. Board ID), specified above,
                 &lt;br&gt;was correctly entered when the roster entry was first created.
                 You cannot change it here.
-                &lt;p&gt;Note that some Digitrax documentation refers
-                to Base Address, while other documentation refers to
-                &lt;p&gt;Board Address or Board ID.  These are equivalent concepts.
             &lt;/html&gt;</text>
           </label>
           <label>
@@ -310,6 +319,9 @@
     <pane>
         <name>Signaling Configuration</name>
         <column>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;SE74 "Signaling" Configuration Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Operating Mode&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Control Mode"/>
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Signal Head Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
@@ -326,6 +338,9 @@
     <pane>
         <name>Other Settings</name>
         <column>            
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;SE74 "Other" Configuration Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
         <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;LocoNet Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Bushby"/>
             <display item="Command Source"/>

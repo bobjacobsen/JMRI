@@ -3,11 +3,9 @@ package jmri.jmrix.loconet.accy7thgen;
 import jmri.jmrix.loconet.LnConstants;
 
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 
 /**
  * Accessory 7th Generation Device.
@@ -18,7 +16,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     private String device;
     private int serNum;
     private int baseAddr;
-    private int  firstOps;
+    private int  firstOpSws;
     private Integer turnoutAddrStart;
     private Integer turnoutAddrEnd;
     private Integer SensorAddrStart;
@@ -41,7 +39,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
         setDevice(device);
         this.serNum = serNum;
         this.baseAddr = baseAddr;
-        this.firstOps = firstOps;
+        this.firstOpSws = firstOps;
         turnoutAddrStart = gitTurnoutAddressStart();
         turnoutAddrEnd = gitTurnoutAddressEnd();
         SensorAddrStart = gitSensorAddressStart();
@@ -112,16 +110,21 @@ public class Accy7thGenDevice extends java.beans.Beans {
         this.baseAddr = baseAddr;
     }
 
-    public int gitFirstOps() {
-        return firstOps;
+    public String getFirstOpSws() {
+        return "0x"+Integer.toHexString(firstOpSws);
     }
 
-    public void seetFirstOps(int firstOps) {
-        this.firstOps = firstOps;
+    public void setFirstOpSws(int firstOps) {
+        this.firstOpSws = firstOps;
     }
     
-    
     private Integer gitTurnoutAddressStart() {
+        // TODO: needs to be updated to handle the end-of-turnouts addresss.
+        
+        if (baseAddr < 1 || baseAddr > 2048) {
+            return -1;
+        }
+        
         switch (device) {
             case "DS74":
             case "DS78V":
@@ -133,53 +136,87 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitTurnoutAddressEnd() {
+        int ret;
+        // TODO: needs to be updated to handle the end-of-turnouts addresss.
         switch (device) {
             case "DS74":
-                return baseAddr + 3;
+                if ((firstOpSws & 0x1e) == 0xa) {
+                    // Lights mode
+                    ret = baseAddr+7;
+                } else {
+                    ret = baseAddr + 3;
+                }
+                break;
             case "DS78V":
-                return baseAddr+7;
+                if ((firstOpSws & 0x1e) == 0x0C) {
+                    // four position mode
+                    ret = baseAddr + 15;
+                } else {
+                    ret = baseAddr+7;
+                }
+                break;
             case "SE74":
                 int i = baseAddr+35;
-                if ((firstOps & 0x20) == 0x20) {
-                    i = baseAddr+3;
+                if ((firstOpSws & 0x20) == 0x20) {
+                    ret = baseAddr+3;
+                } else {
+                    ret = i;
                 }
-                return i;
+                break;
             default:
-                return -1;
+                ret = -1;
         }
+        
+        if (ret > 2048) {
+            ret = 2048;
+        }
+        return ret;
     }
     
     private Integer gitSensorAddressStart() {
+        // TODO: needs to be updated to handle the end-of-sensors addresss.
         switch (device) {
-            case "DS74":
             case "DS78V":
+            case "DS74":
             case "SE74":
-                return baseAddr;
             case "PM74":
-                return (2 * (baseAddr - 1)) + 1;
+                return (2 * baseAddr) - 1;
             default:
                 return -1;
         }
     }
 
     private Integer gitSensorAddressEnd() {
+        int ret;
         switch (device) {
-            case "DS74":
             case "SE74":
-                return baseAddr+7;
+                ret = (2 * baseAddr)+7;
+                break;
             case "DS78V":
-                return baseAddr+15;
+                if ((firstOpSws & 0x1e) == 0x0C) {
+                    ret =  (2 * baseAddr) + 30;
+                } else {
+                    ret = (2 * baseAddr)+14;
+                }
+                break;
+            case "DS74":
+                ret = (2 * baseAddr) + 6;
+                break;
             case "PM74":
-                // Four sensors: ( 2 * (Base Addr -1)) + 1), +2, +4, +6
-                // This is sorta consistent with DT602 "version 0.1 
-                // subversion 8" firmware...  I think...
-                return ((2 * (baseAddr -1)) + 1) + 7;
+                ret = ((2 * (baseAddr -1)) + 1) + 7;
+                break;
             default:
-                return -1;
+                ret = -1;
+                break;
         }
+        if (ret > 4096) {
+            ret = 4096;
+        }
+        return ret;
     }
 
     private Integer gitReportersStart() {
+        // TODO: needs to be updated to handle the end-of-reporters addresss.
         switch (device) {
             case "PM74":
                 int i = baseAddr - 1;
@@ -209,6 +246,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitReportersEnd() {
+        // TODO: needs to be updated to handle the end-of-reporters addresss.
         switch (device) {
             case "PM74":
                 int i = baseAddr - 1;
@@ -238,9 +276,10 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitAspectStart() {
+        // TODO: needs to be updated to handle the end-of-aspects addresss.
         switch (device) {
             case "SE74":
-                if ((firstOps & 0x20) == 0x20) {
+                if ((firstOpSws & 0x20) == 0x20) {
                     return baseAddr;
                 } else {
                     return 0;
@@ -251,10 +290,11 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitAspectEnd() {
+        // TODO: needs to be updated to handle the end-of-aspects addresss.
         switch (device) {
             case "SE74":
                 int i = 0;
-                if ((firstOps & 0x20) == 0x20) {
+                if ((firstOpSws & 0x20) == 0x20) {
                     i = baseAddr+15;
                 }
                 if (i > 2048) {
@@ -267,6 +307,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
     }
 
     private Integer gitPowerStart() {
+        // TODO: needs to be updated to handle the end-of-powers addresss.
         switch (device) {
             case "PM74":
                 int i = ((baseAddr - 1) & 0xFF) + 1;
@@ -342,4 +383,8 @@ public class Accy7thGenDevice extends java.beans.Beans {
             return "";
         }
     }   
+    
+    // initialize logging
+    // private static final Logger log = LoggerFactory.getLogger(Accy7thGenDevice.class);
+
 }

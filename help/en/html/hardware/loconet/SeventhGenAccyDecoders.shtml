@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Apple macOS version 5.8.0">
+  <title>JMRI Hardware Support - Digitrax Seventh-Generation Accessory Decoders</title>
+  <meta name="author" content="Bob M.">
+  <meta name="keywords" content="Digitrax Seventh JMRI LocoNet">
+  <link rel="shortcut icon" href="../../../images/jmri48x48.gif" />
+  <!--#include virtual="/Style.shtml" -->
+</head>
+<body>
+  <!--#include virtual="/Header.shtml" -->
+
+  <div id="mBody">
+    <!--#include virtual="Sidebar.shtml" -->
+
+    <div id="mainContent">
+      <h1>Support - Digitrax "Seventh-Generation" Accessory Decoders</h1>
+
+      <table>
+      <div class="toc">
+          <p class="not_mapped_style" style="text-align:left"><strong>Contents</strong>
+          <ul class="snav">
+              <li>
+                <a href="#general">Using Seventh-Generation Accessory Decoders with JMRI</a>
+                <ul>
+                  <li><a href="#configuring">Configuring the Seventh-Generation 
+                          Accessory Device with JMRI's "Roster Entry"</a>
+                  <ul>
+                      <li><a href="#WrongProgrammingMode">Do Not Use Programming "On the 
+                              Programming Track"!</a></li>
+                      <li><a href="#WrongBaseAddress">Changing a Seventh-Generation 
+                          Accessory's "Base Address"</a></li>
+
+                  </ul>
+                  </li>
+                  <li><a href="#routes">Using Digitrax Seventh-generation Accessory Decoder 
+                          "Routes"</a></li>
+                  <li><a href="#addressing">Addressing When Using Digitrax Seventh-generation 
+                          Accessory Decoders</a></li>
+
+                </ul>
+              </li>
+            </ul>
+        </div>
+      <h1 id="general">Using the Seventh-generation Accessory Decoders with JMRI</h1>
+      <p>The Digitrax "Seventh-Generation" Accessory decoders provide a variety 
+      of features via four (or more) devices: the DS74, DS78V, PM74, and SE74 devices. 
+      This help page focuses on those things which are consistent between these 
+      devices.  Primarily, this deals with proper creation of "Roster Entry" information,
+      and changing the Seventh-generation Accessory device's "base address".  
+      
+      <p>Each Seventh-generation Accessory device has its own device-specific help 
+      page.  Each includes specific information for its device type, while relying 
+      on this page for common functionality.  The device-specific pages can be 
+      found at:
+      <ul>
+          <li><a href="DS74.shtml">DS74-device-specific help page;</a></li>
+          <li><a href="DS78V.shtml">DS78V-device-specific help page;</a></li>
+          <li><a href="PM74.shtml">PM74-specific help page;</a> and</li>
+          <li><a href="SE74.shtml">SE74-specific help page.</a></li>
+      </ul>
+      
+      <h2 id="configuring">Configuring the Seventh-Generation Accessory Device 
+          with JMRI's "Roster Entry"</h2>
+      <span class="since">Since <a href="jmri5.3.4.shtml">JMRI 5.3.4</a></span>
+      DecoderPro and/or PanelPro, via the "Roster", can configure the Op Switches 
+      of the Seventh-generation Accessory devices, so long as the JMRI "Roster" definition 
+      exists, and so long as JMRI has a functional LocoNet connection to the device.  
+      As of JMRI "test release" 5.5.5, the Roster definitions for the DS74, S78V, 
+      PM74 and SE74 have been updated to give a more-consistent presentation.  Users are 
+      encouraged to update to this (or a more-recent) JMRI test release, or update to
+      some JMRI "production release" at or after JMRI release 5.6.
+      
+      <p>To configure a Digitrax Seventh-Generation Accessory device, the following 
+          steps apply.  For this example, the SE74 device is used, but any of the 
+          other Digitrax Seventh-Generation Accessory devices can be configured 
+          similarly.
+      <ol>
+          <li>Make sure to <em>change the device's "base address" to an appropriate
+              value before continuing!</em>  Once you have set the "Active Address"
+              (i.e. the device's "Base Address"), you <em>cannot </em> change the 
+              Roster Entry's "Active Address".  It is better to change the device's
+              "Base Address" <em>before </em> creating the Roster Entry!  See 
+              <a href="#WrongBaseAddress">Changing a Seventh-Generation Accessory's "Base 
+                  Address"</a>.</li>
+           <li>Open DecoderPro (as an individual application) or via
+              selecting "Roster" in PanelPro.</li>
+          <li>Create a new "Roster" entry.  Select "Digitrax", then "Series 7 
+              Accessory Devices", then the device type - for this example, the SE74.
+              This changes the display to include the "Create Basic Roster Entry"
+              information.
+              <br>
+              <strong>DO NOT OPEN THE PROGRAMMER ("Comprehensive", "Advanced", "Basic", 
+              "Registers", or any other type!) YET!</strong> And <strong>do not "double-
+              click" the device type!</strong>  Either of these operations will skip 
+              the ability to change the "Active Address" portion of the window, 
+              which <em> you need</em> to specify and save using this screen!  And
+              either will prevent you from saving the roster entry - and force the 
+              roster to "programming on the programming track" - which does NOT work
+              with these Digitrax Seventh-generation Accessory decoder definitions!
+            <br>
+            <img src="images/RosterEntryAddrIdSE74.png">
+          </li>
+          <li><strong>Define the Roster entry's unique "Roster ID" name.</strong></li>
+          <li><strong>Define the "Active Address" for the device</strong>.  Enter 
+              the "Base Address" for the device.</li>
+          <li>"Save" the "New Loco" decoder.</li>
+          <li><strong>Close the "Create New Loco" tool</strong>.  This <em> ensures</em> 
+              that JMRI does not open the "decoder definition" using an incorrect
+              programming method!</li>
+          <li>Once the Roster entry has been defined and saved with the correct "Base 
+              Address", you may then re-open the Roster entry <strong>in the 
+              "Programming on Main" mode</strong>.
+              <br>
+             <img src="images/RosterProgrmmingOnMain.png" alt="Image showing the bottom, right 
+           corner and the 'Programming On Main' button activated.">
+          </li>
+      </ol>
+ 
+      <p>Note that the JMRI Roster tool shows the "programming mode" as "Programming on Main"
+          when correctly configured to work with the Digitrax Seventh-generation 
+          Accessory decoder programmer.  This type of Roster Entry <strong> requires</strong>
+          this.  When opened in the Programming On Main mode, JMRI will be able to 
+          read from, and write to, the addressed device's configuration variables 
+          ('OpSw'itches).  This is shown for a Seventh-generation Accessory device's 
+          opened Roster Entry, as in the partial image below:
+          <br>
+      <img src="images/RosterCorrectProgrammingMode.png" alt="When the bottom 
+           of the Roster entry looks like this image, JMRI will be able read and write
+           to the device.">
+
+      <H3 id="WrongProgrammingMode">Do Not Use Programming "On the Programming Track"!</H3>          
+      <p>If the programmer you select is "On Programming Track" (i.e. on the 
+          "service-mode" programmer), the JMRI programmer <strong>will not be able</strong>
+          to configure the Digitrax Seventh-generation Accessory device!  If a 
+          Digitrax Seventh-generation Accessory decoder is opened incorrectly, the 
+          programmer will show something similar to the partial image shown below, 
+          and JMRI <strong>will not be able to read from, or write to</strong>, the 
+          Seventh-generation Accessory device's configuration!  
+      <br>
+      <img src="images/RosterWrongProgrammingMode.png" alt="When the bottom 
+           of the Roster entry looks anything like this image, JMRI will not read or write
+           to the device!">
+      <p>Please remember to <em>use the "Programming on Main" mode</em> when programming 
+          any Seventh-generation Accessory devices! 
+
+      <H3 id="WrongBaseAddress">Changing a Seventh-generation Accessory's "Base Address"</H3>
+      Well... you cannot - at least within a JMRI Roster Entry.  This is because the 
+      Seventh-generation Accessory decoder's "Base Address" cannot be reliably 
+      changed in JMRI via "CV" writes.  Luckily, another option is available.
+      
+      <p>The steps below should work to change the 
+      Base Address of a Digitrax Seventh-generation Accessory Device.
+      
+      <ol>
+          <li>If you have the current configuration as a JMRI Roster Entry 
+          (with the "old" Base Address), and the device at that "old" address,
+          be sure to "Write" the CV information to the Digitrax Seventh-generation
+          device!</li>
+          <li>Close the Roster Entry if it is opened.</li>
+          <li>Use Digitrax instructions to change the device's "Base Address" to 
+              a new value.</li>
+          <li>Create a new JMRI Roster Entry using the new "Base Address".  Use 
+              <a href="#configuring">the instructions provided in a previous section</a> 
+              in this help page.</li>
+          <li><strong><em> Save</em></strong> the new Roster Entry.  This is still an 
+          important step!</li>
+          <li><strong>Close the "Create New Loco" tool</strong>.  This <em> ensures</em> 
+              that JMRI does not open the "decoder definition" using an incorrect
+              programming method!</li>
+          <li><em> Open</em> that new Roster Entry (with "Programming  on the Main"!).</li>
+          <li><em> Read</em> the entire set of CVs (OpSws) into the Roster Entry.</li>
+          <li><strong><em> Save</em></strong> the new Roster Entry.</li>
+          <li>You may delete the previous Roster Entry, at the old "Base Address", 
+          if you wish.</li>
+      </ol>
+
+      <h2 id="routes">Using Digitrax Seventh-generation Accessory Decoder "Routes"</h2>
+      <p>Several types of Digitrax Seventh-generation Accessory device provide a "routes"
+          functionality.  Where the devices provide the feature, the "Roster Entry" can
+          only provide access to the "OpSw"s which control the device's "Routes".  The 
+          Roster Entry cannot read or write the individual switch entries of any 
+          Digitrax Seventh-generation Accessory device.  Instead, use the mechanisms 
+          described in the appropriate Digitrax manual.
+        <p>JMRI may <em> trigger</em> a Route stored in a Seventh-generation Accessory
+          decoder, if the device has enabled LocoNet triggering of its routes.
+            
+        <h2 id="addressing">Addressing When Using Digitrax Seventh-generation 
+                          Accessory Decoders</h2>
+        Digitrax Seventh-generation Accessory decoders implement multiple types of
+        LocoNet messages, depending on the type of accessory decoder.  The addressing 
+        types implemented by each are summarized below:
+        <p>
+        <table border="1" class="not_mapped_style2" style="text-align:center table-layout: fixed; width: 100%">
+            <tr>
+                <th colspan="2" style="text-align:right">Addressing Type:</th>
+                <th>Switch </th> 
+                <th>Sensor </th>
+                <th>Transponding</th>
+                <th>"Signal Aspect" </th>
+                <th>"Power Status"</th></tr>
+            <tr><th colspan="2" style="text-align:right">JMRI equivalent:</th>
+                <th rowspan="2">'Turnout'</th>
+                <th rowspan="2">'Sensor'</th>
+                <th rowspan="2">'Reporter'</th> 
+                <th rowspan="2">approximately, 'DCC<br>Signal Decoder'</th>
+                <th rowspan="2"><em>(No equivalent)</em></th>
+            </tr>
+            <tr>
+                <th colspan='2' style="text-align:left">Device Type</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+                
+            <tr style="text-align:center"><td colspan="2" style="text-align:left"><a href="DS74.shtml">DS74 </a></td>
+                <td>Yes </td><td>Yes </td>
+                <td></td><td></td><td></td></tr>
+            <tr style="text-align:center"><td colspan="2" style="text-align:left"><a href="DS78V.shtml">DS78V </a>
+                </td><td>Yes </td><td>Yes </td>
+                <td></td><td></td><td></td></tr>
+            <tr style="text-align:center"><td colspan="2" style="text-align:left"><a href="PM74.shtml">PM74 </a>
+                </td><td></td><td>Yes </td><td>Yes </td>
+                <td></td><td>Yes </td></tr>
+            <tr style="text-align:center"><td colspan="2" style="text-align:left"><a href="SE74.shtml">SE74 </a>
+                </td><td>Yes </td><td>Yes </td><td>
+                </td><td>(Optional)</td><td></td></tr>
+        </table>
+        
+        <p>Details of the LocoNet addressing of the Digitrax Seventh-generation Accessory 
+        devices may be found in the help pages for each device, linked above.
+        
+        <p>The optional SE74 "Signal Aspect" address is dependent on the SE74's 
+            "Aspect-mode" signaling.  When configured for Aspect-mode, an SE74's
+            signal head is considered to exist in JMRI's "DCC Signal Decoder" 
+            address space.  When configured for "SE8C-mode", its signsl heads exist 
+            in JMRI's "Turnout" address space.  Details are provided in the 
+            <a href="SE74.shtml"> SE74</a>-specific help page.
+                
+        <p>Note that the "Power Status" does not have an equivalent in JMRI.
+
+      <hr>
+      <p>LocoNet&reg; is a registered trademark of <a href="https://www.digitrax.com/">Digitrax,
+      Inc.</a></p>
+      <!--#include virtual="/Footer.shtml" -->`
+    </div>
+    <!-- closes #mainContent-->
+  </div>
+  <!-- closes #mBody-->
+</body>
+</html>

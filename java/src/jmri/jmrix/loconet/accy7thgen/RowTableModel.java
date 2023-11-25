@@ -6,8 +6,8 @@ import javax.swing.table.*;
 
 import jmri.jmrix.loconet.LnTrafficController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 /**
  *  A TableModel that better supports the processing of rows of data. That

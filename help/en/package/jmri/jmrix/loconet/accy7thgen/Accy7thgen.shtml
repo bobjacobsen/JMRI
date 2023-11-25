@@ -84,7 +84,7 @@
           modes, where each reported piece of information corresponds to a single 
           address.
 
-      <h2 href="#baseChange">Changing 7th-generation Accessory 'Base Address'</h2>
+      <h2 id="baseChange">Changing 7th-generation Accessory 'Base Address'</h2>
       <p>To change a device's "Base Address", which changes the individual associated 
           addresses of the device, use the "Change Base Addr." button.  The tool then 
           opens a "dialog box" asking for the new "base address".  If the entered 
@@ -93,7 +93,7 @@
           and re-scans the available Digitrax 7th-generation Accessory devices, and,
           if necessary, updates the highlighting of any "conflicting" addresses.
 
-      <h3 href="#Addressnuances">Nots on choosing a 'Base Address'</h3>
+      <h3 id="Addressnuances">Notes on choosing a 'Base Address'</h3>
       <p>Most devices use the "Base Address" as the first of several "Turnout" 
           addresses.  But the PM74 "Base Address" is defined to be the "Power"
           address, with Sensors at about 8 times the "Base Address" and with 
@@ -111,7 +111,7 @@
           signaling.  That way this tool can get the signaling mode information
           and calculate the address correctly.
                     
-      <h2 href="#rosterentries">Updating Roster entries when changing a device's 'Base Address'</h2>    
+      <h2 id="rosterentries">Updating Roster entries when changing a device's 'Base Address'</h2>    
       <p>Note that changing a device's "Base Address" will make its "Roster Entry",
           effectively, "unusable", if there was one created.  This is because the
           Roster Entry does allow the user to define the "Base Address" when the

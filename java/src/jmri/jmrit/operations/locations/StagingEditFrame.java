@@ -4,6 +4,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.*;
 
+import jmri.jmrit.operations.locations.schedules.tools.SchedulesAndStagingAction;
 import jmri.jmrit.operations.locations.tools.TrackDestinationEditAction;
 import jmri.jmrit.operations.routes.Route;
 import jmri.jmrit.operations.trains.Train;
@@ -32,7 +33,7 @@ public class StagingEditFrame extends TrackEditFrame {
     
     @Override
     public void initComponents(Track track) {
-        setTitle(Bundle.getMessage("EditStaging"));
+        setTitle(Bundle.getMessage("EditStaging", track.getLocation().getName()));
         initComponents(track.getLocation(), track);
     }
 
@@ -73,6 +74,8 @@ public class StagingEditFrame extends TrackEditFrame {
         super.initComponents(location, track);
 
         _toolMenu.insert(new TrackDestinationEditAction(this), TOOL_MENU_OFFSET);
+        // place at end of menu
+        _toolMenu.add(new SchedulesAndStagingAction());
         addHelpMenu("package.jmri.jmrit.operations.Operations_Staging", true); // NOI18N
 
         // override text strings for tracks

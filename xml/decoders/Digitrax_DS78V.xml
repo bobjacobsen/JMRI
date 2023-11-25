@@ -22,11 +22,17 @@
         </programming>
 
         <variables>
-          <!-- Needed to set the "Base Address" value. May be set when creating 
-            the initial roster entry.  May not be modified after creation! -->
-          <variable CV="1,2" comment="Board address" item="Long Address" default="40" infoOnly="yes">
+          <!-- Need to set the "Base Address" value. May be set when creating 
+            the initial roster entry _when using the 'New Loco' button_.  The 
+            address _may not be modified after creation_!  
+
+            As such, the Roster's "Create Loco" menu item, and any similar method for creating a new roster entry 
+            without "pre-specifying" the base address, will default to the base 
+            address of '1' and _not be changeable_.
+            -->
+          <variable CV="1,2" comment="Base address" item="Long Address" default="1" infoOnly="yes">
             <splitVal highCV="2" min="1" max="2045"/>
-            <label>Board Address</label>
+            <label>Base Address</label>
           </variable>
 
           <variable CV="7" item="Decoder Version" readOnly="yes" default="124">
@@ -149,113 +155,107 @@
             <label>CV15</label>
           </variable>
 
-          <variable CV="16" item="CV16" default="0" readOnly="yes"
-                tooltip="OpSws 41-48" mask="VVVVVVVV">
-            <decVal min="0" max="255"/>
-            <label>CV16</label>
-          </variable>
-
-          <variable CV="0.25" item="Servo 1 Thrown Angle" default="10">
+          <variable CV="0.25" item="Servo 1 Thrown position" default="10">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="0.26" item="Servo 1 Closed Angle" default="240">
+          <variable CV="0.26" item="Servo 1 Closed position" default="240">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="0.27" item="Servo 1 Approach Angle" default="125">
+          <variable CV="0.27" item="Servo 1 'Approach' position" default="125">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="0.28" item="Servo 1 Approach Medium Angle" default="125">
+          <variable CV="0.28" item="Servo 1 'Approach Medium' position" default="125">
             <decVal min="0" max="255" />
           </variable>
 
-          <variable CV="1.25" item="Servo 2 Thrown Angle" default="10">
+          <variable CV="1.25" item="Servo 2 Thrown position" default="10">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="1.26" item="Servo 2 Closed Angle" default="240">
+          <variable CV="1.26" item="Servo 2 Closed position" default="240">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="1.27" item="Servo 2 Approach Angle" default="125">
+          <variable CV="1.27" item="Servo 2 'Approach' position" default="125">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="1.28" item="Servo 2 Approach Medium Angle" default="125">
-            <decVal min="0" max="255" />
-          </variable>
-
-          <variable CV="2.25" item="Servo 3 Thrown Angle" default="10">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="2.26" item="Servo 3 Closed Angle" default="240">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="2.27" item="Servo 3 Approach Angle" default="125">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="2.28" item="Servo 3 Approach Medium Angle" default="125">
+          <variable CV="1.28" item="Servo 2 'Approach Medium' position" default="125">
             <decVal min="0" max="255" />
           </variable>
 
-          <variable CV="3.25" item="Servo 4 Thrown Angle" default="10">
+          <variable CV="2.25" item="Servo 3 Thrown position" default="10">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="3.26" item="Servo 4 Closed Angle" default="240">
+          <variable CV="2.26" item="Servo 3 Closed position" default="240">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="3.27" item="Servo 4 Approach Angle" default="125">
+          <variable CV="2.27" item="Servo 3 'Approach' position" default="125">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="3.28" item="Servo 4 Approach Medium Angle" default="125">
-            <decVal min="0" max="255" />
-          </variable>
-
-          <variable CV="4.25" item="Servo 5 Thrown Angle" default="10">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="4.26" item="Servo 5 Closed Angle" default="240">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="4.27" item="Servo 5 Approach Angle" default="125">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="4.28" item="Servo 5 Approach Medium Angle" default="125">
+          <variable CV="2.28" item="Servo 3 'Approach Medium' position" default="125">
             <decVal min="0" max="255" />
           </variable>
 
-          <variable CV="5.25" item="Servo 6 Thrown Angle" default="10">
+          <variable CV="3.25" item="Servo 4 Thrown position" default="10">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="5.26" item="Servo 6 Closed Angle" default="240">
+          <variable CV="3.26" item="Servo 4 Closed position" default="240">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="5.27" item="Servo 6 Approach Angle" default="125">
+          <variable CV="3.27" item="Servo 4 'Approach' position" default="125">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="5.28" item="Servo 6 Approach Medium Angle" default="125">
-            <decVal min="0" max="255" />
-          </variable>
-
-          <variable CV="6.25" item="Servo 7 Thrown Angle" default="10">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="6.26" item="Servo 7 Closed Angle" default="240">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="6.27" item="Servo 7 Approach Angle" default="125">
-            <decVal min="0" max="255" />
-          </variable>
-          <variable CV="6.28" item="Servo 7 Approach Medium Angle" default="125">
+          <variable CV="3.28" item="Servo 4 'Approach Medium' position" default="125">
             <decVal min="0" max="255" />
           </variable>
 
-          <variable CV="7.25" item="Servo 8 Thrown Angle" default="10">
+          <variable CV="4.25" item="Servo 5 Thrown position" default="10">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="7.26" item="Servo 8 Closed Angle" default="240">
+          <variable CV="4.26" item="Servo 5 Closed position" default="240">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="7.27" item="Servo 8 Approach Angle" default="125">
+          <variable CV="4.27" item="Servo 5 'Approach' position" default="125">
             <decVal min="0" max="255" />
           </variable>
-          <variable CV="7.28" item="Servo 8 Approach Medium Angle" default="125">
+          <variable CV="4.28" item="Servo 5 'Approach Medium' position" default="125">
+            <decVal min="0" max="255" />
+          </variable>
+
+          <variable CV="5.25" item="Servo 6 Thrown position" default="10">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="5.26" item="Servo 6 Closed position" default="240">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="5.27" item="Servo 6 'Approach' position" default="125">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="5.28" item="Servo 6 'Approach Medium' position" default="125">
+            <decVal min="0" max="255" />
+          </variable>
+
+          <variable CV="6.25" item="Servo 7 Thrown position" default="10">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="6.26" item="Servo 7 Closed position" default="240">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="6.27" item="Servo 7 'Approach' position" default="125">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="6.28" item="Servo 7 'Approach Medium' position" default="125">
+            <decVal min="0" max="255" />
+          </variable>
+
+          <variable CV="7.25" item="Servo 8 Thrown position" default="10">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="7.26" item="Servo 8 Closed position" default="240">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="7.27" item="Servo 8 'Approach' position" default="125">
+            <decVal min="0" max="255" />
+          </variable>
+          <variable CV="7.28" item="Servo 8 'Approach Medium' position" default="125">
             <decVal min="0" max="255" />
           </variable>
 
@@ -274,16 +274,27 @@
     <name>CVs</name>
     <column>
         <row>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;DS78v OpSw Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
+        </row>
+        <row>
             <cvtable/>
         </row>
         <row>
             <column>
                 <label>
-                    <text>&lt;html&gt;The "CV" column in the table above shows CV
-                        numbers, not the Op Switch number.  To see those, hover
-                        your mouse over a variable on the OpSw Settings pane.
-                        &lt;p&gt;&lt;p&gt;The top-most row above reflects the Board
-                        Address configured on the "Basic" sheet.
+                    <text>&lt;html&gt;Notes:&lt;ul&gt;
+                        &lt;li&gt;&lt;strong&gt;BE SURE THAT NO DEVICE&lt;/strong&gt;
+                        uses the same "base address" or "NMRA extended accessory address" &lt;strong&gt;or&lt;/strong&gt; 
+                        &lt;p&gt;&lt;strong&gt;uses any of &lt;/strong&gt;the seven following "base addresses" or 
+                        "NMRA extended accessory addresses".
+                        &lt;li&gt;&lt;*CV "Numbers" like "0.25" thur "7.28" are "special" CVs which this Roster entry handles specially. 
+                        &lt;li&gt;The "CV" column in the table above shows CV numbers, not the Op Switch number.  To 
+                        &lt;br&gt;see those, hover your mouse over a variable on the OpSw Settings pane.
+                        &lt;li&gt;CVs 1 and 2 reflect the Board Address configured on the "Basic" sheet as a 11 bit value,
+                        &lt;br&gt;with the lowest 8 bits in CV 1 and the remaining 3 bits in CV 2 as its least-significant bits.
+                        &lt;li&gt;CV "Numbers" like "0.25" thur "7.28" are "special" CVs which this Roster entry handles specially. 
                     </text>
                 </label>
                 <label>
@@ -297,6 +308,10 @@
   <pane>
       <name>Basic</name>
       <column>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;DS78V Base Address&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
+
           <display item="Long Address"/>
           <label>
               <text> </text>
@@ -304,11 +319,11 @@
           <label>
             <text>&lt;html&gt;&lt;p&gt;
                 &lt;p&gt;This roster entry will only access the specified
-                board if the Board Address (i.e. Board ID), specified above,
+                board if the Base Address (i.e. Board ID), specified above,
                 &lt;br&gt;was correctly entered when the roster entry was first created.
                 You cannot change it here.
                 &lt;p&gt;Note that some Digitrax documentation refers
-                to Board Address, while other documentation refers to
+                to Base Address, while other documentation refers to
                 &lt;p&gt;Board ID.  These are equivalent concepts.
             &lt;/html&gt;</text>
           </label>
@@ -318,6 +333,14 @@
           </label>
 
           <display item="Serial Number"/>
+            <label>
+                <text>&lt;html&gt;Notes:&lt;ul&gt;
+                    &lt;li&gt;&lt;strong&gt;BE SURE THAT NO DEVICE&lt;/strong&gt;
+                    uses the same "base address" or "NMRA extended accessory address" &lt;strong&gt;or&lt;/strong&gt; 
+                    &lt;p&gt;&lt;strong&gt;uses any of &lt;/strong&gt;the seven following "base addresses" or 
+                    "NMRA extended accessory addresses".
+                </text>
+            </label>
 
       </column>
   </pane>
@@ -325,6 +348,9 @@
     <pane>
         <name>OpSw Settings</name>
         <column>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h1&gt;&lt;strong&gt;DS78V Configuration Settings&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Output Chacteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Output Type"/>
             <display item="Command Source"/>
@@ -336,6 +362,14 @@
 
             <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h2&gt;&lt;strong&gt;Input Characteristics&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             <display item="Input Lines"/>
+            <label>
+                <text>&lt;html&gt;Notes:&lt;ul&gt;
+                    &lt;li&gt;&lt;strong&gt;BE SURE THAT NO DEVICE&lt;/strong&gt;
+                    uses the same "base address" or "NMRA extended accessory address" &lt;strong&gt;or&lt;/strong&gt; 
+                    &lt;p&gt;&lt;strong&gt;uses any of &lt;/strong&gt;the seven following "base addresses" or 
+                    "NMRA extended accessory addresses".
+                </text>
+            </label>
         </column>
     </pane>
 
@@ -343,58 +377,103 @@
         <name>Servos</name>
         <column>
             <row>
-                <display item="Servo 1 Thrown Angle"/>
-                <display item="Servo 1 Closed Angle"/>
-                <display item="Servo 1 Approach Angle"/>
-                <display item="Servo 1 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;DS78V Servo Positions&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
             </row>
             <row>
-                <display item="Servo 2 Thrown Angle"/>
-                <display item="Servo 2 Closed Angle"/>
-                <display item="Servo 2 Approach Angle"/>
-                <display item="Servo 2 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 1&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 1 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 1 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 1 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 1 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
             </row>
             <row>
-                <display item="Servo 3 Thrown Angle"/>
-                <display item="Servo 3 Closed Angle"/>
-                <display item="Servo 3 Approach Angle"/>
-                <display item="Servo 3 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 2&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 2 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 2 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 2 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 2 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
             </row>
             <row>
-                <display item="Servo 4 Thrown Angle"/>
-                <display item="Servo 4 Closed Angle"/>
-                <display item="Servo 4 Approach Angle"/>
-                <display item="Servo 4 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 3&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 3 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 3 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 3 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 3 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
             </row>
             <row>
-                <display item="Servo 5 Thrown Angle"/>
-                <display item="Servo 5 Closed Angle"/>
-                <display item="Servo 5 Approach Angle"/>
-                <display item="Servo 5 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 4&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 4 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 4 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 4 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 4 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
             </row>
             <row>
-                <display item="Servo 6 Thrown Angle"/>
-                <display item="Servo 6 Closed Angle"/>
-                <display item="Servo 6 Approach Angle"/>
-                <display item="Servo 6 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 5&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 5 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 5 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 5 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 5 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
             </row>
             <row>
-                <display item="Servo 7 Thrown Angle"/>
-                <display item="Servo 7 Closed Angle"/>
-                <display item="Servo 7 Approach Angle"/>
-                <display item="Servo 7 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 6&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 6 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 6 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 6 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 6 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
             </row>
             <row>
-                <display item="Servo 8 Thrown Angle"/>
-                <display item="Servo 8 Closed Angle"/>
-                <display item="Servo 8 Approach Angle"/>
-                <display item="Servo 8 Approach Medium Angle"/>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 7&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 7 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 7 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 7 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 7 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
             </row>
+            <row>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;h3&gt;&lt;strong&gt;Servo 8&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+                <display item="Servo 8 Thrown position" label="&lt;html&gt;'Thrown'&lt;p&gt;'Clear'&#58;"/>
+                <display item="Servo 8 Closed position" label="&lt;html&gt;'Closed'&lt;p&gt;'Stop'&#58;"/>
+                <display item="Servo 8 'Approach' position" label="&lt;html&gt;'Approach'&#58;"/>
+                <display item="Servo 8 'Approach Medium' position" label="&lt;html&gt;'Approach-&lt;p&gt;Medium'&#58;"/>
+            </row>
+        <row>
+                <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;&lt;br&gt;&lt;h3&gt;&lt;strong&gt;Notes on servo positioning&lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text></label>
+            </row>
+            <row>
+        <label><text>&lt;html&gt;&lt;ul&gt;
+                    &lt;li&gt;&lt;strong&gt;BE SURE THAT NO DEVICE&lt;/strong&gt;
+                    uses the same "base address" or "NMRA extended accessory address" &lt;strong&gt;or&lt;/strong&gt; 
+                    &lt;p&gt;&lt;strong&gt;uses any of &lt;/strong&gt;the seven following "base addresses" or 
+                    "NMRA extended accessory addresses".
+            &lt;li&gt;Each 'position' refers to the servo's position for a given turnout's position.  Each 
+            &lt;p&gt;'position' value relates to 1/256th of the DS78V's total throw, which &lt;strong&gt;is not&lt;/strong&gt;
+            &lt;p&gt;&lt;strong&gt;necessarily&lt;/strong&gt; the same as the full 'swing' that the servo possesses "natively'.&lt;/li&gt;
+            &lt;li&gt;The DS78V can only exercise a "typical" R/C-style servo between its 0-degree 
+            &lt;p&gt;position and about its 100-degree position  It &lt;strong&gt;cannot&lt;/strong&gt; exercise the SG90 servo to 
+            &lt;p&gt;angles corresponding to the remainder of the range of its motion.&lt;/li&gt;
+            &lt;/html&gt;</text>
+        </label>       
+        </row>
+            
         </column>
+
+           
     </pane>
     <pane>
       <name>Notes</name>
       <column>
+            <label>
+                <text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;
+            &lt;h2&gt;&lt;strong&gt;General Note:
+            &lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
+            </label>
+            <label>
+                <text>&lt;html&gt;&lt;ul&gt;
+                    &lt;li&gt;&lt;strong&gt;BE SURE THAT NO DEVICE&lt;/strong&gt;
+                    uses the same "base address" or "NMRA extended accessory address" &lt;strong&gt;or&lt;/strong&gt; 
+                    &lt;p&gt;&lt;strong&gt;uses any of &lt;/strong&gt;the seven following "base addresses" or 
+                    "NMRA extended accessory addresses".
+                </text>
+            </label>
         <label><text>&lt;html&gt;&lt;span style=&quot;color: black;&quot;&gt;
             &lt;h2&gt;&lt;strong&gt;Notes on DS78V Roster Entries and Programming
             &lt;/strong&gt;&lt;/h2&gt;&lt;/html&gt;</text>
@@ -404,15 +483,13 @@
                 &lt;li&gt;
                 This roster entry uses the "Extended Accessory Decoder CV" method 
                 &lt;p&gt;to access the DS78V's "OpSw"s.  This is effectively the same as 
-                &lt;p&gt;is described in the DS78V instruction in the "Programming DS74 CVs"
+                &lt;p&gt;is described in the DS78V instruction in the "Programming DS78V CVs"
                 &lt;p&gt;section.
                 &lt;/li&gt;
                 &lt;li&gt;
                 The DS78V Roster entry has no ability to change the entry's "Base Address".
                 &lt;p&gt;Use the mechanisms shown in the DS78V's Manual for Digitrax' suggestions
                 &lt;p&gt;for changing the Base Address.
-                &lt;/li&gt;
-                &lt;li&gt;
                 &lt;/li&gt;
             </text>
         </label>

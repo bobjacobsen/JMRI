@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta name="generator" content="HTML Tidy for HTML5 for Apple macOS version 5.8.0">
-  <title>JMRI Hardware Support - LocoNet&reg; Addressing</title>
+  <title>JMRI Hardware Support - Digitrax SE74 "7th-Generation" Signal Head Controller</title>
   <meta name="author" content="Bob M.">
-  <meta name="keywords" content="Digitrax SE74 with JMRI">
+  <meta name="keywords" content="Digitrax SE74 JMRI LocoNet">
+  <link rel="shortcut icon" href="../../../images/jmri48x48.gif" />
   <!--#include virtual="/Style.shtml" -->
 </head>
 <body>
@@ -14,113 +15,72 @@
     <!--#include virtual="Sidebar.shtml" -->
 
     <div id="mainContent">
-      <h1>Support: Digitrax SE74</h1>
+      <h1>Support - Digitrax SE74 "7th-Generation" Signal Head Controller</h1>
 
-      <table>
-        <tr><td>
-      <ul class="snav">
-        <li>
-          <a href="#general">Using the SE74 with JMRI</a>
-          <ul>
-            <li><a href="#configuring">Configuring the SE74 with JMRI</a>
-            <ul>
-                <li><a href="#WrongProgrammingMode">Do Not Use Programming "On the Programming Track"!</a></li>
-                <li><a href="#WrongBaseAddress">Changing a Roster Entry's "Base Address"</a></li>
-            </ul>
-            </li>
-            <li><a href="#loconetaddresses">SE74 LocoNet Addressing</a>
-              <ul>
-                  <li><a href="#loconetturnoutaddressess">SE74 Switch Usage</a>
-                      <ul><li><a href="#se8cturnoutaddresses">SE74's "SE8C-style" Signaling, via LocoNet Switches</a></li></ul> 
-                  <li><a href="#loconetsensoraddresses">SE74 Sensor Usage</a></li>
-                  <li><a href="#aspectaddressing">SE74 "Aspect-style" Signaling</a></li>
-              </ul>
+            <img src="images/Se74.png" width="520" alt="An image of the Digitrax SE74 
+              with one signal cable attached and one signal connected to 
+              that signal cable">
+
+      <div class="toc">
+          <p class="not_mapped_style" style="text-align:left"><strong>Contents</strong>
+          <ul class="snav">
+              <li>
+                <a href="#general">Using the SE74 with JMRI</a>
+                <ul>
+                  <li><a href="#configuring">Configuring the SE74 with JMRI</a>
+                  <ul>
+                      <li><a href="#WrongProgrammingMode">Do Not Use Programming "On the Programming Track"!</a></li>
+                      <li><a href="#WrongBaseAddress">Changing a Roster Entry's "Base Address"</a></li>
+                  </ul>
+                  </li>
+                  <li><a href="#loconetaddresses">SE74 LocoNet Addressing</a>
+                    <ul>
+                        <li><a href="#loconetturnoutaddressess">SE74 Switch Usage</a>
+                            <ul><li><a href="#se8cturnoutaddresses">SE74's "SE8C-style" Signaling, via LocoNet Switches</a></li></ul> 
+                        <li><a href="#loconetsensoraddresses">SE74 Sensor Usage</a></li>
+                        <li><a href="#aspectaddressing">SE74 "Aspect-style" Signaling</a></li>
+                    </ul>
+                    </li>
+                  <li><a href="#signaling">SE74 and JMRI Signaling</a>
+                    <ul>
+                    <li><a href="#se8csig">Signaling when the SE74 is in "SE8C-compatible" mode</a></li>
+                    <li><a href="#aspectsig">Signaling when the SE74 is in "aspect" mode</a></li>
+                    <li><a href="#whichsigmode">Which SE74 signaling mode should I choose?</a></li>
+                    <li><a href="#configAspectSignaljmri">Configuring SE74 "Aspect"-mode
+                          "Signal Head" objects in JMRI</a></li>
+                    <li><a href="#configSe8cSignaljmri">Configuring SE74 "SE8C"-mode "Signal
+                          Head" objects in JMRI</a></li>
+                    <li><a href="#configSigMastjmri">Configuring SE74 Signal Heads on
+                            Signal Masts in JMRI</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="#turnouts">Controlling SE74 "turnout" outputs</a></li>
+                  <li><a href="#inputs">Using SE74 Inputs</a></li>
+                  <li><a href="#routes">Using SE74 Routes</a></li>
+                </ul>
               </li>
-            <li><a href="#signaling">SE74 and JMRI Signaling</a><ul>
-              <li><a href="#se8csig">Signaling when the SE74 is in "SE8C-compatible" mode</a></li>
-              <li><a href="#aspectsig">Signaling when the SE74 is in "aspect" mode</a></li>
-              <li><a href="#whichsigmode">Which SE74 signaling mode should I choose?</a></li>
-              <li><a href="#configAspectSignaljmri">Configuring SE74 "Aspect"-mode
-                    "Signal Head" objects in JMRI</a></li>
-              <li><a href="#configSe8cSignaljmri">Configuring SE74 "SE8C"-mode "Signal
-                    Head" objects in JMRI</a></li>
-              <li><a href="#configSigMastjmri">Configuring SE74 Signal Heads on
-                      Signal Masts in JMRI</a></li>
             </ul>
-            </li>
-            <li><a href="#turnouts">Controlling SE74 "turnout" outputs</a></li>
-            <li><a href="#inputs">Using SE74 Inputs</a></li>
-            <li><a href="#routes">Using SE74 Routes</a></li>
-          </ul>
-        </li>
-
-      <!-- h2 TOC -->
-      </ul>
-              </td><td>
-                  <img src="images/Se74.png" width="100%" alt="An image of the SE74 
-                       with one signal cable attached and one signal connected to 
-                        that signal cable">
-              </td>    </table>
+        </div>
 
       <h1 id="general">Using the SE74 with JMRI</h1>
       <p>The Digitrax SE74 provides a variety of features which may be used with JMRI.
-      JMRI-supported features include signal control, switch control, and inputs.
+      JMRI-supported features include signal control, switch control, and Sensor 
+      "inputs".
 
       <h2 id="configuring">Configuring the SE74 with JMRI</h2>
       <span class="since">Since <a href="jmri5.3.4.shtml">JMRI 5.3.4</a></span>
       DecoderPro and/or PanelPro, via the "Roster", can configure the Op Switches 
-      of the SE74 so long as it has a LocoNet connection to the SE74.
+      of the DS78V so long as it has a LocoNet connection to the SE74.  See 
+      <a href="SeventhGenAccyDecoders.shtml#configuring">Configuring the Seventh-
+         Generation Accessory Device with JMRI's "Roster Entry"</a>.
       
-      <p>To do this, you open DecoderPro (as an individual application or via
-      selecting "Roster" in PanelPro) and create a new "Roster" entry. Select the
-      "Digitrax SE74" <strong>define the "Active Address" for the SE74</strong>.
-      Define the Roster entry's unique "Roster ID".  
-      
-      <p>Then "Save" the "New Loco" decoder, and <strong>close the "Create New Loco"
-          tool</strong>.  This <em> ensures</em> that JMRI does not open the 
-          "decoder definition" using an incorrect programming method!
-      <p>Once the Roster entry has been defined and saves with the correct "Base Address", you 
-          may then open the decoder entry <strong>in the "Programming on Main" mode
-          </strong>.  
-      <p>The JMRI Roster tool shows the "programming mode" as "Programming on Main
-          "when correctly configured to work with the SE74 programmer.  This is 
-          shown in the image below:
-          <br>
-      <img src="images/RosterSE74Example.png" alt="Image showing the bottom, right 
-           corner and the 'Programming On Main' button actinated.">
-      <p>This SE74 "decoder definition" <strong> requires</strong> this!
-          You can then use the usual DecoderPro panes to read and write the configuration
-          variables ('OpSw'itches) in the SE74.
-      <p>The Roster "entry" programmer will show the following at the bottom of 
-          the Roster Entry page when the programmer is in the correct programming
-          mode!
-          <br>
-      <img src="images/SE74CorrectProgrammingMode.png" width="30%" alt="When the bottom 
-           of the Roster entry looks like this image, JMRI will be able read and write
-           to the SE74.">
-          
-      <p>Note that configuring the SE74's "Routes" may be done using the methods 
-          described in the Digitrax SE74 documentation.
-      <br>
-      <H3 id="WrongProgrammingMode">Do Not Use Programming "On the Programming Track"!</H3>          
-      <p>When you select "On Programming Track" (i.e. on the "service-mode" programmer),
-          the JMRI programmer <strong>will not</strong> configure the SE74! If you open 
-          a SE74 Roster, and see the following at the bottom of the tool, you
-          <strong>will not be able to write or read the SE74 configuration</strong>!  
-          Please remember to <em>use the "Programming on Main" mode</em> when programming the 
-          SE74 and other 7th-generation Accessory devices! 
-      <br>
-      <img src="images/SE74WrongProgrammingMode.png" width="50%" alt="When the bottom 
-           of the Roster entry looks anything like this image, JMRI will not read or write
-           to the SE74!">
-      <br>
       <H3 id="WrongBaseAddress">Changing a Roster Entry's "Base Address"</H3>
-      Well... you cannot, at least within JMRI, for now.  We are working on it, though.  
-      <p>But you can write the current Roster Entry's values to a SE74, then use 
-      Digitrax instructions to change its "Base Address" to a new value, then create 
-      a new JMRI Roster Entry using the new "Base Address".  Then save and then open 
-      that new Roster Entry...
+      Well... you cannot, at least within a JMRI Roster Entry.  This is because the 
+      7th-generation "Base Address" cannot be reliably changed in JMRI via CV writes.
+      Some other solution must be used.  This is described in <a href="SeventhGenAccyDecoders.shtml#WrongBaseAddress">
+          Changing a Seventh-generation Accessory's "Base Address"</a>
 
+ 
       <h2 id="loconetaddresses">SE74 LocoNet Addressing</h2>
       <p>The SE74 uses several types of LocoNet addressing.  It uses LocoNet Switch addresses:
       <ul>
@@ -789,6 +749,7 @@
             control message which matches the "trigger" entry for any one of
             the routes configured in the SE74.
 
+      <hr>
       <p>LocoNet&reg; is a registered trademark of <a href="https://www.digitrax.com/">Digitrax,
       Inc.</a></p>
       <!--#include virtual="/Footer.shtml" -->

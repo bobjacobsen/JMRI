@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.stream.Stream;
 import java.util.UUID;
 
 import javax.swing.AbstractAction;
@@ -292,10 +291,13 @@ public class StoreAndCompare extends AbstractAction {
             }
 
             if (!match) {
-                // if either line contains a fontname attribute
+                // remove fontname and fontFamily attributes from comparison
                 String fontname_regexe = "( fontname=\"[^\"]*\")";
                 line1 = filterLineUsingRegEx(line1, fontname_regexe);
                 line2 = filterLineUsingRegEx(line2, fontname_regexe);
+                String fontFamily_regexe = "( fontFamily=\"[^\"]*\")";
+                line1 = filterLineUsingRegEx(line1, fontFamily_regexe);
+                line2 = filterLineUsingRegEx(line2, fontFamily_regexe);
             }
 
             // Check if timebase is ignored

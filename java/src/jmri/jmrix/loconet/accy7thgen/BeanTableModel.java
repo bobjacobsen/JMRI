@@ -3,8 +3,6 @@ package jmri.jmrix.loconet.accy7thgen;
 import java.lang.reflect.*;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *  The BeanTableModel will use reflection to determine the columns of
@@ -296,7 +294,7 @@ public class BeanTableModel<T> extends RowTableModel<T> {
             Method setMethod = ci.getSetter();
 
             if (setMethod != null) {
-                if (!value.equals(("Change Base Addr"))) {
+                if (!value.equals( "Change Base Addr")) {
                     // DO NOT do this for the "button" cell!
                     // It is ALL RIGHT for all other cells.
                     setMethod.invoke(getRow(row), value);
@@ -440,6 +438,4 @@ public class BeanTableModel<T> extends RowTableModel<T> {
     	    return getName().hashCode();
     	 }
     }
-        private final static Logger log = LoggerFactory.getLogger(BeanTableModel.class);
-
 }
