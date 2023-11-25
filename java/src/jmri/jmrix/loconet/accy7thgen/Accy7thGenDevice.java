@@ -189,9 +189,6 @@ public class Accy7thGenDevice extends java.beans.Beans {
     private Integer gitSensorAddressEnd() {
         int ret;
         switch (device) {
-            case "SE74":
-                ret = (2 * baseAddr) + 6;
-                break;
             case "DS78V":
                 if ((firstOpSws & 0x1e) == 0x0C) {
                     ret =  (2 * baseAddr) + 30;
@@ -199,6 +196,7 @@ public class Accy7thGenDevice extends java.beans.Beans {
                     ret = (2 * baseAddr)+14;
                 }
                 break;
+            case "SE74":
             case "DS74":
                 ret = (2 * baseAddr) + 6;
                 break;
