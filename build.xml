@@ -551,6 +551,7 @@
             <fileset file="log.txt"/>
             <fileset file="${jartarget}/jmri.jar"/>
             <fileset file="${jartarget}/jmri-tests.jar"/>
+            <fileset file="${jartarget}/railops.jar"/>
             <fileset file="${javadir}/manifest"/>
             <!-- .gitignore test artifacts -->
             <fileset file="junit-results.xml"/>
@@ -1945,7 +1946,7 @@
         <jar jarfile="${jartarget}/jmri.jar"
              basedir="${target}"
              compress="true"
-             index="true">  <!--  java -jar jmri.jar doesn't start when apps.PanelPro.PanelPro is specified & index="true" -->
+             index="true">
             <fileset dir="."
                      includes="xml/,resources/,help/,web/,jython/"
                      excludes="help/en/manual/**,web/app/**" />
@@ -1995,6 +1996,34 @@
           </manifest>
         </jar>
     </target>
+
+    <target name="jar-railops"
+            description="create a Rail-Ops specific jar for separate distribution"
+            depends="debug">
+        <manifestclasspath property="jar.classpath" jarfile="${jartarget}/railops.jar">
+          <classpath refid="jar.class.path" />
+        </manifestclasspath>
+        <jar jarfile="${jartarget}/railops.jar"
+             basedir="${target}"
+             compress="true"
+             index="true"
+             includes="META-INF/services/jmri.util.startup.StartupActionFactory,
+                       META-INF/services/jmri.jmrit.swing.ToolsMenuAction,
+                       jmri/jmrit/railops/**
+                    ">
+          <manifest>
+            <section name="jmri">
+              <attribute name="Specification-Title" value="RailOps Classes"/>
+              <attribute name="Specification-Version" value="1.1.1"/>
+              <attribute name="Specification-Vendor" value="????"/>
+              <attribute name="Package-Title" value="railops"/>
+              <attribute name="Package-Version" value="1.1.1"/>
+              <attribute name="Package-Vendor" value="???"/>
+            </section>
+          </manifest>
+        </jar>
+    </target>
+
 
     <target name="native-image" depends="jar" description="create native launchers">
         <exec executable="native-image"
