@@ -95,7 +95,7 @@ public class GuiLafPreferencesManager extends Bean implements PreferencesManager
         if (!this.initialized) {
             Preferences preferences = ProfileUtils.getPreferences(profile, this.getClass(), true);
             this.setLocale(Locale.forLanguageTag(preferences.get(LOCALE, this.getLocale().toLanguageTag())));
-            this.setLookAndFeel(preferences.get(LOOK_AND_FEEL, this.getLookAndFeel()));
+            //??? this.setLookAndFeel(preferences.get(LOOK_AND_FEEL, this.getLookAndFeel()));
 
             this.setDefaultFontSize(); // before we change anything
             this.setFontSize(preferences.getInt(FONT_SIZE, this.getDefaultFontSize()));

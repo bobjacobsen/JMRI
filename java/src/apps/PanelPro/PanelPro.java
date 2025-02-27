@@ -110,7 +110,12 @@ public class PanelPro extends Apps {
 
     // Main entry point
     public static void main(String args[]) {
-
+    
+        //??? Load extra L&F
+         javax.swing.SwingUtilities.invokeLater(() -> {
+            com.github.weisj.darklaf.LafManager.install(new com.github.weisj.darklaf.theme.HighContrastDarkTheme());
+        });
+        
         // Set up system properties that needs to be loaded early
         jmri.util.EarlyInitializationPreferences.getInstance().loadAndSetPreferences();
 

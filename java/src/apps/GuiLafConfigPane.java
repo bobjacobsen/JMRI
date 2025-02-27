@@ -221,6 +221,13 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
                 jmi.setSelected(true);
             }
         }
+        
+        //??? 
+        var lafBoxModel = com.github.weisj.darklaf.LafManager.getThemeComboBoxModel() ;
+        panel.add(new JComboBox<com.github.weisj.darklaf.theme.Theme>(lafBoxModel));
+        for (int i = 0 ; i < lafBoxModel.getSize(); i++) {
+            log.info("  Theme '{}'", lafBoxModel.getElementAt(i));
+        }
     }
 
     /**
@@ -403,4 +410,5 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
     public boolean isPreferencesValid() {
         return true; // no validity checking performed
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GuiLafConfigPane.class);
 }
