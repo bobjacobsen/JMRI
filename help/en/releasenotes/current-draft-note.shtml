@@ -197,7 +197,7 @@
 
         <h4>Uhlenbrock Intellibox</h4>
             <ul>
-                <li></li>
+                <li>Updated communications for the 2neo to avoid a timeout.</li>
             </ul>
 
         <h4>Zimo MXULF</h4>

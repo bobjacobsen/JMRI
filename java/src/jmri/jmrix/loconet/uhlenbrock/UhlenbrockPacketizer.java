@@ -188,15 +188,20 @@ public class UhlenbrockPacketizer extends LnPacketizer {
                             continue;
                         }
                     }
-                    // check parity
-                    if (!msg.checkParity()) {
-                        log.warn("Ignore LocoNet packet with bad checksum: {}", msg.toString());
-                        throw new LocoNetMessageException();
-                    }
-
                     if (msg.equals(lastMessage)) {
                         log.debug("We have our returned message and can send back out our next instruction");
                         mCurrentState = NOTIFIEDSTATE;
+                    }
+
+                    // check parity
+                    // We check parity _after_ checking for last message
+                    // to avoid a lockup when the 2neo sends a response with a bad checksum.
+                    // The 2neo has a native USB connection, so no parity errors are expected.
+                    // (This may or may not be true for the original Intellibox, but those
+                    // are now few and far between.)
+                    if (!msg.checkParity()) {
+                        log.warn("Ignore LocoNet packet with bad checksum: {}", msg.toString());
+                        throw new LocoNetMessageException();
                     }
 
                     // message is complete, dispatch it !!
