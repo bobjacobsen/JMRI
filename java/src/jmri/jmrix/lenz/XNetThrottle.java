@@ -543,7 +543,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
 
     // Handle incoming messages for This throttle.
     @Override
-    public void message(XNetReply l) {
+    public synchronized void message(XNetReply l) {
         // First, we want to see if this throttle is waiting for a message
         //or not.
         log.debug("Throttle {} - received message {}", getDccAddress(), l);
