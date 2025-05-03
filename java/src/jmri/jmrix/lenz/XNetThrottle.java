@@ -544,6 +544,16 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
     // Handle incoming messages for This throttle.
     @Override
     public synchronized void message(XNetReply l) {
+        log.debug("queuing message handler with state {}", requestState);
+        jmri.util.ThreadingUtil.runOnLayoutEventually(() -> {
+            synchronized (XNetThrottle.this) {
+                log.debug("running message handler with state {}", requestState);
+                deferredMessageHandler(l);
+            }
+        });
+    }
+    
+    void deferredMessageHandler(XNetReply l) {
         // First, we want to see if this throttle is waiting for a message
         //or not.
         log.debug("Throttle {} - received message {}", getDccAddress(), l);
@@ -1091,18 +1101,24 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
      * @param s state
      */
     protected synchronized void queueMessage(XNetMessage m, int s) {
-        log.debug("adding message to message queue");
-        // put the message in the queue
-        RequestMessage msg = new RequestMessage(m, s);
-        try {
-            requestList.put(msg);
-        } catch (java.lang.InterruptedException ie) {
-            log.trace("Interrupted while queueing message {}", msg);
-        }
-        // if the state is idle, trigger the message send
-        if (requestState == THROTTLEIDLE) {
-            sendQueuedMessage();
-        }
+        log.debug("queuing add to message queue");
+        jmri.util.ThreadingUtil.runOnLayoutEventually(() -> {
+            synchronized (XNetThrottle.this) {
+                // put the message in the queue
+                RequestMessage msg = new RequestMessage(m, s);
+                try {
+                    requestList.put(msg);
+                } catch (java.lang.InterruptedException ie) {
+                    log.trace("Interrupted while queueing message {}", msg);
+                }
+                log.debug("added message to queue, now containing {}, state {}", 
+                            requestList.size(), requestState);
+                // if the state is idle, trigger the message send
+                if (requestState == THROTTLEIDLE) {
+                    sendQueuedMessage();
+                }
+            }
+        });
     }
 
     /**
