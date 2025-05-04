@@ -1081,8 +1081,6 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
         // check to see if the queue has a message in it, and if it does,
         // remove the first message
         if (!requestList.isEmpty()) {
-            log.debug("sending message to traffic controller for {} with state {} new state {}", 
-                    getDccAddress(), requestState, msg.getState());
             // if the queue is not empty, remove the first message
             // from the queue, send the message, and set the state machine
             // to the required state.
@@ -1091,6 +1089,8 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
             } catch (java.lang.InterruptedException ie) {
                 return; // if there was an error, exit.
             }
+            log.debug("sending message to traffic controller for {} with state {} new state {}", 
+                    getDccAddress(), requestState, msg.getState());
             requestState = msg.getState();
             tc.sendXNetMessage(msg.getMsg(), this);
         } else {
