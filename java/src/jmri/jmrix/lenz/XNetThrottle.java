@@ -403,7 +403,8 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
      */
     @Override
     public synchronized void setSpeedSetting(float speed) {
-        log.debug("set Speed to: {} Current step mode is: {}", speed, this.speedStepMode);
+        log.debug("set Speed to {} Current step mode is {} for {} ", 
+            speed, this.speedStepMode, getDccAddress());
         super.setSpeedSetting(speed);
         if (speed < 0) {
             /* we're sending an emergency stop to this locomotive only */
@@ -544,7 +545,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
     // Handle incoming messages for This throttle.
     @Override
     public synchronized void message(XNetReply l) {
-        log.debug("queuing message handler with state {}", requestState);
+        log.debug("queuing message handler with state {} for {}", requestState, getDccAddress());
         jmri.util.ThreadingUtil.runOnLayoutEventually(() -> {
             synchronized (XNetThrottle.this) {
                 log.debug("running message handler with state {}", requestState);
@@ -556,7 +557,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
     void deferredMessageHandler(XNetReply l) {
         // First, we want to see if this throttle is waiting for a message
         //or not.
-        log.debug("Throttle {} - received message {}", getDccAddress(), l);
+        log.debug("Throttle {} - received message {}, state {}", getDccAddress(), l, requestState);
         if (requestState == THROTTLEIDLE) {
             log.trace("Current throttle status is THROTTLEIDLE");
             // We haven't sent anything, but we might be told someone else
@@ -583,7 +584,9 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
                 sendQueuedMessage();
             } else if (l.isRetransmittableErrorMsg()) {
                 /* this is a communications error */
-                log.trace("Communications error occurred - message received was: {}", l);
+                log.warn("Communications error occurred - message received was: {}", l);
+                requestState = THROTTLEIDLE;
+                sendQueuedMessage();
             } else if (l.isUnsupportedError()) {
                 /* The Command Station does not support this command */
                 log.error("Unsupported Command Sent to command station");
@@ -591,9 +594,9 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
                 sendQueuedMessage();
             } else {
                 /* this is an unknown error */
+                log.warn("Received unhandled response: {}", l);
                 requestState = THROTTLEIDLE;
                 sendQueuedMessage();
-                log.trace("Received unhandled response: {}", l);
             }
         } else if ((requestState & THROTTLESTATSENT) == THROTTLESTATSENT) {
             log.trace("Current throttle status is THROTTLESTATSENT");
@@ -622,7 +625,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
                     parseSpeedAndDirection(b2);
                     parseFunctionInformation(b3, b4);
 
-                    //We've processed this request, so set the status to Idle.
+                    // We've processed this request, so set the status to Idle.
                     requestState = THROTTLEIDLE;
                     sendQueuedMessage();
                     // And then we want to request the Function Momentary Status
@@ -744,7 +747,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
                 /* this is an unknown error */
                 requestState = THROTTLEIDLE;
                 sendQueuedMessage();
-                log.trace("Received unhandled response: {}", l);
+                log.warn("Received unhandled response: {}", l);
             }
         }
     }
@@ -1027,7 +1030,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
      * Set up the status timer, and start it.
      */
     protected void startStatusTimer() {
-        log.debug("Status Timer Started");
+        log.debug("Status Timer Started for {}", getDccAddress()); 
 
         if (statusTask != null) {
             statusTask.cancel();
@@ -1038,6 +1041,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
             public void run() {
                 /* If the timer times out, just send a status
                  request message */
+                log.debug("Timer fired for {}", getDccAddress());       
                 sendStatusInformationRequest();
             }
         };
@@ -1049,7 +1053,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
      * Stop the Status Timer
      */
     protected void stopStatusTimer() {
-        log.debug("Status Timer Stopped");
+        log.debug("Status Timer Stopped for {}", getDccAddress()); 
         if (statusTask != null) {
             try {
                 statusTask.cancel();
@@ -1077,7 +1081,8 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
         // check to see if the queue has a message in it, and if it does,
         // remove the first message
         if (!requestList.isEmpty()) {
-            log.debug("sending message to traffic controller");
+            log.debug("sending message to traffic controller for {} with state {} new state {}", 
+                    getDccAddress(), requestState, msg.getState());
             // if the queue is not empty, remove the first message
             // from the queue, send the message, and set the state machine
             // to the required state.
@@ -1089,7 +1094,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
             requestState = msg.getState();
             tc.sendXNetMessage(msg.getMsg(), this);
         } else {
-            log.debug("message queue empty");
+            log.debug("message queue empty for {} with state {}", getDccAddress(), requestState);
             // if the queue is empty, set the state to idle.
             requestState = THROTTLEIDLE;
         }
@@ -1101,7 +1106,7 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
      * @param s state
      */
     protected synchronized void queueMessage(XNetMessage m, int s) {
-        log.debug("queuing add to message queue");
+        log.debug("queuing add to message queue for {}", getDccAddress());
         jmri.util.ThreadingUtil.runOnLayoutEventually(() -> {
             synchronized (XNetThrottle.this) {
                 // put the message in the queue
@@ -1109,10 +1114,10 @@ public class XNetThrottle extends AbstractThrottle implements XNetListener {
                 try {
                     requestList.put(msg);
                 } catch (java.lang.InterruptedException ie) {
-                    log.trace("Interrupted while queueing message {}", msg);
+                    log.warn("Interrupted while queueing message {}", msg);
                 }
-                log.debug("added message to queue, now containing {}, state {}", 
-                            requestList.size(), requestState);
+                log.debug("added message to queue for {}, now containing {}, state {}", 
+                            getDccAddress(), requestList.size(), requestState);
                 // if the state is idle, trigger the message send
                 if (requestState == THROTTLEIDLE) {
                     sendQueuedMessage();
