@@ -62,7 +62,7 @@ public final class GuiLafConfigPane extends JPanel implements PreferencesPanel {
      *
      * @see GuiLafPreferencesManager#MAX_FONT_SIZE
      */
-    public static final int MAX_DISPLAYED_FONT_SIZE = 20;
+    public static final int MAX_DISPLAYED_FONT_SIZE = 48;
 
     private final JComboBox<String> localeBox = new JComboBox<>(new String[]{
         Locale.getDefault().getDisplayName(),

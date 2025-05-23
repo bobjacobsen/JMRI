@@ -650,5 +650,7 @@
             <li>The PlantUML library we use for various documentation images
                 has been updated to the current 1.2025.2 version.</li>
             <li>Fixed a bug where Dark Mode would fail due to a missing library.</li>
+            <li>Allowed setting a font size up to 48 (was 20) in Preferences for better compatibility
+                with really high resolution Windows screens.</li>
         </ul>
 
