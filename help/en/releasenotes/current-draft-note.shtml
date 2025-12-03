@@ -86,7 +86,7 @@
 
         <h4>LocoNet</h4>
             <ul>
-                <li></li>
+                <li>Corrected an offset of 1 minute in the LocoNet clock support.</li>
             </ul>
 
         <h4>Maple</h4>

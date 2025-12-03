@@ -1652,7 +1652,7 @@ public class LocoNetSlot {
         if (getSlot() != LnConstants.FC_SLOT) {
             log.error("getFcMinutes invalid for slot {}", getSlot());
         }
-        int temp = ((255 - dirf) & 0x7F) % 60;
+        int temp = ((256 - dirf) & 0x7F) % 60;
         return (60 - temp) % 60;
     }
 
@@ -1672,7 +1672,7 @@ public class LocoNetSlot {
         if (getSlot() != LnConstants.FC_SLOT) {
             log.error("setFcMinutes invalid for slot {}", getSlot());
         }
-        dirf = (255 - (60 - val)) & 0x7F;
+        dirf = (256 - (60 - val)) & 0x7F;
     }
 
     /**
