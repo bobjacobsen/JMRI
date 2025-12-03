@@ -1212,7 +1212,7 @@ public class LocoNetSlotTest {
 
         s = new LocoNetSlot(123);
         Assert.assertEquals("FcFracMins initial value", 0x0, s.getFcFracMins());
-        Assert.assertEquals("FcMinutes initial value", 53, s.getFcMinutes());
+        Assert.assertEquals("FcMinutes initial value", 0, s.getFcMinutes());
         Assert.assertEquals("FcHours initial value", 0, s.getFcHours());
         Assert.assertEquals("FcDays initial value", 0, s.getFcDays());
         s.setFcFracMins(18);
@@ -1223,6 +1223,16 @@ public class LocoNetSlotTest {
         Assert.assertEquals("getFcMinutes", 41, s.getFcMinutes());
         Assert.assertEquals("getFcHours", 2, s.getFcHours());
         Assert.assertEquals("getFcDays", 3, s.getFcDays());
+
+        s.setFcMinutes(59);
+        Assert.assertEquals("getFcMinutes", 59, s.getFcMinutes());
+        
+        s.setFcMinutes(0);
+        Assert.assertEquals("getFcMinutes", 0, s.getFcMinutes());
+        
+        s.setFcMinutes(60); // check wrap
+        Assert.assertEquals("getFcMinutes", 0, s.getFcMinutes());
+        
     }
 
     @Test
