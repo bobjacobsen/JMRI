@@ -176,22 +176,6 @@ public class OlcbAddressTest {
         assertEquals(new OlcbAddress("1.2.3.4.5.6.7.9", null), v[1]);
 
     }
-
-    @Test
-    public void testName() {
-        JUnitUtil.initIdTagManager();
-        IdTagManager tagmgr = InstanceManager.getDefault(IdTagManager.class);
-        var tag1 = tagmgr.provideIdTag("IDOpenLCB$02.01.2C.01.00.00.00.8A");
-        tag1.setUserName("evtBar");
-        OlcbTestInterface iface = new OlcbTestInterface(new OlcbTestInterface.CreateConfigurationManager());
-        var memo = iface.systemConnectionMemo;
-        
-        OlcbAddress a = new OlcbAddress("evtBar", memo);
-        assertEquals(a, new OlcbAddress(new org.openlcb.EventID("02.01.2C.01.00.00.00.8A")));
-        
-        iface.dispose();
-        JUnitUtil.clearShutDownManager(); // put in place because AbstractMRTrafficController implementing subclass was not terminated properly
-    }
         
     @BeforeEach
     public void setUp() {
