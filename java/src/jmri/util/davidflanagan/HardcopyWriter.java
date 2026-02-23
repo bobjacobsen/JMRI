@@ -1168,11 +1168,11 @@ public class HardcopyWriter extends Writer implements Printable {
      * Write a graphic to the printout at a specific size (in points)
      * <p>
      * This was not in the original class, but was added afterwards by Kevin
-     * Dickerson. Heavily modified by P Gladstone. If the image is large
-     * and there are many images in the printout, then it probably makes
-     * sense to pass in a HardcopyWriter.ImageIconWrapper object instead. This
-     * will save memory as it just retains the filename until time comes to
-     * actually render the image.
+     * Dickerson. Heavily modified by P Gladstone. If the image is large and
+     * there are many images in the printout, then it probably makes sense to
+     * pass in a HardcopyWriter.ImageIconWrapper object instead. This will save
+     * memory as it just retains the filename until time comes to actually
+     * render the image.
      * <p>
      * The image is positioned on the right side of the paper, at the current
      * height. The image aspect ratio is maintained.
@@ -1219,7 +1219,7 @@ public class HardcopyWriter extends Writer implements Printable {
      * the top of the next page if there isn't enough space.
      * <p>
      * I'm not convinced that this is actually used as the code that invokes it
-     * is under a test for Java < 1.2. 
+     * is under a test for Java version before 1.5.
      *
      * @param jW the window to print
      */
