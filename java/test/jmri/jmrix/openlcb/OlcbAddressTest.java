@@ -1,6 +1,5 @@
 package jmri.jmrix.openlcb;
 
-import jmri.*;
 import jmri.jmrix.can.CanMessage;
 import jmri.jmrix.can.CanReply;
 
