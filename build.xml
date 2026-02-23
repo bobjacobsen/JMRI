@@ -486,9 +486,9 @@
     </target>
 
     <target name="check-ant-requirements"> <!-- check build system requirements, not for user use -->
-      <antversion property="ant-version-ok" atleast="1.8.0"/>
+      <antversion property="ant-version-ok" atleast="1.10.6"/>
       <antversion property="ant-version-actual"/>
-      <fail unless="ant-version-ok" message="Minimum ant version required is 1.8.0, this is ${ant-version-actual}"/>
+      <fail unless="ant-version-ok" message="Minimum ant version required is 1.10.6, this is ${ant-version-actual}"/>
     </target>
 
     <target name="show-java-version"> <!-- check build system requirements, not for user use -->
