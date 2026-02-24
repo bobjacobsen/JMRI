@@ -526,6 +526,7 @@
         <a id="Roster" name="Roster"></a>
         <ul>
             <li>Improved the locomotive image resolution in printed rosters.</li>
+            <li>Increased the size of the roster preview so that it matches the paper size and improved text legibility.</li>
             <li>Update "Export Complete Roster" process so that
                 upon "Import Complete Roster" the images will
                 properly display without the need to rebuild the roster.</li>
@@ -659,6 +660,6 @@
     <h3>Miscellaneous</h3>
         <a id="Misc" name="Misc"></a>
         <ul>
-            <li></li>
+            <li>When printing on MacOS, selecting a specific page range to print does not work correctly. This is a known Java issue. The workaround is to print the entire document to PDF, and then use a PDF reader to select the pages to print.</li>
         </ul>
 
