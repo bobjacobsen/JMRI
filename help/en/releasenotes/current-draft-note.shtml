@@ -3,7 +3,7 @@
         <ul>
             <li>Network connections now take their host name/address and port number
                 from the per-node individual configuration, if available,
-                and from the shared configurations is not.  This will allow
+                and from the shared configurations if not.  This will allow
                 you to have different host name/address for different
                 computers sharing the same JMRI profile.</li>
         </ul>
