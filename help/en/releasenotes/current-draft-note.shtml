@@ -1,7 +1,11 @@
 
     <h3>Hardware Support</h3>
         <ul>
-          <li></li>
+            <li>Network connections now take their host name/address and port number
+                from the per-node individual configuration, if available,
+                and from the shared configurations is not.  This will allow
+                you to have different host name/address for different
+                computers sharing the same JMRI profile.</li>
         </ul>
 
         <h4>Acela CTI</h4>
