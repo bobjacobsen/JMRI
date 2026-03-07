@@ -384,6 +384,9 @@ public class PositionableLabelXml extends AbstractXmlAdapter {
         } catch (NullPointerException e) {  // considered normal if the attributes are not present
         }
 
+        // Derive the final font to avoid various later size issues
+        util.setFontStyle(util.getFontStyle());
+        
         // set color if needed
         try {
             int red = element.getAttribute("red").getIntValue();
