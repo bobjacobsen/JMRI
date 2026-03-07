@@ -375,7 +375,8 @@ public class PositionableLabelXml extends AbstractXmlAdapter {
         a = element.getAttribute("fontname");
         try {
             if (a != null) {
-                util.setFont(new Font(a.getValue(), util.getFontStyle(), util.getFontSize()));
+                var thisFont = new Font(a.getValue(), util.getFontStyle(), util.getFontSize());
+                util.setFont(thisFont.deriveFont(util.getFontStyle()));
                 // Reset util to the new instance
                 // The setFont process clones the current util instance but the rest of loadTextInfo used the orignal instance.
                 util = l.getPopupUtility();
