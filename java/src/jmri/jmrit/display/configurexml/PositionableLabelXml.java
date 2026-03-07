@@ -383,9 +383,6 @@ public class PositionableLabelXml extends AbstractXmlAdapter {
             }
         } catch (NullPointerException e) {  // considered normal if the attributes are not present
         }
-
-        // Derive the final font to avoid various later size issues
-        util.setFontStyle(util.getFontStyle());
         
         // set color if needed
         try {
@@ -422,7 +419,7 @@ public class PositionableLabelXml extends AbstractXmlAdapter {
         try {
             fixedHeight = element.getAttribute("fixedHeight").getIntValue();
         } catch (org.jdom2.DataConversionException e) {
-            log.warn("Could not parse fixed Height attributes!");
+            log.warn("Could not parse fixed Height attribute!");
         } catch (NullPointerException e) {  // considered normal if the attributes are not present
         }
 
@@ -480,6 +477,9 @@ public class PositionableLabelXml extends AbstractXmlAdapter {
         if (deg == 0 && util.hasBackground()) {
             l.setOpaque(true);
         }
+
+        // Derive the final font to avoid various later size issues
+        util.setFontStyle(util.getFontStyle());
     }
 
     public void loadCommonAttributes(Positionable l, int defaultLevel, Element element)
