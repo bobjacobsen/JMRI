@@ -432,6 +432,7 @@ public class PositionablePopupUtil {
             _parent.updateSize();
             _parent.getEditor().setAttributes(_self, _parent);
         }
+        setFontStyle(newFont.getStyle());  // does a derive font needed for proper sizing later
     }
 
     public Font getFont() {
