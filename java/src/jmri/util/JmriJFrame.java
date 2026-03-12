@@ -1170,6 +1170,33 @@ public class JmriJFrame extends JFrame implements WindowListener, jmri.ModifiedF
         return allowInFrameServlet;
     }
 
+    /**
+     * Overload the standard JFrame method to 
+     * track the JMenuBar manually.  Needed because
+     * the Windows LAF returns null to 
+     * this.
+     */
+    @Override
+    public JMenuBar getJMenuBar() {
+        var bar = super.getJMenuBar();
+        if (bar != null) return bar;
+        return locallySavedJMenuBar;
+    }
+
+    /**
+     * Overload the standard JFrame method to 
+     * track the JMenuBar manually.  Needed because
+     * the Windows LAF returns null to 
+     * this.
+     */
+    @Override
+    public void setJMenuBar(JMenuBar bar) {
+        locallySavedJMenuBar = bar;
+        super.setJMenuBar(bar);
+    }
+
+    JMenuBar locallySavedJMenuBar;
+    
     /** {@inheritDoc} */
     @Override
     public Frame getFrame() {
