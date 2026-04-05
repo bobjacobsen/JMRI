@@ -129,6 +129,10 @@
             <ul>
                 <li>Updated the OpenLCB_Java library to include an 
                     improvement in how unknown-MTI messages are displayed.</li>
+                <li>The event-entry field on the Send Frame panel will now 
+                    allow entry of event names.</li>
+                <li>The popup menu on event entry fields now lets you copy
+                    the numerical event ID even if a event name has been entered.</li>
             </ul>
 
         <h4>Powerline</h4>
