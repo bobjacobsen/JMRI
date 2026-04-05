@@ -127,6 +127,8 @@
 
         <h4><a href="http://openlcb.org">OpenLCB</a> / LCC</h4>
             <ul>
+                <li>Improved how special characters in filenames are
+                    handled by the ChangeDefaultBackupFileName.py script</li>
                 <li>Updated the OpenLCB_Java library to include an 
                     improvement in how unknown-MTI messages are displayed.</li>
             </ul>
