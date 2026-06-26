@@ -18,6 +18,7 @@ import jmri.jmrix.loconet.LnConstants;
 import jmri.jmrix.loconet.LocoNetSlot;
 import jmri.jmrix.loconet.SlotListener;
 import jmri.jmrix.loconet.SlotMapEntry.SlotType;
+import jmri.jmrix.loconet.SlotStatusUser;
 import jmri.swing.JmriJTablePersistenceManager;
 import jmri.util.swing.WrapLayout;
 import jmri.util.table.*;
@@ -28,9 +29,9 @@ import jmri.util.table.*;
  * Slots 102 through 127 are normally not used for loco control, so are shown
  * separately.
  *
- * @author Bob Jacobsen Copyright (C) 2001
+ * @author Bob Jacobsen Copyright (C) 2001, 2026
  */
-public class SlotMonPane extends jmri.jmrix.loconet.swing.LnPanel implements SlotListener  {
+public class SlotMonPane extends jmri.jmrix.loconet.swing.LnPanel implements SlotListener, SlotStatusUser {
 
     /**
      * Controls whether not-in-use slots are shown
@@ -70,6 +71,7 @@ public class SlotMonPane extends jmri.jmrix.loconet.swing.LnPanel implements Slo
         if (memo.getSlotManager().getLoconetProtocol() != LnConstants.LOCONETPROTOCOL_TWO) {
             columns=20;
         }
+        
         slotModel = new SlotMonDataModel(memo.getSlotManager().getNumSlots(), columns, memo);
         slotTable = new JTable(slotModel);
         slotTable.setName(this.getTitle());
@@ -166,6 +168,8 @@ public class SlotMonPane extends jmri.jmrix.loconet.swing.LnPanel implements Slo
         add(topPanel);
         add(slotScroll);
 
+        // Express interest in slot status information
+        memo.getSlotManager().addSlotStatusUser(this);
         memo.getSlotManager().addSlotListener(this);
 
         // set top panel size
@@ -249,6 +253,7 @@ public class SlotMonPane extends jmri.jmrix.loconet.swing.LnPanel implements Slo
 
     @Override
     public void dispose() {
+        memo.getSlotManager().removeSlotStatusUser(this);
         slotModel.dispose();
         slotModel = null;
         slotTable = null;

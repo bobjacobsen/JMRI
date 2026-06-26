@@ -308,30 +308,59 @@ public class SlotManager extends AbstractProgrammer implements LocoNetListener, 
     javax.swing.Timer staleSlotCheckTimer = null;
 
     /**
+     * How long to wait without traffic to a specific slot before 
+     * checking whether it's been purged or not when the CS's OpSw 13 is
+     * set to long-duration purging.
+     * 
+     * Default value is 620 seconds.
+     * 
+     * Public so that it can be changed via e.g. a script.
+     */
+    public long longStaleTimeoutDuration = 620000;  // for when CS timeout is 600 seconds
+
+    /**
+     * How long to wait without traffic to a specific slot before 
+     * checking whether it's been purged or not when the CS's OpSw 13 is
+     * set to short-duration purging.
+     * 
+     * Default value is 220 seconds.
+     * 
+     * Public so that it can be changed via e.g. a script.
+     */
+    public long shortStaleTimeoutDuration = 220000;  // for when CS timeout is 200 seconds
+    
+    /**
      * Scan the slot array looking for slots that are in-use or common but have
-     * not had any updates in over 90s and issue a read slot request to update
-     * their state as the command station may have purged or stopped updating
+     * not had any updates in over a timeout value. If one is found, issue a read slot request to update
+     * its state as the command station may have purged or stopped updating
      * the slot without telling us via a LocoNet message.
      * <p>
      * This is intended to be called from the staleSlotCheckTimer
      */
     private void checkStaleSlots() {
-        long staleTimeout = System.currentTimeMillis() - 90000; // 90 seconds ago
-        LocoNetSlot slot;
+        // set the delay based on the OpSw 13 setting
+        long staleTimeoutDuration;
+        if ((_slots[127].pcmd()&0x10) != 0) {  // OpSw 13 bit in slot 127 byte 4
+            staleTimeoutDuration = longStaleTimeoutDuration;
+        } else {
+            staleTimeoutDuration = shortStaleTimeoutDuration;
+        }
 
+        long minStaleTime = System.currentTimeMillis() - staleTimeoutDuration;
+   
+        LocoNetSlot slot;
         // We will just check the normal loco slots 1 to numSlots exclude systemslots
         for (int i = 1; i < numSlots; i++) {
             slot = _slots[i];
             if (!slot.isSystemSlot()) {
                 if ((slot.slotStatus() == LnConstants.LOCO_IN_USE || slot.slotStatus() == LnConstants.LOCO_COMMON)
-                    && (slot.getLastUpdateTime() <= staleTimeout)) {
+                    && (slot.getLastUpdateTime() <= minStaleTime)) {
                     sendReadSlot(i);
-                    break; // only send the first one found
+                    break; // only send the first one found, will get next one on next staleSlotCheckTimer timeout
                 }
             }
         }
     }
-
 
     java.util.TimerTask slot250Task = null;
     /**
@@ -355,6 +384,28 @@ public class SlotManager extends AbstractProgrammer implements LocoNetListener, 
         jmri.util.TimerUtil.schedule(slot250Task,100);
     }
 
+
+    /**
+     * Contains the list of {@link SlotStatusUser} objects.
+     * If this list is non-empty, this SlotManager should be 
+     * regularly checking status of slots.  If not, not.
+     */
+    protected ArrayList<SlotStatusUser> slotStatusUsers = new ArrayList<>();
+
+    /**
+     * Indicate that a client object is interested in the slot status information.
+     */
+    public void addSlotStatusUser(SlotStatusUser user) {
+        slotStatusUsers.add(user);
+    }
+    
+    /**
+     * Indicate that a client object is no longer interested in the slot status information.
+     */
+    public void removeSlotStatusUser(SlotStatusUser user) {
+        slotStatusUsers.remove(user);
+    }
+    
     /**
      * Provide a mapping between locomotive addresses and the SlotListener
      * that's interested in them.
@@ -1226,11 +1277,13 @@ public class SlotManager extends AbstractProgrammer implements LocoNetListener, 
         loadSlots(false);
 
         // We will scan the slot table every 0.3 s for in-use slots that are stale
-        final int slotScanDelay = 300; // Must be short enough that 128 can be scanned in 90 seconds, see checkStaleSlots()
+        final int slotScanDelay = 300; // Must be short enough that 128 can be scanned in 220 seconds, see checkStaleSlots()
         staleSlotCheckTimer = new javax.swing.Timer(slotScanDelay, new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                checkStaleSlots();
+                if (!slotStatusUsers.isEmpty()) {
+                    checkStaleSlots();
+                }
             }
         });
 
