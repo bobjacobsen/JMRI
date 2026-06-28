@@ -353,10 +353,16 @@ public class SlotManager extends AbstractProgrammer implements LocoNetListener, 
         for (int i = 1; i < numSlots; i++) {
             slot = _slots[i];
             if (!slot.isSystemSlot()) {
+                // only scan in use or common slots that haven't been accessed recently
                 if ((slot.slotStatus() == LnConstants.LOCO_IN_USE || slot.slotStatus() == LnConstants.LOCO_COMMON)
                     && (slot.getLastUpdateTime() <= minStaleTime)) {
-                    sendReadSlot(i);
-                    break; // only send the first one found, will get next one on next staleSlotCheckTimer timeout
+                    
+                    // but don't scan in-consist slots
+                    if (slot.consistStatus() == LnConstants.CONSIST_NO) {
+                        // OK, scan that slot 
+                        sendReadSlot(i);
+                        break; // only send the first one found, will get next one on next staleSlotCheckTimer timeout
+                    }
                 }
             }
         }
