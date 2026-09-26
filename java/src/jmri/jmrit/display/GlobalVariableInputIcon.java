@@ -59,6 +59,7 @@ public class GlobalVariableInputIcon extends PositionableJPanel implements java.
                 int key = e.getKeyCode();
                 if (key == KeyEvent.VK_ENTER) {
                     updateGlobalVariable();
+                    transferFocus();  // this field should no longer be in edit mode
                 }
             }
         });
@@ -95,6 +96,7 @@ public class GlobalVariableInputIcon extends PositionableJPanel implements java.
     public void mouseExited(JmriMouseEvent e) {
         updateGlobalVariable();
         super.mouseExited(e);
+        transferFocus();  // this field should no longer be in edit mode
     }
 
     /**

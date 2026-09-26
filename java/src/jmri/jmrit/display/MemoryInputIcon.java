@@ -57,6 +57,7 @@ public class MemoryInputIcon extends PositionableJPanel implements java.beans.Pr
                 int key = e.getKeyCode();
                 if (key == KeyEvent.VK_ENTER) {
                     updateMemory();
+                    transferFocus();  // this field should no longer be in edit mode
                 }
             }
         });
@@ -93,6 +94,7 @@ public class MemoryInputIcon extends PositionableJPanel implements java.beans.Pr
     public void mouseExited(JmriMouseEvent e) {
         updateMemory();
         super.mouseExited(e);
+        transferFocus();  // this field should no longer be in edit mode
     }
 
     /**

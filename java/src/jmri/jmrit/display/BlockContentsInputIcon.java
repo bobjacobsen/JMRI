@@ -59,6 +59,7 @@ public class BlockContentsInputIcon extends PositionableJPanel implements java.b
                 int key = e.getKeyCode();
                 if (key == KeyEvent.VK_ENTER) {
                     updateBlock();
+                    transferFocus();  // this field should no longer be in edit mode
                 }
             }
         });
@@ -95,6 +96,7 @@ public class BlockContentsInputIcon extends PositionableJPanel implements java.b
     public void mouseExited(JmriMouseEvent e) {
         updateBlock();
         super.mouseExited(e);
+        transferFocus();  // this field should no longer be in edit mode
     }
 
     /**
