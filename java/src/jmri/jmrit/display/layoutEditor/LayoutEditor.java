@@ -446,6 +446,7 @@ public final class LayoutEditor extends PanelEditor implements MouseWheelListene
         // Let Editor make target, and use this frame
         super.setTargetPanel(null, null);
         super.setTargetPanelSize(gContext.getWindowWidth(), gContext.getWindowHeight());
+        setInputFocusTraversal();
         setSize(screenDim.width, screenDim.height);
 
         // register the resulting panel for later configuration
@@ -3199,6 +3200,75 @@ public final class LayoutEditor extends PanelEditor implements MouseWheelListene
     }
 
     /**
+     * Keep Tab traversal within the input fields on a Layout Editor panel.
+     * The default window traversal can leave the panel after the last field.
+     */
+    private void setInputFocusTraversal() {
+        _targetPanel.setFocusTraversalPolicyProvider(true);
+        _targetPanel.setFocusTraversalPolicy(new FocusTraversalPolicy() {
+
+            private List<Component> getInputFields() {
+                return getContents().stream()
+                        .filter(positionable -> positionable instanceof MemoryInputIcon
+                                || positionable instanceof BlockContentsInputIcon
+                                || positionable instanceof GlobalVariableInputIcon)
+                        .map(Positionable::getTextComponent)
+                        .filter(Objects::nonNull)
+                        .filter(component -> component.isFocusable() && component.isEnabled() && component.isVisible())
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            public Component getComponentAfter(Container focusCycleRoot, Component component) {
+                List<Component> fields = getInputFields();
+                if (fields.isEmpty()) {
+                    return null;
+                }
+                if (component == _targetPanel) {
+                    return fields.get(0);
+                }
+                int index = fields.indexOf(component);
+                if (index == fields.size() - 1) {
+                    return _targetPanel;
+                }
+                return fields.get((index + 1) % fields.size());
+            }
+
+            @Override
+            public Component getComponentBefore(Container focusCycleRoot, Component component) {
+                List<Component> fields = getInputFields();
+                if (fields.isEmpty()) {
+                    return null;
+                }
+                if (component == _targetPanel) {
+                    return fields.get(fields.size() - 1);
+                }
+                int index = fields.indexOf(component);
+                if (index <= 0) {
+                    return _targetPanel;
+                }
+                return fields.get(index - 1);
+            }
+
+            @Override
+            public Component getFirstComponent(Container focusCycleRoot) {
+                List<Component> fields = getInputFields();
+                return fields.isEmpty() ? null : fields.get(0);
+            }
+
+            @Override
+            public Component getLastComponent(Container focusCycleRoot) {
+                return getInputFields().isEmpty() ? null : _targetPanel;
+            }
+
+            @Override
+            public Component getDefaultComponent(Container focusCycleRoot) {
+                return getFirstComponent(focusCycleRoot);
+            }
+        });
+    }
+
+    /**
      * Handle a mouse pressed event
      * <p>
      * Side-effects on _anchorX, _anchorY,_lastX, _lastY, xLoc, yLoc, dLoc,
@@ -3468,8 +3538,6 @@ public final class LayoutEditor extends PanelEditor implements MouseWheelListene
                 selections.get(0).doMousePressed(event);
             }
         }
-
-        requestFocusInWindow();
 
     }   // mousePressed
 
@@ -4225,7 +4293,6 @@ public final class LayoutEditor extends PanelEditor implements MouseWheelListene
             isDragging = false;
         }
 
-        requestFocusInWindow();
     }   // mouseReleased
 
     public void addPopupItems(@Nonnull JPopupMenu popup, @Nonnull JmriMouseEvent event) {
@@ -4602,7 +4669,6 @@ public final class LayoutEditor extends PanelEditor implements MouseWheelListene
         } else if ((selectionWidth == 0) || (selectionHeight == 0)) {
             clearSelectionGroups();
         }
-        requestFocusInWindow();
     }
 
     private void checkPointOfPositionable(@Nonnull PositionablePoint p) {
